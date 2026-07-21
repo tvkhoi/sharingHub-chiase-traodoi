@@ -1,0 +1,691 @@
+   Giới thiệu
+Mục đích hệ thống
+Lý do xây dựng hệ thống
+Trong những năm gần đây, nhu cầu tái sử dụng và tái phân phối tài sản cá nhân ngày càng được nhiều người quan tâm nhằm giảm lãng phí, tiết kiệm chi phí và góp phần bảo vệ môi trường. Tuy nhiên, việc kết nối giữa người có nhu cầu chia sẻ tài sản và người có nhu cầu tiếp nhận vẫn chủ yếu được thực hiện thông qua các nhóm mạng xã hội hoặc các kênh trao đổi không chuyên biệt. Điều này khiến quá trình tìm kiếm thông tin, liên hệ và xác minh độ tin cậy của các bên còn gặp nhiều khó khăn.
+Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân được xây dựng nhằm tạo ra một nền tảng tập trung, hỗ trợ người dùng đăng tải, tìm kiếm và trao đổi tài sản một cách thuận tiện, đồng thời nâng cao tính minh bạch và an toàn trong quá trình giao dịch.
+Vấn đề thực tế hệ thống giải quyết
+Hệ thống hướng đến giải quyết một số vấn đề phổ biến trong hoạt động tái phân phối tài sản hiện nay như: 
+Nhiều bài đăng được tạo từ các tài khoản ẩn danh hoặc chưa được xác thực, khiến người dùng gặp khó khăn trong việc đánh giá mức độ tin cậy của đối tượng giao dịch.
+Thông tin về tài sản trên nhiều bài đăng chưa đầy đủ hoặc thiếu tính nhất quán (mô tả, hình ảnh, tình trạng sử dụng...), làm giảm hiệu quả tìm kiếm và gây khó khăn trong quá trình ra quyết định.
+Việc kết nối và trao đổi giữa người sở hữu tài sản và người có nhu cầu tiếp nhận chủ yếu diễn ra trên các nền tảng mạng xã hội, chưa có quy trình quản lý thống nhất để theo dõi trạng thái giao dịch.
+Thiếu cơ chế đánh giá sau giao dịch và tiếp nhận, xử lý các báo cáo vi phạm, dẫn đến việc xây dựng môi trường giao dịch minh bạch và đáng tin cậy còn gặp nhiều hạn chế.
+Giá trị và lợi ích
+Đối với người dùng, hệ thống giúp rút ngắn thời gian tìm kiếm tài sản, hỗ trợ kết nối nhanh giữa người sở hữu và người có nhu cầu tiếp nhận, đồng thời tăng mức độ tin cậy thông qua chức năng đánh giá và báo cáo vi phạm.
+Đối với tổ chức hoặc đơn vị vận hành, hệ thống cung cấp công cụ quản lý thông tin người dùng, bài đăng và các báo cáo vi phạm, góp phần duy trì môi trường giao dịch minh bạch và nâng cao chất lượng dịch vụ.
+Phạm vi hệ thống
+Tên hệ thống: Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân. 
+Hệ thống bao gồm: 
+Hệ thống cung cấp các chức năng phục vụ toàn bộ quá trình kết nối và giao dịch giữa người sở hữu tài sản và người tiếp nhận tài sản, bao gồm: 
+Quản lý tài khoản người dùng.
+Đăng tải và quản lý tin đăng tài sản.
+Tìm kiếm và xem thông tin tài sản.
+Gửi đề xuất trao đổi và thương lượng giao dịch.
+Xác nhận hoặc hủy giao dịch.
+Theo dõi trạng thái và lịch sử giao dịch.
+Đánh giá đối tác sau giao dịch.
+Báo cáo vi phạm.
+Quản lý và xử lý báo cáo vi phạm đối với quản trị viên.
+Hệ thống không bao gồm: 
+Thanh toán trực tuyến.
+Tích hợp dịch vụ vận chuyển.
+Định vị và theo dõi vị trí giao nhận theo thời gian thực.
+Xác thực danh tính bằng các dịch vụ của bên thứ ba.
+Tích hợp với các hệ thống quản lý bên ngoài.
+Giới hạn và phạm vi hoạt động
+Hệ thống hỗ trợ người dùng thực hiện các bước từ đăng tải tài sản đến hoàn tất giao dịch trên môi trường trực tuyến. Việc bàn giao tài sản được thực hiện trực tiếp giữa các bên và nằm ngoài phạm vi kiểm soát của hệ thống.
+Hệ thống ghi nhận kết quả giao dịch dựa trên thông tin xác nhận từ người dùng và không chịu trách nhiệm xác minh chất lượng hoặc tình trạng thực tế của tài sản được trao đổi.
+Thuật ngữ và tài liệu tham khảo
+Bảng 1.1 Thuật ngữ
+Bảng 1.2 Tài liệu tham khảo
+Tổng quan hệ thống
+Bối cảnh hệ thống
+Hệ thống hoạt động như một nền tảng trung gian kết nối người sở hữu tài sản với người có nhu cầu tiếp nhận tài sản. Mọi hoạt động đăng tải, tìm kiếm, gửi đề xuất, thương lượng và theo dõi giao dịch đều được thực hiện thông qua hệ thống.
+Quản trị viên chịu trách nhiệm giám sát hoạt động của hệ thống thông qua việc tiếp nhận và xử lý các báo cáo vi phạm, từ đó áp dụng các biện pháp xử lý phù hợp đối với tài khoản hoặc bài đăng không tuân thủ quy định.
+Các tác nhân liên quan
+Người sở hữu tài sản.
+Người tiếp nhận tài sản.
+Quản trị viên.
+Các giao tiếp và tương tác chính
+Người sở hữu tài sản đăng tải và quản lý tin đăng.
+Người tiếp nhận tìm kiếm tài sản và gửi đề xuất trao đổi.
+Hai bên thực hiện thương lượng và xác nhận kết quả giao dịch.
+Sau giao dịch, người dùng có thể đánh giá đối tác hoặc gửi báo cáo vi phạm.
+Quản trị viên tiếp nhận, xem xét và xử lý các báo cáo vi phạm.
+Chức năng tổng thể của hệ thống
+Hệ thống được tổ chức thành các nhóm chức năng chính sau:
+Quản lý tài khoản người dùng.
+Quản lý tin đăng tài sản.
+Quản lý tìm kiếm và đề xuất.
+Quản lý thương lượng và chốt giao dịch.
+Quản lý bàn giao và theo dõi giao dịch.
+Quản lý đánh giá và phản hồi.
+Quản lý báo cáo và xử lý vi phạm.
+Các điều kiện và ràng buộc tổng quan
+Người dùng phải có tài khoản để thực hiện các chức năng liên quan đến giao dịch.
+Chỉ người sở hữu tài sản mới được đăng tải, chỉnh sửa hoặc xóa tin đăng của mình.
+Chỉ người tiếp nhận mới được gửi đề xuất đối với tài sản.
+Chức năng đánh giá chỉ được thực hiện sau khi giao dịch đã hoàn tất.
+Chỉ quản trị viên mới có quyền xử lý báo cáo và áp dụng biện pháp xử lý đối với tài khoản hoặc bài đăng vi phạm.
+Đặc điểm người dùng
+Các nhóm người dùng
+Hệ thống phục vụ ba nhóm người dùng chính:
+Người sở hữu tài sản: đăng tải, quản lý tài sản và tham gia giao dịch.
+Người tiếp nhận tài sản: tìm kiếm tài sản, gửi đề xuất và tham gia giao dịch.
+Quản trị viên: quản lý hoạt động của hệ thống và xử lý các báo cáo vi phạm.
+Số lượng người dùng dự kiến
+Hệ thống được thiết kế để phục vụ đồng thời nhiều người dùng. Trong giai đoạn triển khai ban đầu, quy mô dự kiến từ vài trăm đến vài nghìn tài khoản, đồng thời cho phép mở rộng khi số lượng người dùng tăng lên.
+Trình độ và cách thức sử dụng hệ thống
+Đối tượng sử dụng chủ yếu là người dùng phổ thông có khả năng sử dụng máy tính hoặc thiết bị di động và có kết nối Internet. Giao diện được thiết kế theo hướng đơn giản, dễ thao tác, giúp người dùng có thể nhanh chóng thực hiện các chức năng mà không cần đào tạo chuyên sâu. 
+System Uses case
+Danh sách các tác nhân (Actor)
+Bảng 3.1 Danh sách các tác nhân
+Danh sách System Use Case
+Bảng 3.2 Danh sách System Use Case
+System Uses case diagram
+Hình 3.1 Sơ đồ tổng quan Use Case
+Đặc tả System Use case
+UC1.1. Đăng tải tài sản
+UC1.2. Chỉnh sửa thông tin tài sản 
+UC1.3. Xoá tin đăng
+UC1.4. Xem danh sách tài sản đã chia sẻ 
+UC2.1. Tìm kiếm và lọc tài sản 
+UC2.2. Xem chi tiết tài sản  
+UC2.3. Gửi đề xuất trao đổi
+UC3.1. Xem danh sách đề xuất giao dịch
+UC3.2. Chấp nhận hoặc từ chối đề xuất  
+UC3.3. Trao đổi thông tin giao dịch  
+UC3.4. Chốt thỏa thuận giao dịch  
+UC4.1. Xác nhận hoàn tất giao dịch 
+UC4.2.Hủy giao dịch 
+ UC4.3. Theo dõi trạng thái giao dịch 
+UC5.1. Đăng ký tài khoản 
+UC5.2. Đăng nhập hệ thống 
+UC5.3. Quản lý hồ sơ cá nhân 
+  UC6.1. Đánh giá đối tác giao dịch
+UC6.2. Xem hồ sơ uy tín thành viên 
+UC7.1. Báo cáo vi phạm 
+UC7.2. Xem danh sách báo cáo
+UC7.3. Xem chi tiết báo cáo
+UC7.4. Xử lý báo cáo vi phạm
+Functional Requirements (FR) 
+Yêu cầu phi chức năng
+Yêu cầu phi chức năng xác định các tiêu chí chất lượng mà hệ thống cần đáp ứng trong quá trình vận hành. Các yêu cầu này không mô tả chức năng nghiệp vụ mà tập trung vào khả năng sử dụng, hiệu năng, độ tin cậy, bảo mật và khả năng mở rộng của hệ thống. 
+Chú thích ký hiệu
+Để thuận tiện cho việc trình bày và theo dõi các yêu cầu trong tài liệu, các ký hiệu được sử dụng theo quy ước sau:
+Bảng: Danh sách yêu cầu phi chức năng 
+Bảng. Ma trận truy vết giữa yêu cầu phi chức năng và System Use Case
+Yêu cầu giao diện hệ thống
+Giao diện hệ thống nội bộ
+Giao tiếp giữa các module
+Giao diện bên ngoài
+API với hệ thống khác
+Cơ sở dữ liệu 
+Giao diện người dùng
+Thuật ngữ / Viết tắt | Giải thích
+Admin | Quản trị viên hệ thống, chịu trách nhiệm quản lý và xử lý các báo cáo vi phạm.
+Actor | Tác nhân tương tác với hệ thống, bao gồm Người sở hữu tài sản, Người tiếp nhận tài sản và Quản trị viên.
+BRD (Business Requirements Document) | Tài liệu mô tả yêu cầu nghiệp vụ của hệ thống.
+SyRS (System Requirements Specification) | Tài liệu đặc tả yêu cầu hệ thống, mô tả các yêu cầu chức năng và phi chức năng.
+BUC (Business Use Case) | Use Case ở mức nghiệp vụ, mô tả quy trình nghiệp vụ của tổ chức.
+UC (System Use Case) | Use Case ở mức hệ thống, mô tả các chức năng mà hệ thống cung cấp cho người dùng.
+FR (Functional Requirement) | Yêu cầu chức năng mà hệ thống phải thực hiện.
+NFR (Non-Functional Requirement) | Yêu cầu phi chức năng quy định các thuộc tính chất lượng của hệ thống như hiệu năng, bảo mật, khả năng sử dụng,...
+Responsive | Khả năng giao diện tự động thích ứng với các kích thước màn hình khác nhau như máy tính, máy tính bảng và điện thoại.
+Hash | Kỹ thuật mã hóa một chiều được sử dụng để lưu trữ mật khẩu an toàn trong cơ sở dữ liệu.
+STT | Tài liệu | Phiên bản | Mục đích sử dụng
+1 | IEEE Std 29148-2018 – Systems and Software Engineering – Requirements Engineering | 2018 | Hướng dẫn xây dựng và đặc tả yêu cầu hệ thống (SyRS).
+2 | OMG Unified Modeling Language (UML) Specification Version 2.5.1 | 2.5.1 | Chuẩn mô hình hóa Use Case, Activity Diagram và các mô hình UML.
+3 | IEEE Std 830-1998 – Software Requirements Specification (tham khảo) | 1998 | Tham khảo cấu trúc tài liệu đặc tả yêu cầu phần mềm.
+4 | Business Requirements Document (BRD) – Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân | Phiên bản hiện hành | Cơ sở xác định yêu cầu nghiệp vụ và xây dựng System Use Case.
+5 | Giáo trình Phân tích và Thiết kế Hệ thống Thông tin | Theo chương trình đào tạo | Tham khảo phương pháp phân tích nghiệp vụ và mô hình hóa hệ thống.
+6 | Luật Giao dịch điện tử số 20/2023/QH15 | 2023 | Căn cứ về giao dịch điện tử trong môi trường trực tuyến.
+7 | Nghị định số 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân | 2023 | Căn cứ xây dựng các yêu cầu bảo vệ thông tin người dùng.
+8 | Quy định cộng đồng của hệ thống | Phiên bản hiện hành | Căn cứ xây dựng chức năng báo cáo và xử lý vi phạm.
+Actor | Mô tả
+1. Người sở hữu tài sản | Cá nhân hoặc tổ chức đăng tải và quản lý tài sản
+2. Người tiếp nhận tài sản | Cá nhân hoặc tổ chức tìm kiếm và tiếp nhận tài sản
+3. Quản trị viên | Quản lý, xử lý báo cáo vi phạm và vận hành hệ thống
+Tên Use Case | Actor
+UC1. Chia sẻ thông tin tài sản | UC1. Chia sẻ thông tin tài sản
+UC1.1. Đăng tải tài sản* | Người sở hữu tài sản
+UC1.2. Chỉnh sửa thông tin tài sản | Người sở hữu tài sản
+UC1.3. Xoá tin đăng | Người sở hữu tài sản
+UC1.4. Xem danh sách tài sản đã chia sẻ | Người sở hữu tài sản
+UC2. Tiếp cận tài sản | UC2. Tiếp cận tài sản
+UC2.1. Tìm kiếm và lọc tài sản | Người tiếp nhận tài sản
+UC2.2. Xem chi tiết tài sản | Người sở hữu tài sản/Người tiếp nhận tài sản
+UC2.3. Gửi đề xuất trao đổi* | Người tiếp nhận tài sản
+UC3. Thương lượng giao dịch | UC3. Thương lượng giao dịch
+UC3.1 Xem danh sách đề xuất giao dịch | Người sở hữu tài sản
+UC3.2 Chập nhận hoặc từ chối đề xuất | Người sở hữu tài sản
+UC3.3 Trao đổi thông tin giao dịch | Người sở hữu tài sản/ Người tiếp nhận tài sản
+UC3.4 Chốt thỏa thuận giao dịch | Người sở hữu tài sản/ Người tiếp nhận tài sản
+UC4. Thực hiện giao dịch | UC4. Thực hiện giao dịch
+UC4.1. Xác nhận hoàn tất giao dịch* | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC4.2. Hủy giao dịch | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC4.3. Theo dõi trạng thái giao dịch | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC5. Xây dựng hồ sơ người dùng | UC5. Xây dựng hồ sơ người dùng
+UC5.1. Đăng ký tài khoản | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC5.2. Đăng nhập hệ thống | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC5.3. Quản lý hồ sơ cá nhân | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC6. Đánh giá giao dịch | UC6. Đánh giá giao dịch
+UC6.1. Đánh giá đối tác giao dịch* | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC6.2. Xem hồ sơ uy tín thành viên | Người sở hữu tài sản / Người tiếp nhận tài sản
+UC7. Đảm bảo an toàn cộng đồng | UC7. Đảm bảo an toàn cộng đồng
+UC7.1. Báo cáo vi phạm | Người sở hữu tài sản / Người tiếp nhận tài
+UC7.2. Xem danh sách báo cáo | Quản trị viên
+UC7.3. Xem chi tiết báo cáo | Quản trị viên
+UC7.4. Xử lý báo cáo vi phạm* | Quản trị viên
+Thuộc tính | Nội dung
+Mã Use Case | UC1.1
+Tên Use Case | Đăng tải tài sản
+Actor | Người sở hữu tài sản
+Mục tiêu | Cho phép người sở hữu đăng tải tài sản lên hệ thống để chia sẻ theo hình thức cho tặng hoặc trao đổi.
+Trigger | Người sở hữu chọn chức năng Đăng tải tài sản.
+Tiền điều kiện | - Người dùng đã đăng nhập.
+- Hồ sơ thành viên đã được thiết lập.
+- Tài khoản đang hoạt động.
+Hậu điều kiện | Bài đăng được tạo thành công và hiển thị trên hệ thống.
+Luồng chính | 1. Người sở hữu chọn chức năng Đăng tải tài sản.
+2. Hệ thống hiển thị biểu mẫu đăng tải tài sản.
+3. Người sở hữu nhập thông tin tài sản (tên, danh mục, mô tả, tình trạng, hình ảnh, địa điểm, số lượng).
+4. Người sở hữu lựa chọn hình thức chia sẻ (Cho tặng hoặc Trao đổi).
+5. Nếu chọn Trao đổi, người sở hữu chọn hình thức trao đổi (đồ vật hoặc tiền) và yêu cầu trao đổi.
+6. Người sở hữu xác nhận đăng tải.
+7. Hệ thống kiểm tra dữ liệu.
+8. Hệ thống lưu bài đăng và thông báo thành công.
+Luồng thay thế | 4a. Người sở hữu thay đổi hình thức chia sẻ trước khi xác nhận đăng tải. Hệ thống cập nhật biểu mẫu theo hình thức mới.
+5a. Người sở hữu thay đổi yêu cầu trao đổi trước khi xác nhận đăng tải. Hệ thống cập nhật thông tin mới.
+Luồng ngoại lệ | 3e. Thiếu thông tin bắt buộc hoặc dữ liệu không hợp lệ, hệ thống yêu cầu người dùng bổ sung.
+5e. Người sở hữu chọn hình thức Trao đổi nhưng chưa nhập hình thức hoặc điều kiện trao đổi. Hệ thống không cho phép tiếp tục.
+7e. Hình ảnh không đúng định dạng hoặc vượt dung lượng cho phép. Hệ thống thông báo lỗi và yêu cầu tải lại.
+Thuộc tính | Nội dung
+Mã Use Case | UC1.2
+Tên Use Case | Chỉnh sửa thông tin tài sản
+Use Case cha | UC1. Chia sẻ thông tin tài sản
+Actor | Người sở hữu tài sản
+Mục tiêu | Cho phép người sở hữu cập nhật thông tin bài đăng tài sản đã chia sẻ khi thông tin còn được phép chỉnh sửa.
+Trigger | Người sở hữu chọn chức năng Chỉnh sửa tại bài đăng tài sản.
+Tiền điều kiện | Người sở hữu đã đăng nhập, tài khoản đang hoạt động; bài đăng thuộc quyền sở hữu của người dùng, bài đăng chưa bị xóa hoặc kết thúc.
+Hậu điều kiện | Thông tin bài đăng được cập nhật thành công hoặc dữ liệu bài đăng được giữ nguyên nếu thao tác không hoàn tất.
+Luồng chính | 1. Người sở hữu truy cập danh sách tài sản đã chia sẻ.
+2. Người sở hữu chọn bài đăng cần chỉnh sửa.
+3. Hệ thống hiển thị thông tin hiện tại của bài đăng.
+4. Người sở hữu chỉnh sửa thông tin tài sản như tên, danh mục, mô tả, tình trạng, hình ảnh, địa điểm, số lượng hoặc hình thức chia sẻ.
+5. Người sở hữu chọn Lưu thay đổi.
+6. Hệ thống kiểm tra tính hợp lệ của thông tin cập nhật.
+7. Hệ thống cập nhật bài đăng.
+8. Hệ thống thông báo chỉnh sửa thành công.
+Luồng thay thế | 4a. Người sở hữu chỉ chỉnh sửa một phần thông tin bài đăng, hệ thống giữ nguyên các thông tin không thay đổi.
+4b. Người sở hữu thay đổi hình thức chia sẻ từ Cho tặng sang Trao đổi, hệ thống yêu cầu nhập hình thức và điều kiện trao đổi.
+5a. Người sở hữu hủy thao tác chỉnh sửa, hệ thống không cập nhật dữ liệu và quay lại thông tin ban đầu.
+Luồng ngoại lệ | 2e. Bài đăng không thuộc quyền sở hữu của người dùng, hệ thống từ chối truy cập chỉnh sửa.
+4e. Bài đăng đang trong quá trình thương lượng hoặc giao dịch, hệ thống không cho phép chỉnh sửa các thông tin ảnh hưởng đến quyền lợi của các bên liên quan.
+6e. Thông tin cập nhật thiếu hoặc không hợp lệ, hệ thống hiển thị lỗi và yêu cầu nhập lại.
+7e. Hệ thống không thể cập nhật bài đăng do lỗi xử lý, dữ liệu cũ được giữ nguyên.
+Thuộc tính | Nội dung
+Mã Use Case | UC1.3
+Tên Use Case | Xoá tin đăng
+Use Case cha | UC1. Chia sẻ thông tin tài sản
+Actor | Người sở hữu tài sản
+Mục tiêu | Cho phép người sở hữu xóa hoặc ngừng công khai bài đăng tài sản khi không còn nhu cầu chia sẻ.
+Trigger | Người sở hữu chọn chức năng Xoá tin đăng tại bài đăng tài sản.
+Tiền điều kiện | Người sở hữu đã đăng nhập; tài khoản đang hoạt động; bài đăng thuộc quyền sở hữu của người dùng; bài đăng chưa có giao dịch đang diễn ra.
+Hậu điều kiện | Bài đăng bị xóa hoặc ngừng hiển thị công khai; nếu thao tác bị hủy hoặc không hợp lệ, bài đăng vẫn được giữ nguyên.
+Luồng chính | 1. Người sở hữu truy cập danh sách tài sản đã chia sẻ.
+2. Người sở hữu chọn bài đăng cần xóa.
+3. Người sở hữu chọn chức năng Xoá tin đăng.
+4. Hệ thống hiển thị thông báo xác nhận xóa.
+5. Người sở hữu xác nhận xóa tin đăng.
+6. Hệ thống kiểm tra trạng thái bài đăng.
+7. Hệ thống xóa hoặc ngừng công khai bài đăng.
+8. Hệ thống thông báo xóa tin đăng thành công.
+Luồng thay thế | 5a. Người sở hữu hủy thao tác xóa, hệ thống đóng thông báo xác nhận và giữ nguyên bài đăng.
+7a. Thay vì xóa vĩnh viễn, hệ thống chuyển bài đăng sang trạng thái Đã kết thúc/Không hiển thị để phục vụ lưu vết.
+Luồng ngoại lệ | 2e. Bài đăng không thuộc quyền sở hữu của người dùng, hệ thống từ chối thao tác.
+6e. Bài đăng đang trong quá trình thương lượng hoặc giao dịch, hệ thống không cho phép xóa và hiển thị lý do.
+7e. Hệ thống không thể xóa bài đăng do lỗi xử lý, bài đăng vẫn được giữ nguyên.
+Thuộc tính | Nội dung
+Mã Use Case | UC1.4
+Tên Use Case | Xem danh sách tài sản đã chia sẻ
+Use Case cha | UC1. Chia sẻ thông tin tài sản
+Actor | Người sở hữu tài sản
+Mục tiêu | Cho phép người sở hữu theo dõi các bài đăng tài sản đã chia sẻ và trạng thái của từng bài đăng.
+Trigger | Người sở hữu chọn chức năng Tài sản của tôi.
+Tiền điều kiện | Người sở hữu đã đăng nhập và tài khoản đang hoạt động.
+Hậu điều kiện | Danh sách tài sản được hiển thị; người sở hữu có thể tiếp tục xem chi tiết, chỉnh sửa hoặc xóa bài đăng.
+Luồng chính | 1. Người sở hữu chọn chức năng Tài sản của tôi.
+2. Hệ thống truy xuất danh sách tài sản của người sở hữu.
+3. Hệ thống hiển thị danh sách bài đăng cùng trạng thái (Đang khả dụng, Đang thương lượng, Đã hoàn tất, Đã kết thúc).
+4. Người sở hữu xem thông tin và lựa chọn bài đăng cần thao tác.
+Luồng thay thế | 3a. Người sở hữu lọc danh sách theo trạng thái hoặc danh mục tài sản.
+3b. Người sở hữu sắp xếp danh sách theo thời gian đăng hoặc trạng thái.
+Luồng ngoại lệ | 2e. Không tìm thấy bài đăng nào, hệ thống hiển thị thông báo “Bạn chưa chia sẻ tài sản nào.”
+Thuộc tính | Nội dung
+Mã Use Case | UC2.1
+Tên Use Case | Tìm kiếm và lọc tài sản
+Use Case cha | UC2. Tiếp cận tài sản
+Actor | Người tiếp nhận tài sản
+Mục tiêu | Cho phép người tiếp nhận tìm kiếm và lọc danh sách tài sản phù hợp với nhu cầu.
+Trigger | Người tiếp nhận truy cập trang tìm kiếm tài sản.
+Tiền điều kiện | Người tiếp nhận đã đăng nhập.
+Hậu điều kiện | Danh sách tài sản phù hợp với tiêu chí tìm kiếm được hiển thị.
+Luồng chính | ( Bảng 2.3
+PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH 
+Kết luận INS05
+PHƯƠNG PHÁP KHẢO SÁT QUA GOOGLE FORM)
+1. Người tiếp nhận truy cập chức năng tìm kiếm.
+2. Nhập từ khóa hoặc lựa chọn tiêu chí tìm kiếm (danh mục, địa điểm, hình thức chia sẻ...).
+3. Chọn Tìm kiếm.
+4. Hệ thống tìm kiếm dữ liệu.
+5. Hệ thống hiển thị danh sách tài sản phù hợp.
+Luồng thay thế | 2a. Người tiếp nhận chỉ sử dụng bộ lọc mà không nhập từ khóa.
+5a. Người tiếp nhận thay đổi tiêu chí lọc để thu hẹp hoặc mở rộng kết quả.
+Luồng ngoại lệ | 4e. Không tìm thấy tài sản phù hợp, hệ thống thông báo và gợi ý thay đổi tiêu chí tìm kiếm.
+Thuộc tính | Nội dung
+Mã Use Case | UC2.2
+Tên Use Case | Xem chi tiết tài sản
+Use Case cha | UC2. Tiếp cận tài sản
+Actor | Người tiếp nhận tài sản
+Mục tiêu | Cho phép người tiếp nhận xem đầy đủ thông tin của một tài sản trước khi quyết định gửi đề xuất giao dịch.
+Trigger | Người tiếp nhận chọn một tài sản trong danh sách tìm kiếm.
+Tiền điều kiện | Người tiếp nhận đã tìm thấy ít nhất một tài sản phù hợp.
+Hậu điều kiện | Thông tin chi tiết của tài sản được hiển thị.
+Luồng chính | 1. Người tiếp nhận chọn một tài sản từ danh sách.
+2. Hệ thống hiển thị thông tin chi tiết gồm hình ảnh, mô tả, tình trạng, số lượng, địa điểm, hình thức chia sẻ và thông tin người sở hữu.
+3. Người tiếp nhận xem thông tin tài sản.
+4. Người tiếp nhận quyết định tiếp tục gửi đề xuất hoặc quay lại danh sách.
+Luồng thay thế | 2a. Người tiếp nhận xem thêm các hình ảnh của tài sản.
+4a. Người tiếp nhận quay lại danh sách để tiếp tục tìm kiếm tài sản khác.
+Luồng ngoại lệ | 2e. Tài sản đã bị xóa hoặc không còn khả dụng, hệ thống thông báo và quay lại danh sách tìm kiếm.
+Thuộc tính | Nội dung
+Mã Use Case | UC2.3
+Tên Use Case | Gửi đề xuất trao đổi
+Use Case cha | UC2. Tiếp cận tài sản
+Actor | Người tiếp nhận tài sản
+Mục tiêu | Cho phép người tiếp nhận gửi đề xuất giao dịch đến người sở hữu đối với tài sản mong muốn.
+Trigger | Người tiếp nhận chọn chức năng Gửi đề xuất trên trang chi tiết tài sản.
+Tiền điều kiện | Người tiếp nhận đã đăng nhập, tài sản đang ở trạng thái Đang khả dụng.
+Hậu điều kiện | Đề xuất giao dịch được gửi đến người sở hữu và chờ xử lý.
+Luồng chính | 1. Người tiếp nhận chọn Gửi đề xuất.
+2. Hệ thống hiển thị biểu mẫu đề xuất giao dịch.
+3. Người tiếp nhận nhập số lượng tài sản mong muốn và lời nhắn (nếu có).
+4. Nếu tài sản thuộc hình thức Trao đổi, người tiếp nhận chọn thông tin tài sản đối ứng hoặc đề xuất số tiền trao đổi.
+5. Người tiếp nhận xác nhận gửi đề xuất.
+6. Hệ thống kiểm tra dữ liệu.
+7. Hệ thống lưu đề xuất và gửi thông báo đến người sở hữu.
+8. Hệ thống thông báo gửi đề xuất thành công.
+Luồng thay thế | 3a. Người tiếp nhận chỉnh sửa nội dung đề xuất trước khi gửi.
+5a. Người tiếp nhận hủy thao tác gửi đề xuất.
+Luồng ngoại lệ | 4e. Đề xuất trao đổi nhưng chưa cung cấp thông tin tài sản đối ứng hoặc đề xuất tiền theo yêu cầu, hệ thống yêu cầu bổ sung.
+6e. Tài sản không còn ở trạng thái khả dụng hoặc đã hết số lượng, hệ thống từ chối gửi đề xuất.
+7e. Hệ thống không thể lưu đề xuất do lỗi xử lý, hệ thống thông báo thất bại và yêu cầu thực hiện lại.
+Thuộc tính | Nội dung
+Mã Use Case | UC3.1
+Tên Use Case | Xem danh sách đề xuất giao dịch
+Use Case cha | UC3. Thương lượng giao dịch
+Actor | Người sở hữu tài sản
+Mục tiêu | Cho phép người sở hữu xem các đề xuất giao dịch được gửi đến các bài đăng tài sản của mình.
+Trigger | Người sở hữu chọn chức năng Danh sách đề xuất giao dịch.
+Tiền điều kiện | Người sở hữu đã đăng nhập, tài khoản đang hoạt động, có bài đăng tài sản đã được công bố.
+Hậu điều kiện | Danh sách đề xuất giao dịch được hiển thị để người sở hữu xem xét và xử lý.
+Luồng chính | Mục 5.3. PHƯƠNG PHÁP QUAN SÁT
+1. Người sở hữu truy cập chức năng Danh sách đề xuất giao dịch.
+2. Hệ thống truy xuất các đề xuất được gửi đến các bài đăng của người sở hữu.
+3. Hệ thống hiển thị danh sách đề xuất kèm thông tin người gửi, tài sản liên quan, số lượng mong muốn, hình thức giao dịch và trạng thái đề xuất.
+4. Người sở hữu chọn một đề xuất để xem chi tiết hoặc xử lý.
+Luồng thay thế | 3a. Người sở hữu lọc danh sách theo trạng thái đề xuất như Chờ xử lý, Đang thương lượng, Đã chấp nhận, Đã từ chối.
+3b. Người sở hữu sắp xếp danh sách theo thời gian gửi hoặc bài đăng liên quan.
+Luồng ngoại lệ | 2e. Không có đề xuất nào, hệ thống hiển thị thông báo “Chưa có đề xuất giao dịch nào.”
+Thuộc tính | Nội dung
+Mã Use Case | UC3.2
+Tên Use Case | Chấp nhận hoặc từ chối đề xuất
+Use Case cha | UC3. Thương lượng giao dịch
+Actor | Người sở hữu tài sản
+Mục tiêu | Cho phép người sở hữu xem xét và quyết định chấp nhận hoặc từ chối đề xuất giao dịch từ người tiếp nhận.
+Trigger | Người sở hữu chọn một đề xuất giao dịch cần xử lý.
+Tiền điều kiện | Người sở hữu đã đăng nhập; đề xuất thuộc bài đăng của người sở hữu; đề xuất đang ở trạng thái Chờ xử lý.
+Hậu điều kiện | Đề xuất được chuyển sang trạng thái Đang thương lượng hoặc Đã từ chối.
+Luồng chính | 1. Người sở hữu mở chi tiết đề xuất giao dịch.
+2. Hệ thống hiển thị thông tin đề xuất, người gửi, số lượng mong muốn, hình thức giao dịch và lời nhắn.
+3. Người sở hữu xem xét đề xuất.
+4. Người sở hữu chọn Chấp nhận đề xuất.
+5. Hệ thống cập nhật trạng thái đề xuất sang Đang thương lượng.
+6. Hệ thống thông báo kết quả cho người tiếp nhận.
+Luồng thay thế | 4a. Người sở hữu chọn Từ chối đề xuất.
+4a.1. Người sở hữu nhập lý do từ chối nếu cần.
+4a.2. Hệ thống cập nhật trạng thái đề xuất sang Đã từ chối.
+4a.3. Hệ thống thông báo kết quả cho người tiếp nhận.
+Luồng ngoại lệ | 2e. Đề xuất không tồn tại hoặc không thuộc bài đăng của người sở hữu, hệ thống từ chối truy cập.
+4e. Đề xuất không còn ở trạng thái Chờ xử lý, hệ thống không cho phép xử lý lại.
+5e. Tài sản không còn khả dụng hoặc không đủ số lượng, hệ thống không cho phép chấp nhận đề xuất.
+Thuộc tính | Nội dung
+Mã Use Case | UC3.3
+Tên Use Case | Trao đổi thông tin giao dịch
+Use Case cha | UC3. Thương lượng giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép hai bên trao đổi thông tin để thống nhất các điều kiện chuyển giao tài sản.
+Trigger | Một đề xuất giao dịch đã được người sở hữu chấp nhận để bắt đầu thương lượng.
+Tiền điều kiện | Người sở hữu và người tiếp nhận đã đăng nhập, đề xuất đang ở trạng thái Đang thương lượng.
+Hậu điều kiện | Nội dung trao đổi được ghi nhận, hai bên có đủ thông tin để chốt hoặc hủy thỏa thuận.
+Luồng chính | 1. Một trong hai bên mở cuộc trao đổi liên quan đến đề xuất giao dịch.
+2. Hệ thống hiển thị lịch sử trao đổi trước đó nếu có.
+3. Người dùng nhập nội dung trao đổi về số lượng, thời gian, địa điểm, tình trạng tài sản hoặc điều kiện giao dịch.
+4. Người dùng gửi nội dung trao đổi.
+5. Hệ thống ghi nhận nội dung trao đổi và hiển thị cho bên còn lại.
+6. Hai bên tiếp tục trao đổi cho đến khi đủ thông tin để chốt thỏa thuận hoặc hủy thương lượng.
+Luồng thay thế | 3a. Người dùng gửi thêm hình ảnh hoặc thông tin bổ sung để làm rõ tình trạng tài sản.
+6a. Một trong hai bên đề xuất thay đổi thời gian, địa điểm hoặc điều kiện giao dịch và tiếp tục trao đổi.
+Luồng ngoại lệ | 1e. Người dùng không thuộc giao dịch này, hệ thống từ chối truy cập cuộc trao đổi.
+4e. Nội dung trao đổi vi phạm quy định cộng đồng hoặc chứa thông tin không hợp lệ, hệ thống từ chối gửi.
+6e. Một trong hai bên hủy thương lượng, cuộc trao đổi kết thúc và đề xuất chuyển sang trạng thái Đã hủy.
+Thuộc tính | Nội dung
+Mã Use Case | UC3.4
+Tên Use Case | Chốt thỏa thuận giao dịch
+Use Case cha | UC3. Thương lượng giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép hai bên xác nhận các điều kiện giao dịch đã thống nhất để chuyển sang giai đoạn thực hiện giao dịch.
+Trigger | Hai bên đã thống nhất được các điều kiện chuyển giao tài sản.
+Tiền điều kiện | Đề xuất đang ở trạng thái Đang thương lượng; tài sản còn khả dụng; hai bên đã thống nhất số lượng, thời gian và địa điểm bàn giao.
+Hậu điều kiện | Thỏa thuận giao dịch được xác lập, giao dịch chuyển sang trạng thái Chờ bàn giao.
+Luồng chính | 1. Người sở hữu tài sản chọn chức năng Chốt thỏa thuận giao dịch.
+2. Hệ thống hiển thị thông tin thỏa thuận gồm tài sản, số lượng, hình thức giao dịch, thời gian và địa điểm bàn giao.
+3. Người dùng kiểm tra thông tin thỏa thuận.
+4. Người dùng xác nhận chốt thỏa thuận.
+5. Hệ thống gửi yêu cầu xác nhận cho bên còn lại.
+6. Bên còn lại xác nhận thỏa thuận.
+7. Hệ thống cập nhật trạng thái giao dịch sang Chờ bàn giao.
+8. Hệ thống thông báo chốt thỏa thuận thành công cho hai bên.
+Luồng thay thế | 3a. Người dùng phát hiện thông tin thỏa thuận chưa đúng và quay lại trao đổi để điều chỉnh.
+6a. Bên còn lại yêu cầu chỉnh sửa điều kiện thỏa thuận, giao dịch quay lại trạng thái Đang thương lượng.
+Luồng ngoại lệ | 4e. Người dùng chưa xác nhận đầy đủ thông tin bắt buộc, hệ thống yêu cầu hoàn thiện.
+6e. Bên còn lại từ chối xác nhận, thỏa thuận chưa được hình thành.
+7e. Tài sản không còn khả dụng hoặc số lượng không đủ, hệ thống không cho phép chốt thỏa thuận.
+Thuộc tính | Nội dung
+Mã Use Case | UC4.1
+Tên Use Case | Xác nhận hoàn tất giao dịch
+Use Case cha | UC4. Thực hiện giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép hai bên xác nhận giao dịch đã hoàn tất sau khi việc bàn giao tài sản được thực hiện thành công.
+Trigger | Sau khi bàn giao tài sản hoàn tất, một trong hai bên chọn chức năng Xác nhận hoàn tất giao dịch.
+Tiền điều kiện | Giao dịch đang ở trạng thái Chờ xác nhận hoàn tất.
+Hậu điều kiện | Giao dịch chuyển sang trạng thái Hoàn tất, số lượng tài sản được cập nhật và hai bên đủ điều kiện đánh giá lẫn nhau.
+Luồng chính | Mục 3. PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+1. Người sở hữu hoặc người tiếp nhận mở thông tin giao dịch.
+2. Hệ thống hiển thị thông tin giao dịch.
+3. Người dùng chọn Xác nhận hoàn tất.
+4. Hệ thống ghi nhận xác nhận của người dùng.
+5. Khi cả hai bên đều xác nhận, hệ thống cập nhật trạng thái giao dịch thành Hoàn tất.
+6. Hệ thống cập nhật số lượng tài sản còn lại.
+7. Hệ thống thông báo hoàn tất giao dịch cho hai bên.
+Luồng thay thế | 4a. Chỉ một bên xác nhận, hệ thống chờ xác nhận từ bên còn lại.
+Luồng ngoại lệ | 3e. Giao dịch không tồn tại hoặc không thuộc quyền của người dùng.
+5e. Giao dịch đã được xác nhận hoàn tất trước đó.
+Thuộc tính | Nội dung
+Mã Use Case | UC4.2
+Tên Use Case | Hủy giao dịch
+Use Case cha | UC4. Thực hiện giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép một trong hai bên hủy giao dịch trước khi hoàn tất bàn giao.
+Trigger | Người dùng chọn chức năng Hủy giao dịch.
+Tiền điều kiện | Giao dịch đang ở trạng thái Đang thương lượng hoặc Chờ bàn giao.
+Hậu điều kiện | Giao dịch chuyển sang trạng thái Đã hủy, tài sản trở lại trạng thái khả dụng nếu còn hiệu lực.
+Luồng chính | 1. Người dùng mở giao dịch.
+2. Chọn Hủy giao dịch.
+3. Nhập lý do hủy.
+4. Xác nhận hủy giao dịch.
+5. Hệ thống cập nhật trạng thái giao dịch thành Đã hủy.
+6. Hệ thống thông báo cho bên còn lại.
+Luồng thay thế | 4a. Người dùng hủy thao tác, giao dịch giữ nguyên trạng thái.
+Luồng ngoại lệ | 2e. Giao dịch đã hoàn tất nên không thể hủy.
+5e. Lỗi cập nhật trạng thái giao dịch.
+Thuộc tính | Nội dung
+Mã Use Case | UC4.3
+Tên Use Case | Theo dõi trạng thái giao dịch
+Use Case cha | UC4. Thực hiện giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng theo dõi trạng thái xử lý của các giao dịch.
+Trigger | Người dùng chọn chức năng Giao dịch của tôi.
+Tiền điều kiện | Người dùng đã đăng nhập.
+Hậu điều kiện | Danh sách và trạng thái giao dịch được hiển thị.
+Luồng chính | 1. Người dùng truy cập danh sách giao dịch.
+2. Hệ thống truy xuất dữ liệu giao dịch.
+3. Hệ thống hiển thị trạng thái từng giao dịch.
+4. Người dùng xem chi tiết giao dịch.
+Luồng thay thế | 3a. Người dùng lọc giao dịch theo trạng thái hoặc thời gian.
+Luồng ngoại lệ | 2e. Không có giao dịch nào, hệ thống hiển thị thông báo phù hợp.
+Thuộc tính | Nội dung
+Mã Use Case | UC5.1
+Tên Use Case | Đăng ký tài khoản
+Use Case cha | UC5. Quản lý tài khoản và hồ sơ thành viên
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng tạo tài khoản mới để sử dụng hệ thống.
+Trigger | Người dùng chọn chức năng Đăng ký.
+Tiền điều kiện | Người dùng chưa có tài khoản trên hệ thống.
+Hậu điều kiện | Tài khoản được tạo thành công và người dùng có thể đăng nhập vào hệ thống.
+Luồng chính | Bảng 2.3
+ PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH 
+ Mục 1 Phần VIII. Kết luận
+PHƯƠNG PHÁP KHẢO SÁT QUA GOOGLE FORM  )
+1. Người dùng chọn chức năng Đăng ký.
+2. Hệ thống hiển thị biểu mẫu đăng ký tài khoản.
+3. Người dùng nhập họ tên, email hoặc số điện thoại, mật khẩu và xác nhận mật khẩu.
+4. Người dùng chọn Đăng ký.
+5. Hệ thống kiểm tra tính hợp lệ của thông tin đăng ký.
+6. Hệ thống tạo tài khoản mới.
+7. Hệ thống thông báo đăng ký thành công và chuyển người dùng đến màn hình đăng nhập hoặc đăng nhập tự động.
+Luồng thay thế | 3a. Người dùng chỉnh sửa lại thông tin trước khi chọn Đăng ký.
+4a. Người dùng hủy thao tác đăng ký, hệ thống quay về màn hình đăng nhập hoặc trang chủ.
+Luồng ngoại lệ | 5e. Email hoặc số điện thoại đã được sử dụng, hệ thống thông báo và yêu cầu người dùng sử dụng thông tin khác.
+5e.1. Mật khẩu và xác nhận mật khẩu không trùng khớp, hệ thống yêu cầu nhập lại.
+5e.2. Thông tin bắt buộc chưa được nhập hoặc không đúng định dạng (ví dụ: email không hợp lệ), hệ thống hiển thị thông báo lỗi.
+6e. Hệ thống không thể tạo tài khoản do lỗi xử lý, hệ thống thông báo thất bại và yêu cầu người dùng thực hiện lại sau.
+Thuộc tính | Nội dung
+Mã Use Case | UC5.2
+Tên Use Case | Đăng nhập hệ thống
+Use Case cha | UC5. Quản lý tài khoản và hồ sơ thành viên
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng truy cập vào hệ thống bằng tài khoản đã đăng ký.
+Trigger | Người dùng chọn Đăng nhập.
+Tiền điều kiện | Người dùng đã có tài khoản hợp lệ.
+Hậu điều kiện | Người dùng đăng nhập thành công vào hệ thống.
+Luồng chính | 1. Người dùng nhập email/số điện thoại và mật khẩu.
+2. Chọn Đăng nhập.
+3. Hệ thống kiểm tra thông tin đăng nhập.
+4. Hệ thống xác thực thành công.
+5. Hệ thống chuyển đến trang chủ.
+Luồng thay thế | 1a. Người dùng chọn Ghi nhớ đăng nhập.
+Luồng ngoại lệ | 3e. Sai tài khoản hoặc mật khẩu.
+4e. Tài khoản bị khóa hoặc chưa xác thực.
+Thuộc tính | Nội dung
+Mã Use Case | UC5.3
+Tên Use Case | Quản lý hồ sơ cá nhân
+Use Case cha | UC5. Quản lý tài khoản và hồ sơ thành viên
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng xem và cập nhật thông tin hồ sơ cá nhân.
+Trigger | Người dùng chọn chức năng Hồ sơ cá nhân.
+Tiền điều kiện | Người dùng đã đăng nhập.
+Hậu điều kiện | Thông tin hồ sơ được cập nhật thành công.
+Luồng chính | 1. Người dùng mở hồ sơ cá nhân.
+2. Hệ thống hiển thị thông tin hồ sơ hiện tại.
+3. Người dùng chỉnh sửa thông tin như ảnh đại diện, họ tên, khu vực sinh sống, giới thiệu bản thân.
+4. Người dùng chọn Lưu.
+5. Hệ thống kiểm tra dữ liệu.
+6. Hệ thống cập nhật hồ sơ.
+7. Hệ thống thông báo cập nhật thành công.
+Luồng thay thế | 3a. Người dùng chỉ cập nhật một phần thông tin hồ sơ.
+4a. Người dùng hủy thao tác cập nhật.
+Luồng ngoại lệ | 5e. Dữ liệu nhập không hợp lệ.
+6e. Hệ thống không thể cập nhật hồ sơ do lỗi xử lý.
+Thuộc tính | Nội dung
+Mã Use Case | UC6.1
+Tên Use Case | Đánh giá đối tác giao dịch
+Use Case cha | UC6. Đánh giá giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng đánh giá và nhận xét đối tác sau khi giao dịch hoàn tất nhằm xây dựng uy tín cộng đồng.
+Trigger | Người dùng chọn chức năng Đánh giá sau khi giao dịch hoàn tất.
+Tiền điều kiện | Giao dịch đã được xác nhận hoàn tất, người dùng là một trong hai bên của giao dịch.
+Hậu điều kiện | Đánh giá được lưu và cập nhật vào hồ sơ uy tín của đối tác.
+Luồng chính | ( Hình 3.1. Hệ thống đánh giá người dùng bằng sao (Rating) và tỷ lệ phản hồi trên Chợ Tốt.
+PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH )
+1. Người dùng mở giao dịch đã hoàn tất.
+2. Chọn chức năng Đánh giá.
+3. Hệ thống hiển thị biểu mẫu đánh giá.
+4. Người dùng chọn số sao và nhập nhận xét.
+5. Người dùng xác nhận gửi đánh giá.
+6. Hệ thống kiểm tra dữ liệu đánh giá.
+7. Hệ thống lưu đánh giá và cập nhật điểm uy tín của đối tác.
+8. Hệ thống thông báo đánh giá thành công.
+Luồng thay thế | 4a. Người dùng chỉ chấm điểm mà không nhập nhận xét.
+5a. Người dùng hủy thao tác đánh giá, hệ thống không lưu dữ liệu.
+Luồng ngoại lệ | 2e. Giao dịch chưa hoàn tất nên không được phép đánh giá.
+6e. Người dùng đã đánh giá giao dịch này trước đó, hệ thống từ chối ghi nhận thêm.
+7e. Hệ thống không thể lưu đánh giá do lỗi xử lý.
+Thuộc tính | Nội dung
+Mã Use Case | UC6.2
+Tên Use Case | Xem hồ sơ uy tín thành viên
+Use Case cha | UC6. Đánh giá giao dịch
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng xem điểm uy tín và lịch sử đánh giá của thành viên khác để hỗ trợ quyết định giao dịch.
+Trigger | Người dùng chọn xem hồ sơ của một thành viên.
+Tiền điều kiện | Thành viên cần xem tồn tại trên hệ thống.
+Hậu điều kiện | Hồ sơ uy tín của thành viên được hiển thị.
+Luồng chính | 1. Người dùng chọn hồ sơ thành viên.
+2. Hệ thống truy xuất thông tin hồ sơ uy tín.
+3. Hệ thống hiển thị số sao đánh giá trung bình, số lượt đánh giá và các nhận xét công khai.
+4. Người dùng xem thông tin và quay lại màn hình trước đó nếu cần.
+Luồng thay thế | 3a. Người dùng xem danh sách các đánh giá chi tiết theo thời gian.
+Luồng ngoại lệ | 2e. Hồ sơ thành viên không tồn tại hoặc đã bị khóa, hệ thống hiển thị thông báo phù hợp.
+Thuộc tính | Nội dung
+Mã Use Case | UC7.1
+Tên Use Case | Báo cáo vi phạm
+Use Case cha | UC7. Đảm bảo an toàn cộng đồng
+Actor | Người sở hữu tài sản, Người tiếp nhận tài sản
+Mục tiêu | Cho phép người dùng gửi báo cáo về bài đăng hoặc thành viên có dấu hiệu vi phạm quy định cộng đồng.
+Trigger | Người dùng chọn chức năng Báo cáo vi phạm.
+Tiền điều kiện | Người dùng đã đăng nhập, đối tượng bị báo cáo còn tồn tại trên hệ thống.
+Hậu điều kiện | Báo cáo được gửi thành công và chuyển đến quản trị viên xử lý.
+Luồng chính | Bảng 2.2. PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+1. Người dùng chọn bài đăng hoặc thành viên cần báo cáo.
+2. Chọn chức năng Báo cáo vi phạm.
+3. Hệ thống hiển thị biểu mẫu báo cáo.
+4. Người dùng chọn lý do, nhập nội dung và đính kèm minh chứng (nếu có).
+5. Người dùng xác nhận gửi báo cáo.
+6. Hệ thống kiểm tra dữ liệu.
+7. Hệ thống lưu báo cáo và thông báo gửi thành công.
+Luồng thay thế | 4a. Người dùng gửi báo cáo không kèm minh chứng.
+Luồng ngoại lệ | 2e. Đối tượng báo cáo không còn tồn tại trên hệ thống.
+6e. Thiếu nội dung hoặc lý do báo cáo, hệ thống yêu cầu bổ sung.
+7e. Hệ thống không thể lưu báo cáo do lỗi xử lý.
+Thuộc tính | Nội dung
+Mã Use Case | UC7.2
+Tên Use Case | Xem danh sách báo cáo
+Use Case cha | UC7. Đảm bảo an toàn cộng đồng
+Actor | Quản trị viên
+Mục tiêu | Cho phép quản trị viên theo dõi các báo cáo vi phạm được gửi từ người dùng.
+Trigger | Quản trị viên chọn chức năng Quản lý báo cáo.
+Tiền điều kiện | Quản trị viên đã đăng nhập.
+Hậu điều kiện | Danh sách báo cáo được hiển thị.
+Luồng chính | 1. Quản trị viên truy cập chức năng quản lý báo cáo.
+2. Hệ thống truy xuất danh sách báo cáo.
+3. Hệ thống hiển thị danh sách theo trạng thái xử lý.
+4. Quản trị viên chọn một báo cáo để xem chi tiết.
+Luồng thay thế | 3a. Quản trị viên lọc báo cáo theo trạng thái hoặc thời gian gửi.
+Luồng ngoại lệ | 2e. Không có báo cáo nào, hệ thống hiển thị thông báo phù hợp.
+Thuộc tính | Nội dung
+Mã Use Case | UC7.3
+Tên Use Case | Xem chi tiết báo cáo
+Use Case cha | UC7. Đảm bảo an toàn cộng đồng
+Actor | Quản trị viên
+Mục tiêu | Cho phép quản trị viên xem đầy đủ nội dung của một báo cáo vi phạm để phục vụ xác minh.
+Trigger | Quản trị viên chọn một báo cáo trong danh sách.
+Tiền điều kiện | Báo cáo tồn tại trên hệ thống.
+Hậu điều kiện | Thông tin chi tiết của báo cáo được hiển thị.
+Luồng chính | 1. Quản trị viên chọn báo cáo cần xem.
+2. Hệ thống hiển thị thông tin người báo cáo, đối tượng bị báo cáo, lý do và minh chứng đính kèm.
+3. Quản trị viên xem nội dung báo cáo.
+4. Quản trị viên lựa chọn xử lý hoặc quay lại danh sách.
+Luồng thay thế | 2a. Quản trị viên xem lịch sử các báo cáo trước đó của cùng đối tượng.
+Luồng ngoại lệ | 2e. Báo cáo đã bị xóa hoặc không còn tồn tại, hệ thống hiển thị thông báo lỗi.
+Thuộc tính | Nội dung
+Mã Use Case | UC7.4
+Tên Use Case | Xử lý báo cáo vi phạm
+Use Case cha | UC7. Đảm bảo an toàn cộng đồng
+Actor | Quản trị viên
+Mục tiêu | Cho phép quản trị viên xác minh và áp dụng biện pháp xử lý đối với các báo cáo vi phạm.
+Trigger | Quản trị viên chọn chức năng Xử lý báo cáo.
+Tiền điều kiện | Báo cáo đang ở trạng thái Chưa xử lý.
+Hậu điều kiện | Báo cáo được cập nhật trạng thái xử lý và áp dụng biện pháp phù hợp đối với đối tượng vi phạm.
+Luồng chính | 1. Quản trị viên mở chi tiết báo cáo.
+2. Xem xét nội dung và minh chứng báo cáo.
+3. Xác minh thông tin liên quan.
+4. Quản trị viên lựa chọn biện pháp xử lý (cảnh báo, ẩn bài đăng, xóa bài đăng, khóa tài khoản...).
+5. Xác nhận xử lý.
+6. Hệ thống cập nhật trạng thái báo cáo và đối tượng vi phạm.
+7. Hệ thống ghi nhận lịch sử xử lý.
+8. Hệ thống thông báo kết quả xử lý cho các bên liên quan.
+Luồng thay thế | 4a. Quản trị viên kết luận báo cáo không vi phạm và đóng báo cáo mà không áp dụng chế tài.
+5a. Quản trị viên yêu cầu người báo cáo bổ sung minh chứng trước khi tiếp tục xử lý.
+Luồng ngoại lệ | 3e. Không đủ căn cứ xác minh, hệ thống cho phép tạm dừng xử lý và giữ trạng thái Chờ bổ sung thông tin.
+4e. Đối tượng bị báo cáo đã được xử lý trước đó, hệ thống thông báo và không thực hiện xử lý trùng lặp.
+6e. Hệ thống không thể cập nhật kết quả xử lý do lỗi hệ thống.
+Mã FR | Nội dung yêu cầu | System Use Case liên quan
+FR-01 | Hệ thống cho phép người sở hữu đăng tải thông tin tài sản. | UC1.1
+FR-02 | Hệ thống cho phép người sở hữu chỉnh sửa thông tin tài sản đã đăng. | UC1.2
+FR-03 | Hệ thống cho phép người sở hữu xóa hoặc ngừng hiển thị bài đăng. | UC1.3
+FR-04 | Hệ thống cho phép người sở hữu xem danh sách tài sản đã chia sẻ. | UC1.4
+FR-05 | Hệ thống cho phép người tiếp nhận tìm kiếm và lọc tài sản. | UC2.1
+FR-06 | Hệ thống cho phép xem chi tiết tài sản. | UC2.2
+FR-07 | Hệ thống cho phép gửi đề xuất giao dịch. | UC2.3
+FR-08 | Hệ thống cho phép người sở hữu xem danh sách đề xuất. | UC3.1
+FR-09 | Hệ thống cho phép chấp nhận hoặc từ chối đề xuất. | UC3.2
+FR-10 | Hệ thống hỗ trợ hai bên trao đổi thông tin giao dịch. | UC3.3
+FR-11 | Hệ thống cho phép chốt thỏa thuận giao dịch. | UC3.4
+FR-12 | Hệ thống cho phép xác nhận hoàn tất giao dịch. | UC4.1
+FR-13 | Hệ thống cho phép hủy giao dịch. | UC4.2
+FR-14 | Hệ thống cho phép theo dõi trạng thái giao dịch. | UC4.3
+FR-15 | Hệ thống cho phép đăng ký tài khoản. | UC5.1
+FR-16 | Hệ thống cho phép đăng nhập hệ thống. | UC5.2
+FR-17 | Hệ thống cho phép cập nhật hồ sơ cá nhân. | UC5.3
+FR-18 | Hệ thống cho phép đánh giá đối tác giao dịch. | UC6.1
+FR-19 | Hệ thống cho phép xem hồ sơ uy tín thành viên. | UC6.2
+FR-20 | Hệ thống cho phép gửi báo cáo vi phạm. | UC7.1
+FR-21 | Hệ thống cho phép quản trị viên xem danh sách báo cáo. | UC7.2
+FR-22 | Hệ thống cho phép quản trị viên xem chi tiết báo cáo. | UC7.3
+FR-23 | Hệ thống cho phép quản trị viên xử lý báo cáo vi phạm. | UC7.4
+Ký hiệu | Ý nghĩa
+NFR (Non-Functional Requirement) | Yêu cầu phi chức năng của hệ thống.
+Mã yêu cầu | Nội dung yêu cầu | Nhóm yêu cầu
+NFR-01 | Hệ thống phải sử dụng giao diện thống nhất về bố cục, màu sắc, biểu tượng và cách trình bày trên toàn bộ các chức năng. | Khả năng sử dụng (Usability)
+NFR-02 | Hệ thống phải hiển thị thông báo rõ ràng đối với các thao tác thành công, thất bại hoặc dữ liệu nhập không hợp lệ. | Khả năng sử dụng (Usability)
+NFR-03 | Các trường dữ liệu bắt buộc phải được kiểm tra trước khi hệ thống cho phép lưu dữ liệu. | Khả năng sử dụng (Usability)
+NFR-04 | Giao diện phải hiển thị phù hợp trên máy tính, máy tính bảng và điện thoại thông minh (Responsive). | Khả năng sử dụng (Usability)
+NFR-05 | Hệ thống phải phản hồi kết quả tìm kiếm tài sản trong thời gian không quá 03 giây trong điều kiện hoạt động bình thường. | Hiệu năng (Performance)
+NFR-06 | Các chức năng thêm, sửa, xóa dữ liệu phải hoàn thành trong thời gian không quá 05 giây kể từ khi người dùng xác nhận thao tác. | Hiệu năng (Performance)
+NFR-07 | Hệ thống phải hỗ trợ tối thiểu 50 người dùng truy cập đồng thời mà vẫn đảm bảo các chức năng chính hoạt động ổn định. | Hiệu năng (Performance)
+NFR-08 | Sau khi hệ thống thông báo thao tác thành công, dữ liệu phải được lưu chính xác vào cơ sở dữ liệu. | Độ tin cậy (Reliability)
+NFR-09 | Trong trường hợp xảy ra lỗi hệ thống hoặc mất kết nối, dữ liệu đã được lưu thành công không được phép bị mất. | Độ tin cậy (Reliability)
+NFR-10 | Hệ thống phải đảm bảo trạng thái của bài đăng và giao dịch luôn nhất quán trong quá trình xử lý. | Độ tin cậy (Reliability)
+NFR-11 | Chỉ người dùng đã đăng nhập mới được phép sử dụng các chức năng yêu cầu xác thực. | Bảo mật (Security)
+NFR-12 | Hệ thống phải phân quyền theo vai trò giữa Người sở hữu tài sản, Người tiếp nhận tài sản và Quản trị viên. | Bảo mật (Security)
+NFR-13 | Người dùng chỉ được phép truy cập và chỉnh sửa dữ liệu thuộc quyền quản lý của mình. | Bảo mật (Security)
+NFR-14 | Mật khẩu người dùng phải được lưu dưới dạng giá trị băm (Hash) và không được lưu dưới dạng văn bản thuần. | Bảo mật (Security)
+NFR-15 | Hệ thống phải hoạt động ổn định trên các trình duyệt Google Chrome, Microsoft Edge và Mozilla Firefox. | Khả năng tương thích (Compatibility)
+NFR-16 | Giao diện phải hỗ trợ Responsive và hiển thị phù hợp trên các độ phân giải màn hình phổ biến. | Khả năng tương thích (Compatibility)
+Mã yêu cầu | Nhóm yêu cầu | System Use Case (Module) liên quan
+NFR-01 | Khả năng sử dụng (Usability) | UC1. Chia sẻ thông tin tài sản, UC2. Tiếp cận tài sản, UC3. Thương lượng giao dịch, UC4. Thực hiện giao dịch, UC5. Quản lý tài khoản và hồ sơ thành viên, UC6. Đánh giá giao dịch, UC7. Đảm bảo an toàn cộng đồng.
+NFR-02 | Khả năng sử dụng (Usability) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-03 | Khả năng sử dụng (Usability) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-04 | Khả năng sử dụng (Usability) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-05 | Hiệu năng (Performance) | UC2. Tiếp cận tài sản,  UC4. Thực hiện giao dịch; UC6. Đánh giá giao dịch, UC7. Đảm bảo an toàn cộng đồng.
+NFR-06 | Hiệu năng (Performance) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-07 | Hiệu năng (Performance) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-08 | Độ tin cậy (Reliability) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-09 | Độ tin cậy (Reliability) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-10 | Độ tin cậy (Reliability) | UC1. Chia sẻ thông tin tài sản, UC3. Thương lượng giao dịch, UC4. Thực hiện giao dịch, UC6. Đánh giá giao dịch, UC7. Đảm bảo an toàn cộng đồng.
+NFR-11 | Bảo mật (Security) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-12 | Bảo mật (Security) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-13 | Bảo mật (Security) | UC1, UC3, UC4, UC5, UC6, UC7
+NFR-14 | Bảo mật (Security) | UC5. Quản lý tài khoản và hồ sơ thành viên.
+NFR-15 | Khả năng tương thích (Compatibility) | UC1, UC2, UC3, UC4, UC5, UC6, UC7
+NFR-16 | Khả năng tương thích (Compatibility) | UC1, UC2, UC3, UC4, UC5, UC6, UC7

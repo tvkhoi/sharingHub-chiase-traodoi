@@ -1,0 +1,497 @@
+MÔ HÌNH HÓA ĐỘNG (DYNAMIC MODEL)
+I. GIỚI THIỆU (INTRODUCTION)
+1.1. Mục đích tài liệu
+Tài liệu Mô hình hóa động (Dynamic Model) được xây dựng nhằm mô tả khía cạnh hành vi (behavioral view) của “Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân”. Nếu như Mô hình hóa tĩnh (Static Model) giải quyết bài toán cấu trúc lưu trữ dữ liệu, thì Mô hình hóa động sẽ giải quyết bài toán: “Làm thế nào để các đối tượng phần mềm phối hợp và giao tiếp với nhau nhằm thực thi trơn tru các luồng sự kiện đã định nghĩa trong Use Case?”. 
+Mục đích cốt lõi của tài liệu này bao gồm:
+Phân rã các Lớp khái niệm (Conceptual Classes) thành các Đối tượng cụ thể và bổ sung thêm các nhóm đối tượng mới (Giao diện, Điều khiển, Logic nghiệp vụ) dựa trên bộ tiêu chí cấu trúc đối tượng của phương pháp luận COMET.
+Định nghĩa trình tự trao đổi thông điệp (messages) giữa các đối tượng để hiện thực hóa 7 nhóm System Use Case đã được phê duyệt trong tài liệu SyRS.
+Làm rõ vòng đời và sự chuyển đổi trạng thái của các thực thể cốt lõi (như Bài đăng, Giao dịch) thông qua mô hình máy trạng thái (Finite State Machine).
+Cung cấp cơ sở dữ liệu vững chắc để tiến hành bước Thiết kế Kiến trúc (Architectural Design) và viết mã nguồn ở các giai đoạn sau của vòng đời phát triển phần mềm.
+1.2. Phạm vi mô hình hóa động
+Phạm vi của tài liệu này bao trùm toàn bộ các quy trình tương tác động bên trong hệ thống, tập trung vào 4 nội dung chính: 
+Phân tích cấu trúc đối tượng (Object Structuring): Đóng gói các thành phần phần mềm thành 4 nhóm đối tượng: Boundary (Biên), Entity (Thực thể), Control (Điều khiển), và Application Logic (Logic nghiệp vụ).
+Mô hình hóa máy trạng thái (State Machine Modeling): Xây dựng Biểu đồ trạng thái (Statechart) cho các đối tượng có vòng đời phức tạp và phụ thuộc trạng thái (State-dependent) nhằm quản lý chặt chẽ quá trình đàm phán và luân chuyển tài sản.
+Mô hình hóa tương tác động (Dynamic Interaction Modeling): Xây dựng các Biểu đồ tuần tự (Sequence Diagram) và Biểu đồ giao tiếp (Communication Diagram) cho tất cả các System Use Case (Từ UC1 đến UC7), bao gồm cả luồng sự kiện chính và các luồng thay thế/ngoại lệ.
+Truy vết yêu cầu (Traceability): Thiết lập ma trận truy vết từ các System Use Case sang các Đối tượng (Objects) và Thông điệp (Messages) nhằm đảm bảo tính toàn vẹn và mức độ bao phủ, tuân thủ tiêu chuẩn ISO/IEC/IEEE 29148.
+1.3. Tài liệu tham chiếu
+Tài liệu Mô hình hóa động được xây dựng dựa trên cơ sở kế thừa trực tiếp đầu vào từ các tài liệu trước đó của dự án và tuân thủ các tiêu chuẩn kỹ nghệ phần mềm quốc tế: 
+Business Requirements Document (BRD) – Tài liệu đặc tả yêu cầu nghiệp vụ của hệ thống. BRD - Business Requirements Document
+System Requirements Specification (SyRS) – Tài liệu đặc tả yêu cầu hệ thống.SyRS - System requirements specification 
+Static Model – Tài liệu Mô hình hóa tĩnh của hệ thống.STATIC MODEL
+ISO/IEC/IEEE 29148:2018 – Systems and Software Engineering – Life Cycle Processes – Requirements Engineering.
+https://cdn.standards.iteh.ai/samples/72089/62bb2ea1ef8b4f33a80d984f826267c1/ISO-IEC-IEEE-29148-2018.pdf 
+Software Modeling and Design: UML, Use Cases, Patterns, and Software Architectures – Hassan Gomaa.
+https://archive.org/details/SoftwareModelingAndDesign_633 
+OMG Unified Modeling Language (UML) Specification 2.5.
+https://www.omg.org/spec/UML/2.5/PDF 
+1.4. Thuật ngữ và từ viết tắt
+Các thuật ngữ và từ viết tắt được sử dụng thống nhất trong tài liệu nhằm bảo đảm cách hiểu giữa các bên liên quan trong quá trình phân tích và mô hình hóa động của hệ thống. 
+Bảng 1.1. Thuật ngữ và từ viết tắt 
+II. CẤU TRÚC ĐỐI TƯỢNG HỆ THỐNG (OBJECT STRUCTURING)
+2.1. Phương pháp cấu trúc đối tượng
+Trong giai đoạn mô hình hóa tĩnh, hệ thống tập trung xác định các lớp khái niệm đại diện cho những thực thể nghiệp vụ cần được quản lý và lưu trữ lâu dài. Tuy nhiên, các lớp thực thể chỉ phản ánh cấu trúc thông tin, chưa thể hiện đầy đủ cách hệ thống tiếp nhận yêu cầu từ tác nhân, điều phối luồng xử lý và phối hợp các thực thể để thực hiện một System Use Case.
+Trong giai đoạn mô hình hóa động, tài liệu lựa chọn phương án xác định đồng thời các lớp phân tích theo ba stereotype:
+<<boundary>>: lớp biên;
+<<control>>: lớp điều khiển;
+<<entity>>: lớp thực thể.
+2.2. Đối tượng biên (Boundary Objects)
+Đối tượng biên là lớp phân tích nằm tại ranh giới giữa tác nhân và hệ thống. Boundary tiếp nhận thông tin đầu vào, chuyển yêu cầu tới Control tương ứng và hiển thị kết quả xử lý cho tác nhân.
+Boundary không trực tiếp thực hiện quy tắc nghiệp vụ, không quản lý trạng thái giao dịch và không cập nhật Entity.
+2.2.1. Nguyên tắc xác định Boundary 
+Một Boundary được xác định từ:
+màn hình hoặc biểu mẫu tương tác với Actor;
+nhóm System Use Case có cùng mục đích giao diện;
+đầu vào và đầu ra trong đặc tả Use Case;
+vai trò của tác nhân sử dụng chức năng.
+2.2.2. Danh sách Boundary Object 
+2.2.3. Operation dự kiến của Boundary 
+2.3. Đối tượng thực thể (Entity Objects)
+Entity Object là lớp phân tích đại diện cho đối tượng hoặc khái niệm nghiệp vụ cần được hệ thống quản lý trong thời gian dài. Danh sách Entity được kế thừa trực tiếp từ mô hình tĩnh (Static Model), bao gồm 12 thực thể cốt lõi đại diện cho miền nghiệp vụ của bài toán: STATIC MODEL . Entity không chỉ chứa thuộc tính mà còn được bổ sung các operation gắn trực tiếp với dữ liệu và trạng thái của chính thực thể.
+Entity không tiếp nhận yêu cầu trực tiếp từ Actor và không điều phối toàn bộ Use Case.
+2.3.1. Danh sách Entity Object 
+2.3.2. Operation phân tích của các Entity chính 
+2.4. Đối tượng điều khiển (Control Objects)
+Đối tượng điều khiển (<<control>>) đóng vai trò như một “nhạc trưởng”, điều phối luồng công việc giữa các đối tượng khác để thực thi trọn vẹn một Use Case. 
+Control:
+nhận yêu cầu từ Boundary;
+xác định các Entity cần tham gia;
+gửi message đến Entity theo đúng trình tự;
+xử lý nhánh chính, thay thế và ngoại lệ;
+trả kết quả về Boundary.
+Control không lưu dữ liệu nghiệp vụ lâu dài và không thay thế trách nhiệm nội tại của Entity. 
+2.4.1. Danh sách Control Object 
+2.4.3. Operation dự kiến của Control
+2.5. Quan hệ giữa Boundary, Control và Entity 
+2.5.1. Nguyên tắc xác định quan hệ 
+Trong Analysis Class Diagram:
+Boundary → Control thường là dependency uses, vì Boundary sử dụng Control để chuyển yêu cầu.
+Control → Entity thường là dependency manages, reads, creates hoặc updates.
+Entity ⇔ Entity sử dụng association, aggregation hoặc composition đã được xác định trong mô hình tĩnh.
+Không dùng association đường liền cho mọi quan hệ Boundary–Control–Entity, vì Boundary và Control không phải quan hệ nghiệp vụ bền vững.
+2.5.2. Ma trận Boundary – Control – Entity 
+2.6. Biểu đồ lớp phân tích của cấu trúc đối tượng 
+Hình 2.1 Biểu đồ lớp phân tích theo mô hình Boundary–Control–Entity  
+III. MÔ HÌNH HÓA TRẠNG THÁI (STATE MACHINE MODELING)
+3.1. Phương pháp xây dựng biểu đồ trạng thái
+Trong thiết kế hướng đối tượng, một hệ thống hoặc đối tượng có tính phụ thuộc trạng thái (state-dependent) khi hành vi phản hồi của nó đối với một sự kiện đầu vào không chỉ phụ thuộc vào bản thân sự kiện đó, mà còn phụ thuộc vào những gì đã xảy ra trước đó trong hệ thống,.
+Theo phương pháp luận COMET, mô hình hóa trạng thái được thực hiện bằng Biểu đồ máy trạng thái (State Machine Diagram) hay còn gọi là Statechart, dựa trên nền tảng lý thuyết của Harel. Một máy trạng thái hữu hạn (Finite State Machine) được đóng gói bên trong một đối tượng điều khiển (Control Object). Cú pháp chuẩn UML được áp dụng cho quá trình chuyển trạng thái là: Event [Condition] / Action,. Trong đó:
+Event (Sự kiện): Là nguyên nhân gây ra sự chuyển đổi trạng thái.
+Condition (Điều kiện bảo vệ - Guard Condition): Biểu thức logic (True/False). Sự kiện chỉ kích hoạt chuyển trạng thái nếu điều kiện này mang giá trị True.
+Action (Hành động): Là kết quả hoặc hiệu ứng thực thi ngay lập tức khi sự chuyển đổi trạng thái diễn ra.
+Đối chiếu với “Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân”, bốn đối tượng mang tính phụ thuộc trạng thái phức tạp nhất là BaiDangTaiSan, DeXuatGiaoDich, GiaoDich, BaoCaoViPham. Do đó, hệ thống sử dụng cácState Machine được xây dựng cho những Entity có vòng đời nghiệp vụ phức tạp. (<<state dependent control>>) để thực thi các Statechart nhằm quản lý vòng đời của bốn thực thể này.
+3.2. Trạng thái của Bài đăng tài sản
+Danh sách trạng thái:
+Bảng 3.1. Bảng chuyển đổi trạng thái.
+3.3. Trạng thái của Đề xuất giao dịch.
+Danh sách các trạng thái: 
+Bảng 3.2. Bảng chuyển đổi trạng thái.
+3.4. Trạng thái của Giao dịch.
+Danh sách các trạng thái:
+Bảng 3.3. Bảng chuyển đổi trạng thái.
+3.5 Trạng thái của Báo cáo vi phạm.
+Danh sách trạng thái: 
+Bảng 3.4. Bảng chuyển đổi trạng thái.
+3.6. Ràng buộc trạng thái và điều kiện chuyển trạng thái
+Việc chuyển đổi trạng thái không diễn ra một cách tự do mà bị kiểm soát bởi các Điều kiện bảo vệ (Guard Conditions - ký hiệu [Condition]). Các điều kiện này chính là sự chuyển hóa của các Quy tắc nghiệp vụ (Business Rules) vào trong mã nguồn:
+	3.6.1 Ràng buộc số lượng khi gửi đề xuất
+Đề xuất chỉ được tạo hoặc chấp nhận khi:“0 < soLuongYeuCau <= soLuongKhaDung”
+Nếu điều kiện không thỏa mãn, hệ thống từ chối thao tác và không thay đổi trạng thái của bài đăng hoặc đề xuất.
+3.6.2. Ràng buộc giữ chỗ số lượng
+Khi chốt thỏa thuận:
+“ soLuongGiuChoMoi = soLuongGiuChoHienTai + soLuongGiaoDich”
+Điều kiện:
+“soLuongGiuChoMoi <= soLuongTong - soLuongDaPhanPhoi”
+Việc bắt đầu thương lượng không làm phát sinh giữ chỗ.
+3.6.3. Ràng buộc tạo giao dịch
+Một DeXuatGiaoDich chỉ tạo tối đa một GiaoDich: 
+“DeXuatGiaoDich 1 -- 0..1 GiaoDich”
+Nếu giao dịch đã tồn tại, hệ thống không tạo giao dịch thứ hai từ cùng đề xuất.
+3.6.4. Ràng buộc hoàn tất giao dịch
+Giao dịch chỉ chuyển sang HoanTat khi:
+“xacNhanNguoiSoHuu = true
+AND
+xacNhanNguoiTiepNhan = true”
+Khi hoàn tất:
+“soLuongGiuCho -= soLuongGiaoDich
+soLuongDaPhanPhoi += soLuongGiaoDich”
+Sau đó hệ thống tính lại:
+“soLuongKhaDung =soLuongTong- soLuongDaPhanPhoi- soLuongGiuCho”
+3.6.5. Ràng buộc hủy giao dịch
+Giao dịch chỉ được hủy khi chưa ở trạng thái HoanTat.
+Khi hủy: “soLuongGiuCho -= soLuongGiaoDich”
+Số lượng đã phân phối không thay đổi.
+3.6.6. Ràng buộc đánh giá
+Đánh giá chỉ được tạo khi: “GiaoDich.trangThai = HoanTat”
+Ngoài ra:
+mỗi giao dịch có tối đa hai đánh giá;
+mỗi bên chỉ được đánh giá đối tác một lần;
+người đánh giá phải là một trong hai bên tham gia giao dịch.
+3.6.7. Ràng buộc xóa bài đăng
+Bài đăng chỉ được xóa vật lý khi: 
+“khongCoDeXuatDangXuLy AND khongCoGiaoDichDangTonTai”
+Nếu bài đăng đã có dữ liệu cần lưu vết, hệ thống phải từ chối thao tác xóa.
+IV. MÔ HÌNH HÓA TƯƠNG TÁC (INTERACTION MODELING)
+4.1. Phương pháp mô hình hóa tương tác
+4.1.1. Nguyên tắc mô hình hóa tương tác
+Mô hình hóa tương tác động (Dynamic Interaction Modeling) là bước hiện thực hóa các Use Case từ mô hình phân tích tĩnh. Mục tiêu của giai đoạn này là xác định cách thức các đối tượng (đã được cấu trúc hóa) phối hợp và trao đổi thông điệp (messages) với nhau nhằm thực thi các kịch bản nghiệp vụ. Theo đúng chuẩn phương pháp luận COMET, đồ án ưu tiên sử dụng Biểu đồ giao tiếp (Communication Diagram) làm biểu đồ chủ đạo cho toàn bộ các Use Case, thay vì Biểu đồ tuần tự (Sequence Diagram). Biểu đồ giao tiếp tập trung làm nổi bật cấu trúc mạng lưới liên kết giữa các đối tượng. Quyết định thiết kế này đóng vai trò sống còn để tạo tiền đề cho bước tiếp theo: tích hợp các biểu đồ giao tiếp đơn lẻ thành một “Biểu đồ giao tiếp tích hợp” (Integrated Communication Diagram) trong thiết kế kiến trúc phần mềm. 
+4.1.2. Quy tắc đánh số thông điệp (Message Sequence Numbering)
+Để thể hiện luồng thời gian thực thi trên Biểu đồ giao tiếp, hệ thống áp dụng bộ quy tắc đánh số thứ tự thông điệp (Message Sequence Numbering) chuẩn UML và COMET:
+Trình tự đánh số: Một chuỗi thông điệp luôn bắt đầu bằng một sự kiện đầu vào từ tác nhân (Actor), được đánh số nguyên (Ví dụ: 1). Các sự kiện nội bộ phát sinh từ yêu cầu này sẽ được đánh số theo cấu trúc phân cấp (Ví dụ: 1.1, 1.2, 1.3), và kết thúc bằng thông điệp phản hồi ra giao diện (Ví dụ: 1.4).
+Ký hiệu ràng buộc: Các nhánh thay thế (Alternative) hoặc điều kiện (Condition) được biểu diễn bằng các mệnh đề nằm trong dấu ngoặc vuông (Ví dụ: 1.2 [Hợp lệ]). Ký hiệu dấu hoa thị (*) được sử dụng để thể hiện vòng lặp hoặc thông điệp đa hướng (Broadcast).
+4.2. Nhóm UC1 – Chia sẻ thông tin tài sản
+4.2.1. UC1.1. Đăng tải tài sản
+Hình 3.7 Communication Diagram cho UC1.1 Đăng tải tài sản
+Mô tả luồng tương tác
+4.2.2. UC1.2. Chỉnh sửa thông tin tài sản
+Mô tả luồng tương tác
+4.2.3. UC1.3. Xóa tin đăng tài sản
+Mô tả luồng tương tác
+4.3. Nhóm UC2 – Tiếp cận tài sản
+4.3.1. UC2.3. Gửi đề xuất giao dịch
+Mô tả luồng tương tác
+4.4. Nhóm UC3 – Thương lượng giao dịch
+4.4.1. UC3.4. Chốt thỏa thuận giao dịch
+Mô tả luồng tương tác
+4.5. Nhóm UC4 - Thực hiện giao dịch
+4.5.1. UC4.1. Xác nhận hoàn tất giao dịch
+Mô tả luồng tương tác
+4.6. Nhóm UC5 – Quản lý tài khoản và hồ sơ
+4.6.1. UC5.1. Đăng ký
+Mô tả luồng tương tác
+4.6.2. UC5.2. Đăng nhập
+Mô tả luồng tương tác
+4.7. Nhóm UC6 – Đánh giá giao dịch
+4.7.1. UC6.1. Đánh giá đối tác giao dịch
+Mô tả luồng tương tác
+4.8. Nhóm UC7 – Quản lý báo cáo và xử lý vi phạm
+4.8.1. UC7.4. Xử lý báo cáo vi phạm
+Mô tả luồng tương tác
+4.9. Kịch bản tương tác động xử lý đụng độ đồng thời (Concurrency Handling) 
+Theo yêu cầu phân tích tính phụ thuộc trạng thái và tranh chấp tài nguyên, hệ thống có kịch bản xử lý đồng thời (Concurrency) đặc thù: Hai người tiếp nhận (User A và User B) cùng gửi yêu cầu "Chốt thỏa thuận" cho một Bài đăng tài sản chỉ còn đúng 1 số lượng khả dụng vào cùng một tích tắc. Để ngăn chặn lỗi một tài sản bị hứa cho nhiều người, QuanLyGiaoDichController đóng vai trò là Trình quản lý giao dịch nguyên tử (Transaction Manager), phối hợp với thực thể BaiDangTaiSan để xử lý khóa bản ghi (Locking): 
+V. KẾT QUẢ PHÂN TÍCH: SƠ ĐỒ LỚP MỨC THIẾT KẾ (DESIGN CLASS DIAGRAM) 
+5.1. Bổ sung các phương thức (Operations) từ Biểu đồ giao tiếp
+Sau khi hoàn thành quá trình mô hình hóa tương tác động (Dynamic Interaction Modeling) thông qua các Biểu đồ giao tiếp (Communication Diagram), toàn bộ các thông điệp (Messages) trao đổi giữa các đối tượng đã được phân tích và chuyển hóa thành các phương thức (Operations) của các lớp trong mô hình thiết kế.
+Việc phân bổ các phương thức tuân theo nguyên tắc Information Expert và Encapsulation của phương pháp COMET, theo đó:
+Các Entity chịu trách nhiệm quản lý dữ liệu và thực hiện các nghiệp vụ gắn với dữ liệu của chính nó.
+Các Control chịu trách nhiệm điều phối luồng xử lý, phối hợp các Entity và Boundary để hoàn thành một ca sử dụng (Use Case).
+5.1.1. Operations được bổ sung cho các Entity Classes
+Nhận xét: Các Operations trên được hình thành trực tiếp từ các thông điệp xuất hiện trong các Communication Diagram của các Use Case. Điều này giúp bảo đảm mọi hành vi nghiệp vụ đều được đóng gói trong chính thực thể sở hữu dữ liệu.
+5.1.2. Operations được bổ sung cho các Control Classes
+Các lớp điều khiển (Control Classes) đóng vai trò điều phối quy trình xử lý nghiệp vụ, tiếp nhận yêu cầu từ lớp Boundary, gọi các phương thức của Entity và trả kết quả cho giao diện người dùng.
+Nhận xét: Các Operations của Controller không trực tiếp xử lý dữ liệu nghiệp vụ mà thực hiện vai trò điều phối luồng xử lý giữa Boundary và Entity, bảo đảm tính phân tách trách nhiệm theo mô hình Boundary – Control – Entity (BCE). 
+5.2. Biểu đồ lớp mức thiết kế (Design Class Diagram - Bản cập nhật) 
+STT | Thuật ngữ / Từ viết tắt | Diễn giải
+1 | Dynamic Model | Mô hình động biểu diễn hành vi của hệ thống thông qua sự tương tác giữa các đối tượng và sự thay đổi trạng thái của chúng trong quá trình thực hiện nghiệp vụ.
+2 | State Machine Diagram (Statechart) | Biểu đồ trạng thái dùng để mô tả vòng đời của một đối tượng, các trạng thái mà đối tượng có thể trải qua và các sự kiện làm thay đổi trạng thái đó.
+3 | Sequence Diagram | Biểu đồ tuần tự mô tả trình tự trao đổi thông điệp giữa các đối tượng theo thứ tự thời gian nhằm thực hiện một chức năng của hệ thống.
+4 | Communication Diagram | Biểu đồ giao tiếp mô tả sự tương tác giữa các đối tượng, nhấn mạnh cấu trúc liên kết và thứ tự trao đổi thông điệp thông qua việc đánh số các thông điệp.
+5 | Boundary Object | Đối tượng biên thực hiện chức năng giao tiếp giữa hệ thống với tác nhân hoặc các hệ thống bên ngoài thông qua giao diện người dùng hoặc các dịch vụ tích hợp.
+6 | Entity Object | Đối tượng thực thể lưu trữ và quản lý dữ liệu của hệ thống, được hình thành từ các lớp khái niệm trong Mô hình hóa tĩnh (Static Model).
+7 | Control Object | Đối tượng điều khiển chịu trách nhiệm điều phối luồng xử lý, phối hợp hoạt động giữa các đối tượng biên và đối tượng thực thể trong quá trình thực hiện nghiệp vụ.
+8 | Application Logic Object | Đối tượng xử lý nghiệp vụ chứa các thuật toán và quy tắc nghiệp vụ phức tạp, phục vụ việc xử lý các chức năng của hệ thống.
+9 | Event / Message | Sự kiện hoặc thông điệp được trao đổi giữa các đối tượng nhằm kích hoạt một thao tác hoặc làm thay đổi trạng thái của đối tượng nhận.
+10 | COMET | Collaborative Object Modeling and Architectural Design Method – Phương pháp luận phân tích và thiết kế phần mềm hướng đối tượng dựa trên UML do Giáo sư Hassan Gomaa đề xuất.
+11 | BRD | Business Requirements Document – Tài liệu đặc tả yêu cầu nghiệp vụ.
+12 | SyRS | System Requirements Specification – Tài liệu đặc tả yêu cầu hệ thống.
+13 | UC | System Use Case – Trường hợp sử dụng ở mức hệ thống, mô tả các chức năng mà hệ thống cung cấp cho người sử dụng.
+14 | BUC | Business Use Case – Trường hợp sử dụng ở mức nghiệp vụ, mô tả các quy trình nghiệp vụ được thực hiện nhằm đạt mục tiêu kinh doanh.
+15 | BRL | Business Rule – Quy tắc nghiệp vụ quy định các điều kiện, ràng buộc và chính sách cần tuân thủ trong quá trình xử lý nghiệp vụ.
+Boundary Object | Stereotype | Actor sử dụng | Use Case liên quan | Trách nhiệm
+GiaoDienTaiKhoan | <<boundary>> | Khách, Người dùng | UC5.1, UC5.2 | Tiếp nhận đăng ký, đăng nhập và hiển thị kết quả xác thực
+GiaoDienHoSo | <<boundary>> | Người dùng | UC5.3, UC6.2 | Hiển thị và tiếp nhận cập nhật hồ sơ cá nhân, hồ sơ uy tín
+GiaoDienBaiDang | <<boundary>> | Người dùng | UC1.1–UC1.4 | Nhập, sửa, xóa và hiển thị bài đăng tài sản
+GiaoDienTimKiemTaiSan | <<boundary>> | Người dùng | UC2.1, UC2.2 | Tiếp nhận từ khóa, bộ lọc và hiển thị kết quả tìm kiếm
+GiaoDienDeXuat | <<boundary>> | Người dùng | UC2.3, UC3.1, UC3.2 | Nhập đề xuất, xem danh sách và phản hồi đề xuất
+GiaoDienThuongLuong | <<boundary>> | Người dùng | UC3.3, UC3.4 | Hiển thị lịch sử trao đổi và tiếp nhận thao tác chốt thỏa thuận
+GiaoDienGiaoDich | <<boundary>> | Người dùng | UC4.1–UC4.3 | Hiển thị trạng thái giao dịch, tiếp nhận xác nhận hoặc hủy
+GiaoDienDanhGia | <<boundary>> | Người dùng | UC6.1 | Tiếp nhận điểm sao, nhận xét và hiển thị kết quả đánh giá
+GiaoDienBaoCao | <<boundary>> | Người dùng | UC7.1 | Tiếp nhận nội dung và minh chứng báo cáo
+GiaoDienQuanTriBaoCao | <<boundary>> | Quản trị viên | UC7.2–UC7.4 | Hiển thị danh sách, chi tiết và tiếp nhận quyết định xử lý báo cáo
+Boundary | Operation phân tích dự kiến
+GiaoDienTaiKhoan | nhapThongTinDangKy(), guiYeuCauDangKy(), nhapThongTinDangNhap(), hienThiKetQua()
+GiaoDienBaiDang | nhapThongTinBaiDang(), guiYeuCauDangBai(), hienThiBaiDang(), hienThiThongBao()
+GiaoDienDeXuat | nhapThongTinDeXuat(), guiDeXuat(), hienThiDanhSachDeXuat()
+GiaoDienThuongLuong | nhapNoiDungTraoDoi(), guiTinNhan(), guiYeuCauChotThoaThuan()
+GiaoDienGiaoDich | hienThiTrangThai(), guiXacNhanHoanTat(), guiYeuCauHuy()
+GiaoDienDanhGia | nhapDanhGia(), guiDanhGia(), hienThiKetQua()
+GiaoDienBaoCao | nhapBaoCao(), taiMinhChung(), guiBaoCao()
+GiaoDienQuanTriBaoCao | hienThiDanhSachBaoCao(), hienThiChiTiet(), guiQuyetDinhXuLy()
+Entity Object | Stereotype | Trách nhiệm dữ liệu | Hành vi nghiệp vụ dự kiến
+NguoiDung | <<entity>> | Tài khoản, mật khẩu băm, trạng thái người dùng | Kiểm tra trạng thái hoạt động, kiểm tra quyền, cập nhật trạng thái tài khoản
+HoSoThanhVien | <<entity>> | Thông tin cá nhân và thông tin công khai | Cập nhật hồ sơ, kiểm tra dữ liệu hồ sơ
+HoSoUyTin | <<entity>> | Điểm trung bình, số đánh giá, số giao dịch hoàn tất | Tính lại và cập nhật dữ liệu uy tín
+DanhMucTaiSan | <<entity>> | Thông tin danh mục | Kiểm tra danh mục đang hoạt động
+BaiDangTaiSan | <<entity>> | Nội dung, số lượng, hình thức trao đổi và trạng thái bài đăng | Cập nhật thông tin, giữ chỗ, giải phóng số lượng, xác nhận phân phối, cập nhật trạng thái
+HinhAnhTaiSan | <<entity>> | Đường dẫn ảnh, thứ tự hiển thị | Khởi tạo, cập nhật thứ tự, thay đổi hoặc loại bỏ hình ảnh
+DeXuatGiaoDich | <<entity>> | Nội dung, số lượng yêu cầu, trạng thái đề xuất | Bắt đầu thương lượng, chấp nhận, từ chối, hủy, chuyển hết hiệu lực
+TinNhanThuongLuong | <<entity>> | Nội dung, người gửi, thời gian gửi | Khởi tạo tin nhắn và xác định người gửi
+GiaoDich | <<entity>> | Số lượng giao dịch, hai bên, thông tin bàn giao, trạng thái | Ghi nhận xác nhận, hoàn tất, hủy và kiểm tra điều kiện chuyển trạng thái
+DanhGia | <<entity>> | Điểm sao, nhận xét, người đánh giá, người được đánh giá | Kiểm tra điểm sao, khởi tạo đánh giá
+BaoCaoViPham | <<entity>> | Nội dung báo cáo, minh chứng, đối tượng bị báo cáo, trạng thái | Tiếp nhận xử lý, yêu cầu bổ sung, xác nhận vi phạm, từ chối
+BienPhapXuLy | <<entity>> | Loại biện pháp, nội dung, thời gian, người thực hiện | Khởi tạo và ghi nhận biện pháp xử lý
+NguoiDung
++dangHoatDong(): Boolean
++kiemTraMatKhau(matKhau): Boolean
++coVaiTro(vaiTro): Boolean
++capNhatTrangThai(trangThaiMoi)
+BaiDangTaiSan
++capNhatThongTin(duLieu)
++coDuSoLuong(soLuongYeuCau): Boolean
++giuChoSoLuong(soLuong)
++giaiPhongSoLuong(soLuong)
++xacNhanPhanPhoi(soLuong)
++tinhSoLuongKhaDung(): Integer
++capNhatTrangThaiTheoSoLuong()
++coTheXoa(): Boolean
+DeXuatGiaoDich
++batDauThuongLuong() 
++chapNhan() 
++tuChoi(lyDo) +huy()
++chuyenHetHieuLuc()
++coTheChot(): Boolean
+GiaoDich
++ghiNhanXacNhan(maNguoiDung) +daDuHaiXacNhan(): Boolean 
++hoanTat() 
++huy(lyDo) 
++coTheHuy(): Boolean
+DanhGia
++kiemTraDiemSao(): Boolean +khoiTaoDanhGia(duLieu)
+HoSoUyTin
++capNhatTuDanhGia(danhSachDanhGia) +capNhatSoGiaoDichHoanTat() +tinhDiemTrungBinh(): Float
+BaoCaoViPham
++tiepNhan() +batDauXuLy(maQuanTriVien) +yeuCauBoSung() +xacNhanViPham() +tuChoi(lyDo) +ketLuanKhongDuCanCu()
+BienPhapXuLy
++khoiTao(loaiBienPhap, noiDung, nguoiThucHien)
+Control Object | Stereotype | Điều phối Use Case | Trách nhiệm
+QuanLyTaiKhoan | <<control>> | UC5.1, UC5.2 | Điều phối đăng ký, đăng nhập và xác thực trạng thái tài khoản
+QuanLyHoSo | <<control>> | UC5.3 | Điều phối xem và cập nhật hồ sơ cá nhân, hồ sơ uy tín
+QuanLyBaiDang | <<control>> | UC1.1 → UC1.4 | Điều phối tạo, sửa, xóa và xem danh sách bài đăng
+TimKiemTaiSan | <<control>> | UC2.1, UC2.2 | Điều phối tìm kiếm, lọc và xem chi tiết tài sản
+QuanLyDeXuat | <<control>> | UC2.3 | Điều phối gửi, xem, chấp nhận hoặc từ chối đề xuất
+QuanLyThuongLuong | <<control>> | UC3.1 → UC3.3 | Điều phối trao đổi thông tin và chốt thỏa thuận
+QuanLyGiaoDich | <<control>> | UC3.4, UC4.1 → UC4.3 | Điều phối xác nhận hoàn tất, hủy và theo dõi giao dịch
+QuanLyDanhGia | <<control>> | UC6.1, UC6.2 | Điều phối kiểm tra điều kiện, tạo đánh giá và cập nhật uy tín
+QuanLyBaoCao | <<control>> | UC7.1 → UC7.4 | Điều phối gửi, xem, xác minh và xử lý báo cáo vi phạm
+Control | Operation phân tích
+QuanLyTaiKhoan | dangKy(duLieu), dangNhap(taiKhoan, matKhau)
+QuanLyHoSo | xemHoSo(maNguoiDung), capNhatHoSo(duLieu), xemHoSoUyTin(maNguoiDung)
+QuanLyBaiDang | dangTaiTaiSan(duLieu), chinhSuaBaiDang(maBaiDang, duLieu), xoaBaiDang(maBaiDang), xemDanhSachBaiDang()
+TimKiemTaiSan | timKiem(tuKhoa, boLoc), xemChiTiet(maBaiDang)
+QuanLyDeXuat | guiDeXuat(duLieu), xemDanhSachDeXuat(), chapNhanDeXuat(), tuChoiDeXuat()
+QuanLyThuongLuong | guiTinNhan(), xemLichSuThuongLuong(), chotThoaThuan(maDeXuat)
+QuanLyGiaoDich | xacNhanHoanTat(maGiaoDich, maNguoiDung), huyGiaoDich(), theoDoiTrangThai()
+QuanLyDanhGia | guiDanhGia(duLieu), capNhatHoSoUyTin()
+QuanLyBaoCao | guiBaoCao(duLieu), xemDanhSachBaoCao(), xemChiTietBaoCao(), xuLyBaoCao()
+Nhóm nghiệp vụ | Boundary | Control | Entity tham gia
+Tài khoản | GiaoDienTaiKhoan | QuanLyTaiKhoan | NguoiDung, HoSoThanhVien, HoSoUyTin
+Hồ sơ | GiaoDienHoSo | QuanLyHoSo | NguoiDung, HoSoThanhVien, HoSoUyTin
+Bài đăng | GiaoDienBaiDang | QuanLyBaiDang | NguoiDung, DanhMucTaiSan, BaiDangTaiSan, HinhAnhTaiSan, DeXuatGiaoDich, GiaoDich
+Tìm kiếm | GiaoDienTimKiemTaiSan | TimKiemTaiSan | DanhMucTaiSan, BaiDangTaiSan, HinhAnhTaiSan
+Đề xuất | GiaoDienDeXuat | QuanLyDeXuat | NguoiDung, BaiDangTaiSan, DeXuatGiaoDich
+Thương lượng | GiaoDienThuongLuong | QuanLyThuongLuong | DeXuatGiaoDich, TinNhanThuongLuong, BaiDangTaiSan, GiaoDich
+Giao dịch | GiaoDienGiaoDich | QuanLyGiaoDich | NguoiDung, GiaoDich, BaiDangTaiSan
+Đánh giá | GiaoDienDanhGia | QuanLyDanhGia | GiaoDich, DanhGia, HoSoUyTin, NguoiDung
+Báo cáo người dùng | GiaoDienBaoCao | QuanLyBaoCao | NguoiDung, BaiDangTaiSan, BaoCaoViPham
+Xử lý báo cáo | GiaoDienQuanTriBaoCao | QuanLyBaoCao | BaoCaoViPham, BienPhapXuLy, NguoiDung, BaiDangTaiSan
+Trạng thái | Mô tả chi tiết | Nguồn gốc xác thực
+KhaDung | Bài đăng đang công khai và còn số lượng để tiếp nhận đề xuất. | BUC01
+UC1.1
+UC2.1
+UC2.3
+TamHetKhaDung | Toàn bộ số lượng chưa phân phối đang được giữ chỗ, bài đăng tạm thời không nhận đề xuất mới. | BUC03
+UC3.2
+Điểm kết thúc | Bài đăng bị xoá vật lý khỏi hệ thống. | BUC03
+UC4.1
+UC1.3
+Trạng thái hiện tại | Sự kiện | Điều kiện bảo vệ | Hành động | Trạng thái tiếp theo
+Khởi tạo | Đăng bài thành công | Dữ liệu hợp lệ | Lưu và công khai bài đăng | KhaDung
+KhaDung | Chốt thỏa thuận | Sau giữ chỗ vẫn còn số lượng khả dụng | Tăng số lượng giữ chỗ | KhaDung
+KhaDung | Chốt thỏa thuận | Sau giữ chỗ, số lượng khả dụng bằng 0 | Tăng số lượng giữ chỗ, ngừng nhận đề xuất mới | TamHetKhaDung
+TamHetKhaDung | Hủy giao dịch | Có số lượng được giải phóng | Giảm số lượng giữ chỗ | KhaDung
+TamHetKhaDung | Hoàn tất giao dịch | Sau cập nhật vẫn còn số lượng khả dụng | Giảm giữ chỗ, tăng số lượng đã phân phối | KhaDung
+KhaDung | Hoàn tất giao dịch | Số lượng còn lại bằng 0 | Cập nhật số lượng, đóng bài đăng | DaKetThuc
+TamHetKhaDung | Hoàn tất giao dịch | Số lượng còn lại bằng 0 | Cập nhật số lượng, đóng bài đăng | DaKetThuc
+KhaDung | Kết thúc chia sẻ | Không có giao dịch đang xử lý | Ngừng tiếp nhận đề xuất | DaKetThuc
+KhaDung | Xóa bài đăng | Không có đề xuất đang xử lý và không có giao dịch | Xóa vật lý | Điểm kết thúc
+Trạng thái | Mô tả chi tiết | Nguồn gốc xác thực
+ChoXuLy | Đề xuất đã được gửi và đang chờ người sở hữu xem xét. | UC2.3
+DangThuongLuong | Hai bên trao đổi điều kiện giao dịch. | UC3.1
+DaChapNhan | Đề xuất đã được chốt và đã tạo giao dịch. | UC3.2
+TuChoi | Người sở hữu từ chối đề xuất hoặc hai bên không đạt thoả thuận. | UC3.3
+DaHuy | Người gửi chủ động huỷ trước khi giao dịch được tạo. | UC3.3
+HetHieuLuc | Đề xuất không còn hợp lệ do bài đăng hết số lượng hoặc đã kết thúc. | UC2.3
+Trạng thái hiện tại | Sự kiện | Điều kiện | Hành động | Trạng thái tiếp theo
+Khởi tạo | Gửi đề xuất | Đã đăng nhập, dữ liệu hợp lệ, đủ số lượng | Lưu đề xuất | ChoXuLy
+ChoXuLy | Bắt đầu thương lượng | Người sở hữu đồng ý trao đổi thêm | Mở luồng thương lượng | DangThuongLuong
+ChoXuLy | Chấp nhận trực tiếp | Số lượng yêu cầu không vượt quá số lượng khả dụng | Giữ chỗ, tạo giao dịch | DaChapNhan
+ChoXuLy | Từ chối |  | Lưu lý do từ chối | TuChoi
+ChoXuLy | Người gửi hủy | Chưa được chấp nhận | Lưu trạng thái hủy | DaHuy
+DangThuongLuong | Chốt thỏa thuận | Số lượng yêu cầu hợp lệ | Giữ chỗ, tạo giao dịch | DaChapNhan
+DangThuongLuong | Không đạt thỏa thuận |  | Kết thúc thương lượng | TuChoi
+DangThuongLuong | Người gửi hủy | Chưa tạo giao dịch | Kết thúc thương lượng | DaHuy
+ChoXuLy | Bài đăng không còn khả dụng | Không đủ số lượng | Vô hiệu hóa đề xuất | HetHieuLuc
+DangThuongLuong | Bài đăng không còn khả dụng | Không đủ số lượng | Dừng thương lượng | HetHieuLuc
+Trạng thái | Mô tả chi tiết | Nguồn gốc xác thực
+ChoBanGiao | Giao dịch đã được tạo và đang chờ bàn giao. | UC3.2
+ChoBenConLaiXacNhan | Một bên đã xác nhận hoàn tất, hệ thống chờ bên còn lại. | UC4.1
+HoanTat | Cả hai bên xác nhận giao dịch hoàn tất. | UC4.1
+DaHuy | Giao dịch bị huỷ trước khi hoàn tất. | UC4.2
+Trạng thái hiện tại | Sự kiện | Điều kiện | Hành động | Trạng thái tiếp theo
+Khởi tạo | Tạo giao dịch | Đề xuất đã được chấp nhận | Lưu giao dịch, giữ chỗ số lượng | ChoBanGiao
+ChoBanGiao | Một bên xác nhận | Chỉ một bên đã xác nhận | Lưu xác nhận | ChoBenConLaiXacNhan
+ChoBanGiao | Hai bên xác nhận | Cả hai xác nhận hợp lệ | Cập nhật số lượng, mở quyền đánh giá | HoanTat
+ChoBenConLaiXacNhan | Bên còn lại xác nhận | Cả hai bên đã xác nhận | Cập nhật số lượng, mở quyền đánh giá | HoanTat
+ChoBanGiao | Hủy giao dịch | Giao dịch chưa hoàn tất | Giải phóng số lượng giữ chỗ | DaHuy
+ChoBenConLaiXacNhan | Hủy giao dịch | Chính sách cho phép hủy | Giải phóng giữ chỗ, lưu lý do | DaHuy
+Trạng thái | Mô tả chi tiết | Nguồn gốc xác thực
+ChoKiemDuyet | Báo cáo đã được gửi và đang chờ quản trị viên tiếp nhận. | UC7.1
+DangXuLy | Quản trị viên đang xác minh nội dung báo cáo. | UC7.2-UC7.4
+ChoBoSungMinhChung | Báo cáo chưa đủ dữ liệu và đang chờ bổ sung. | UC7.4
+DaXuLy | Báo cáo hợp lệ và đã áp dụng biện pháp xử lý. | UC7.4
+TuChoi | Nội dung báo cáo không vi phạm quy định. | UC7.4
+KhongDuCanCu | Không đủ dữ liệu để xác minh hoặc kết luận. | UC7.4
+Trạng thái hiện tại | Sự kiện | Điều kiện | Hành động | Trạng thái tiếp theo
+Khởi tạo | Gửi báo cáo | Dữ liệu hợp lệ | Lưu báo cáo | ChoKiemDuyet
+ChoKiemDuyet | Admin tiếp nhận | Admin có quyền | Ghi nhận người xử lý | DangXuLy
+DangXuLy | Yêu cầu bổ sung | Thiếu minh chứng nhưng có thể bổ sung | Thông báo người báo cáo | ChoBoSungMinhChung
+ChoBoSungMinhChung | Bổ sung minh chứng | Minh chứng hợp lệ | Cập nhật báo cáo | DangXuLy
+DangXuLy | Xác nhận vi phạm | Báo cáo hợp lệ | Tạo biện pháp xử lý | DaXuLy
+DangXuLy | Không phát hiện vi phạm | Nội dung không vi phạm | Lưu lý do từ chối | TuChoi
+DangXuLy | Không đủ căn cứ | Không thể xác minh | Ghi kết luận | KhongDuCanCu
+ChoBoSungMinhChung | Hết thời hạn bổ sung | Không có minh chứng mới | Đóng báo cáo | KhongDuCanCu
+Bước | Mô tả
+1 | Người sở hữu nhập thông tin bài đăng trên GiaoDienBaiDang và gửi yêu cầu đăng bài.
+1.1 | GiaoDienBaiDang gửi thông điệp yeuCauDangBai(duLieu) đến QuanLyBaiDangController.
+1.2 | QuanLyBaiDangController gọi hàm kiemTraTrangThaiHoatDong() trực tiếp trên thực thể NguoiDung để đảm bảo tài khoản hợp lệ.
+1.3 | QuanLyBaiDangController gọi hàm kiemTraTonTai() trên thực thể DanhMucTaiSan để đảm bảo danh mục hợp lệ.
+1.4 | Nếu dữ liệu hợp lệ, QuanLyBaiDangController gọi hàm khoiTaoBaiDang(duLieu) trên thực thể BaiDangTaiSan.
+1.5 | Nếu bài đăng có hình ảnh, QuanLyBaiDangController gọi hàm themHinhAnh(duongDan) trên thực thể HinhAnhTaiSan.
+1.6 | QuanLyBaiDangController gọi hàm capNhatTrangThai("KhaDung") trên thực thể BaiDangTaiSan.
+1.7 | QuanLyBaiDangController trả kết quả xử lý về GiaoDienBaiDang.
+1.8 | GiaoDienBaiDang hiển thị thông báo thành công cho người sở hữu.
+Bước | Mô tả
+1 | Người sở hữu chọn bài đăng, cập nhật thông tin và gửi yêu cầu chỉnh sửa trên GiaoDienBaiDang.
+1.1 | GiaoDienBaiDang gửi thông điệp yeuCauChinhSua(maBaiDang, duLieu) đến QuanLyBaiDangController.
+1.2 | QuanLyBaiDangController truy xuất thông tin từ thực thể BaiDangTaiSan để lấy dữ liệu bài đăng cần chỉnh sửa.
+1.3 | QuanLyBaiDangController gọi hàm kiemTraGiaoDichLienQuan() trên thực thể GiaoDich để xác nhận bài đăng hiện không tham gia vào giao dịch đang xử lý hoặc bị khóa chỉnh sửa.
+1.4 | Nếu đáp ứng điều kiện, QuanLyBaiDangController gọi hàm capNhatThongTin(duLieu) trên thực thể BaiDangTaiSan để cập nhật thông tin bài đăng.
+1.5 | Nếu có thay đổi hình ảnh, QuanLyBaiDangController gọi hàm capNhatHinhAnh(duLieu) trên thực thể HinhAnhTaiSan để cập nhật danh sách hình ảnh của bài đăng.
+1.6 | QuanLyBaiDangController trả kết quả xử lý về GiaoDienBaiDang.
+1.7 | GiaoDienBaiDang hiển thị thông báo cập nhật thông tin tài sản thành công cho người sở hữu.
+Bước | Mô tả
+1 | Người sở hữu chọn bài đăng cần xóa trên GiaoDienBaiDang.
+1.1 | GiaoDienBaiDang gửi thông điệp yeuCauXoa(maBaiDang) đến QuanLyBaiDangController.
+1.2 | QuanLyBaiDangController truy xuất thông tin từ thực thể BaiDangTaiSan để lấy dữ liệu bài đăng cần xóa.
+1.3 | QuanLyBaiDangController gọi hàm kiemTraDeXuatDangXuLy() trên thực thể DeXuatGiaoDich để xác nhận bài đăng không có đề xuất giao dịch nào đang được xử lý.
+1.4 | QuanLyBaiDangController gọi hàm kiemTraGiaoDichLienQuan() trên thực thể GiaoDich để xác nhận bài đăng không thuộc bất kỳ giao dịch nào.
+1.5 | Nếu đáp ứng các điều kiện, QuanLyBaiDangController gọi hàm xoaHinhAnh() trên thực thể HinhAnhTaiSan để xóa toàn bộ hình ảnh liên quan đến bài đăng.
+1.6 | Sau khi xóa hình ảnh thành công, QuanLyBaiDangController gọi hàm xoaBaiDang() trên thực thể BaiDangTaiSan để xóa bài đăng.
+1.7 | QuanLyBaiDangController trả kết quả xử lý về GiaoDienBaiDang.
+1.8 | GiaoDienBaiDang hiển thị thông báo xóa bài đăng thành công cho người sở hữu.
+Bước | Mô tả
+1 | Người tiếp nhận nhập thông tin đề xuất giao dịch trên GiaoDienDeXuat và gửi yêu cầu tạo đề xuất.
+1.1 | GiaoDienDeXuat gửi thông điệp guiDeXuat(duLieu) đến DeXuatGiaoDichController.
+1.2 | DeXuatGiaoDichController gọi hàm kiemTraTrangThaiHoatDong() trên thực thể NguoiDung để xác nhận tài khoản của người gửi đang hoạt động và hợp lệ.
+1.3 | DeXuatGiaoDichController gọi hàm kiemTraQuyenSoHuu() trên thực thể BaiDangTaiSan để xác nhận người gửi không phải là chủ sở hữu của bài đăng.
+1.4 | DeXuatGiaoDichController gọi hàm kiemTraSoLuongKhaDung(soLuongYeuCau) trên thực thể BaiDangTaiSan để kiểm tra số lượng tài sản còn đủ đáp ứng yêu cầu giao dịch.
+1.5 | Nếu các điều kiện đều hợp lệ, DeXuatGiaoDichController gọi hàm khoiTaoDeXuat(duLieu) trên thực thể DeXuatGiaoDich để tạo đề xuất giao dịch mới với trạng thái ChoXuLy.
+1.6 | DeXuatGiaoDichController trả kết quả xử lý về GiaoDienDeXuat.
+1.7 | GiaoDienDeXuat hiển thị thông báo gửi đề xuất giao dịch thành công cho người tiếp nhận.
+Bước | Mô tả
+1 | Người sở hữu gửi yêu cầu chốt thỏa thuận trên GiaoDienThuongLuong.
+1.1 | GiaoDienThuongLuong gửi thông điệp chotThoaThuan(maDeXuat) đến QuanLyGiaoDichController.
+1.2 | QuanLyGiaoDichController gọi hàm kiemTraTrangThai() trên thực thể DeXuatGiaoDich để xác nhận đề xuất vẫn còn hiệu lực và có thể được chấp nhận.
+1.3 | QuanLyGiaoDichController gọi hàm kiemTraSoLuongKhaDung(soLuongYeuCau) trên thực thể BaiDangTaiSan để kiểm tra số lượng tài sản còn đủ đáp ứng yêu cầu giao dịch.
+1.4 | Nếu hợp lệ, QuanLyGiaoDichController gọi hàm giuChoSoLuong(soLuongYeuCau) trên thực thể BaiDangTaiSan nhằm cập nhật số lượng khả dụng của tài sản.
+1.5 | QuanLyGiaoDichController gọi hàm khoiTaoGiaoDich() trên thực thể GiaoDich để tạo giao dịch mới với trạng thái ChoBanGiao.
+1.6 | QuanLyGiaoDichController gọi hàm capNhatTrangThai("DaChapNhan") trên thực thể DeXuatGiaoDich để cập nhật trạng thái của đề xuất giao dịch.
+1.7 | QuanLyGiaoDichController trả kết quả xử lý về GiaoDienThuongLuong.
+1.8 | GiaoDienThuongLuong hiển thị thông báo chốt thỏa thuận thành công cho người dùng.
+Bước | Mô tả
+1 | Người tham gia giao dịch thực hiện xác nhận hoàn tất giao dịch trên GiaoDienGiaoDich.
+1.1 | GiaoDienGiaoDich gửi thông điệp guiXacNhan(maGiaoDich, maNguoiDung) đến GiaoDichController.
+1.2 | GiaoDichController gọi hàm ghiNhanXacNhan(maNguoiDung) trên thực thể GiaoDich để ghi nhận việc xác nhận của người tham gia giao dịch.
+1.3 | GiaoDichController gọi hàm daDuHaiXacNhan() trên thực thể GiaoDich để kiểm tra cả hai bên đã hoàn tất xác nhận hay chưa.
+1.4 | Nếu mới chỉ có một bên xác nhận, GiaoDichController gọi hàm capNhatTrangThai("ChoBenConLaiXacNhan") trên thực thể GiaoDich để cập nhật trạng thái giao dịch.
+1.5 | Khi cả hai bên đã xác nhận đầy đủ, GiaoDichController gọi hàm hoanTat() trên thực thể GiaoDich để hoàn tất giao dịch.
+1.6 | Sau khi giao dịch hoàn tất, GiaoDichController gọi hàm xacNhanPhanPhoi(soLuong) trên thực thể BaiDangTaiSan để cập nhật số lượng đã phân phối và giải phóng số lượng đã giữ chỗ.
+1.7 | GiaoDichController gọi hàm capNhatTrangThaiTheoSoLuong() trên thực thể BaiDangTaiSan để tự động cập nhật trạng thái bài đăng khi số lượng khả dụng đã hết.
+1.8 | GiaoDichController trả kết quả xử lý về GiaoDienGiaoDich.
+1.9 | GiaoDienGiaoDich hiển thị thông báo xác nhận hoàn tất giao dịch thành công cho người tham gia.
+Bước | Mô tả
+1 | Khách nhập thông tin đăng ký (họ tên, email hoặc số điện thoại, mật khẩu) trên GiaoDienTaiKhoan và gửi yêu cầu đăng ký.
+1.1 | GiaoDienTaiKhoan gửi thông điệp dangKy(duLieu) đến QuanLyTaiKhoanController.
+1.2 | QuanLyTaiKhoanController gọi hàm kiemTraEmailTonTai(email) trên thực thể NguoiDung để kiểm tra email đã được sử dụng hay chưa.
+1.3 | QuanLyTaiKhoanController gọi hàm kiemTraSDTTonTai(soDienThoai) trên thực thể NguoiDung để kiểm tra số điện thoại đã được sử dụng hay chưa.
+1.4 | Nếu dữ liệu hợp lệ, QuanLyTaiKhoanController thực hiện băm (hash) mật khẩu và gọi hàm khoiTaoTaiKhoan(duLieu) trên thực thể NguoiDung để tạo tài khoản mới.
+1.5 | QuanLyTaiKhoanController gọi hàm khoiTaoHoSo(hoTen) trên thực thể HoSoThanhVien để tạo hồ sơ thành viên mặc định.
+1.6 | QuanLyTaiKhoanController gọi hàm khoiTaoUyTin() trên thực thể HoSoUyTin để khởi tạo điểm uy tín ban đầu với các giá trị mặc định.
+1.7 | QuanLyTaiKhoanController trả kết quả xử lý về GiaoDienTaiKhoan.
+1.8 | GiaoDienTaiKhoan hiển thị thông báo đăng ký tài khoản thành công cho khách.
+Bước | Mô tả
+1 | Thành viên nhập tên đăng nhập (email hoặc số điện thoại) và mật khẩu trên GiaoDienTaiKhoan, sau đó gửi yêu cầu đăng nhập.
+1.1 | GiaoDienTaiKhoan gửi thông điệp dangNhap(taiKhoan, matKhau) đến QuanLyTaiKhoanController.
+1.2 | QuanLyTaiKhoanController gọi hàm kiemTraMatKhau(matKhau) trên thực thể NguoiDung để đối chiếu mật khẩu đã băm với thông tin được lưu trong hệ thống.
+1.3 | QuanLyTaiKhoanController gọi hàm kiemTraTrangThaiHoatDong() trên thực thể NguoiDung để xác nhận tài khoản đang ở trạng thái hoạt động và không bị khóa.
+1.4 | Nếu thông tin đăng nhập hợp lệ, QuanLyTaiKhoanController thiết lập phiên đăng nhập (Session/Token) cho người dùng.
+1.5 | QuanLyTaiKhoanController trả kết quả xử lý về GiaoDienTaiKhoan.
+1.6 | GiaoDienTaiKhoan hiển thị kết quả đăng nhập cho thành viên, chuyển hướng đến trang chủ nếu thành công hoặc hiển thị thông báo lỗi nếu đăng nhập thất bại.
+Bước | Mô tả
+1 | Người đánh giá nhập điểm số (số sao) và nội dung nhận xét trên GiaoDienDanhGia, sau đó gửi yêu cầu đánh giá.
+1.1 | GiaoDienDanhGia gửi thông điệp guiDanhGia(duLieu) đến QuanLyDanhGiaController.
+1.2 | QuanLyDanhGiaController gọi hàm kiemTraTrangThaiHoanTat() trên thực thể GiaoDich để xác nhận giao dịch đã hoàn tất.
+1.3 | QuanLyDanhGiaController gọi hàm kiemTraQuyenDanhGia(maNguoiDung) trên thực thể GiaoDich để xác nhận người dùng là một trong hai bên tham gia giao dịch.
+1.4 | QuanLyDanhGiaController gọi hàm kiemTraTonTaiDanhGia() trên thực thể DanhGia để bảo đảm mỗi người dùng chỉ được đánh giá một lần cho mỗi giao dịch.
+1.5 | Nếu các điều kiện đều hợp lệ, QuanLyDanhGiaController gọi hàm khoiTaoDanhGia(duLieu) trên thực thể DanhGia để tạo bản ghi đánh giá mới.
+1.6 | QuanLyDanhGiaController gọi hàm capNhatTuDanhGia(diemSao) trên thực thể HoSoUyTin của đối tác để cập nhật điểm uy tín, điểm trung bình và tổng số lượt đánh giá.
+1.7 | QuanLyDanhGiaController trả kết quả xử lý về GiaoDienDanhGia.
+1.8 | GiaoDienDanhGia hiển thị thông báo ghi nhận đánh giá thành công cho người dùng.
+Bước | Mô tả
+1 | Quản trị viên nhập quyết định xử lý và lý do trên GiaoDienQuanTriBaoCao.
+1.1 | GiaoDienQuanTriBaoCao gửi thông điệp xuLyBaoCao(maBaoCao, quyetDinh) đến BaoCaoViPhamController.
+1.2 | BaoCaoViPhamController truy xuất thông tin từ thực thể BaoCaoViPham để kiểm tra trạng thái hiện tại của báo cáo.
+1.3 | Nếu quyết định xác nhận báo cáo hợp lệ, BaoCaoViPhamController gọi hàm xacNhanViPham() trên thực thể BaoCaoViPham để cập nhật trạng thái báo cáo sang DaXuLy.
+1.4 | BaoCaoViPhamController gọi hàm khoiTao(loaiBienPhap, noiDung, nguoiThucHien) trên thực thể BienPhapXuLy để ghi nhận biện pháp xử lý được áp dụng.
+1.5 | Tùy theo loại biện pháp xử lý, BaoCaoViPhamController gọi hàm capNhatTrangThai() trên thực thể NguoiDung (nếu áp dụng khóa tài khoản) hoặc trên thực thể BaiDangTaiSan (nếu áp dụng ẩn bài đăng).
+1.6 | Nếu quyết định xác định báo cáo không hợp lệ, BaoCaoViPhamController gọi hàm tuChoi(lyDo) trên thực thể BaoCaoViPham để cập nhật trạng thái báo cáo sang TuChoi.
+1.7 | BaoCaoViPhamController trả kết quả xử lý về GiaoDienQuanTriBaoCao.
+1.8 | GiaoDienQuanTriBaoCao hiển thị thông báo kết quả xử lý báo cáo cho quản trị viên.
+Bước | Mô tả luồng tương tác đồng thời
+1 | User A và User B đồng thời gửi yêu cầu chotThoaThuan(maDeXuat) đến QuanLyGiaoDichController tại thời điểm T0.
+2 | QuanLyGiaoDichController kích hoạt cơ chế xử lý tuần tự hóa (Serialization). Yêu cầu của User A được hệ thống xử lý trước (dù chỉ sớm hơn vài mili-giây).
+3 | QuanLyGiaoDichController (nhánh của User A) gọi hàm khoaBanGhi() và kiemTraSoLuongKhaDung(1) trên thực thể BaiDangTaiSan để khóa bản ghi và kiểm tra số lượng khả dụng.
+4 | Do số lượng khả dụng lớn hơn 0, QuanLyGiaoDichController gọi hàm giuChoSoLuong(1) trên BaiDangTaiSan. Sau khi cập nhật, số lượng khả dụng của tài sản giảm xuống 0.
+5 | QuanLyGiaoDichController (nhánh của User B) tiếp tục xử lý và gọi hàm kiemTraSoLuongKhaDung(1) trên thực thể BaiDangTaiSan.
+6 | BaiDangTaiSan trả về kết quả False do số lượng khả dụng đã được User A sử dụng hết.
+7 | QuanLyGiaoDichController (nhánh của User B) gọi hàm tuChoiDeXuat("Tài sản đã hết") trên thực thể DeXuatGiaoDich để từ chối đề xuất giao dịch của User B.
+8 | Hệ thống tạo thành công GiaoDich cho User A, đồng thời trả về kết quả thất bại kèm lý do "Tài sản đã hết" cho User B, bảo đảm không xảy ra tranh chấp hoặc vi phạm quy tắc nghiệp vụ khi xử lý đồng thời.
+Entity Class | Operations được bổ sung
+NguoiDung | + kiemTraTrangThaiHoatDong(): Boolean
++ xacThucMatKhau(hash: String): Boolean
++ capNhatTrangThai(trangThaiMoi: Enum): void
+BaiDangTaiSan | + khoiTaoBaiDang(duLieu: Object): void
++ kiemTraSoLuongKhaDung(soLuong: int): Boolean
++ giuChoSoLuong(soLuong: int): void
++ giaiPhongSoLuong(soLuong: int): void
++ capNhatTrangThai(trangThaiMoi: Enum): void
++ khoaBanGhi(): void
+HinhAnhTaiSan | + themHinhAnh(duongDan: String): void
+DanhMucTaiSan | + kiemTraTonTai(): Boolean
+DeXuatGiaoDich | + kiemTraTrangThai(): Boolean
++ capNhatTrangThai(trangThai: Enum): void
++ tuChoiDeXuat(lyDo: String): void
+GiaoDich | + khoiTaoGiaoDich(duLieu: Object): void
++ xacNhanHoanTat(maNguoiDung: String): void
++ kiemTraDieuKienDanhGia(): Boolean
+BaoCaoViPham | + khoiTaoBaoCao(duLieu: Object): void
++ capNhatTrangThaiXuLy(ketQua: Enum): void
+Control Class |  | Operations điều phối
+QuanLyTaiKhoanController |  | + xuLyDangKy(duLieu): void
++ xuLyDangNhap(user, pass): void
+QuanLyBaiDangController |  | + taoBaiDangMoi(duLieu): void
++ xoaBaiDang(maBaiDang): void
+QuanLyGiaoDichController |  | + taoDeXuat(duLieu): void
++ chotThoaThuan(maDeXuat): void (Thực hiện Transaction theo nguyên tắc ACID và xử lý đồng thời)
++ xacNhanGiaoDich(maGiaoDich): void
+BaoCaoViPhamController |  | + tiepNhanBaoCao(duLieu): void
++ xuLyBaoCao(maBaoCao, quyetDinh): void

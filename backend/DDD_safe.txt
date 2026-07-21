@@ -1,0 +1,368 @@
+I. GIỚI THIỆU
+1.1. Mục đích tài liệu
+Tài liệu Thiết kế cơ sở dữ liệu – Database Design Document, viết tắt là DDD, được xây dựng nhằm mô tả cách tổ chức, chuẩn hóa và lưu trữ dữ liệu của “Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân”.
+Tài liệu có các mục đích chính sau:
+Chuyển đổi các lớp thực thể trong mô hình khái niệm thành mô hình dữ liệu logic và mô hình quan hệ.
+Xác định đầy đủ các bảng, cột, khóa chính, khóa ngoại và ràng buộc dữ liệu.
+Chuẩn hóa dữ liệu nhằm hạn chế dữ liệu lặp, dữ liệu không nhất quán và các bất thường khi thêm, sửa hoặc xóa.
+Xây dựng Metadata Registry theo định hướng ISO/IEC 11179 để thống nhất ý nghĩa, cách đặt tên, kiểu dữ liệu và miền giá trị của các phần tử dữ liệu.
+Xác định chính sách bảo đảm toàn vẹn thực thể, toàn vẹn tham chiếu và toàn vẹn miền giá trị.
+Cung cấp đầu vào cho thiết kế cơ sở dữ liệu vật lý chi tiết, lập trình chức năng, xây dựng API, migration và kiểm thử cơ sở dữ liệu.
+Tạo căn cứ truy vết từ yêu cầu hệ thống, mô hình tĩnh và mô hình động tới cấu trúc lưu trữ dữ liệu.
+1.2. Phạm vi tài liệu
+DDD bao phủ dữ liệu phát sinh trong các nhóm chức năng sau:
+Quản lý tài khoản và hồ sơ thành viên.
+Quản lý hồ sơ uy tín.
+Quản lý danh mục tài sản.
+Đăng tải và quản lý bài đăng tài sản.
+Quản lý hình ảnh bài đăng.
+Gửi và xử lý đề xuất giao dịch.
+Lưu lịch sử thương lượng.
+Chốt, theo dõi, hoàn tất hoặc hủy giao dịch.
+Đánh giá sau giao dịch.
+Báo cáo vi phạm.
+Xác minh và áp dụng biện pháp xử lý.
+Các nội dung không thuộc phạm vi thiết kế dữ liệu hiện tại:
+Thanh toán trực tuyến.
+Quản lý đơn vị vận chuyển.
+Theo dõi vị trí theo thời gian thực.
+Xác thực danh tính bằng hệ thống bên thứ ba.
+Quản lý ví điện tử hoặc tài khoản ngân hàng.
+Kho dữ liệu phân tích, Data Warehouse hoặc hệ thống Business Intelligence.
+Phạm vi này phù hợp với SyRS, trong đó hệ thống hỗ trợ từ đăng tải tài sản đến hoàn tất giao dịch, đánh giá và xử lý vi phạm nhưng không bao gồm thanh toán trực tuyến, vận chuyển hoặc tích hợp hệ thống ngoài.
+1.3. Thuật ngữ và từ viết tắt
+1.4. Tài liệu tham khảo
+II. CƠ SỞ SUY DIỄN THIẾT KẾ CƠ SỞ DỮ LIỆU
+2.1. Nguồn suy diễn
+2.2. Nguyên tắc chuyển đổi
+III. TỔNG QUAN DỮ LIỆU HỆ THỐNG
+3.1. Các miền dữ liệu chính
+3.2. Các đối tượng dữ liệu chính
+IV. METADATA REGISTRY
+4.1. Quy tắc đặt tên
+4.2. Phân loại Data Element
+V. MÔ HÌNH DỮ LIỆU MỨC KHÁI NIỆM
+5.1. Danh sách thực thể và thuộc tính chính
+5.2. Các mối quan hệ
+VI. CHUYỂN ĐỔI SANG MÔ HÌNH DỮ LIỆU LOGIC
+6.1. Chuyển lớp thực thể thành bảng
+6.2. Chuyển quan hệ thành khóa ngoại
+VII. THIẾT KẾ CƠ SỞ DỮ LIỆU VẬT LÝ MỨC CAO
+7.1. Danh sách bảng và trường dữ liệu
+Bảng nguoi_dung
+Bảng ho_so_thanh_vien
+Bảng ho_so_uy_tin
+Bảng danh_muc_tai_san
+Bảng bai_dang_tai_san
+Bảng hinh_anh_tai_san
+Bảng de_xuat_giao_dich
+Bảng tin_nhan_thuong_luong
+Bảng giao_dich
+Bảng danh_gia
+Bảng bao_cao_vi_pham
+Bảng bien_phap_xu_ly
+VIII. SƠ ĐỒ ERD TỔNG THỂ 
+IX. CHÍNH SÁCH TOÀN VẸN DỮ LIỆU
+9.1. Toàn vẹn thực thể
+9.2. Toàn vẹn tham chiếu
+Dynamic Model quy định bài đăng chỉ được xóa vật lý khi không có đề xuất đang xử lý và không có giao dịch tồn tại.
+9.3. Toàn vẹn miền giá trị
+9.4. Toàn vẹn trạng thái và transaction
+Khi hoàn tất giao dịch:
+soLuongGiuCho = soLuongGiuCho - soLuongGiaoDich
+soLuongDaPhanPhoi = soLuongDaPhanPhoi + soLuongGiaoDich
+soLuongKhaDung = soLuongTong - soLuongDaPhanPhoi - soLuongGiuCho
+Thuật ngữ | Diễn giải
+DDD | Database Design Document – Tài liệu thiết kế cơ sở dữ liệu
+DBMS | Database Management System – Hệ quản trị cơ sở dữ liệu
+Metadata | Dữ liệu mô tả ý nghĩa, cấu trúc và quy tắc của dữ liệu
+Metadata Registry | Kho đăng ký và quản lý các thành phần metadata
+Data Element | Phần tử dữ liệu có ý nghĩa nghiệp vụ xác định
+Value Domain | Tập giá trị hợp lệ mà Data Element có thể nhận
+Classification Scheme | Sơ đồ phân loại metadata
+Conceptual Model | Mô hình dữ liệu mức khái niệm, độc lập công nghệ
+Logical Model | Mô hình dữ liệu logic thể hiện bảng, thuộc tính và quan hệ
+Physical Model | Mô hình dữ liệu vật lý phụ thuộc DBMS
+Entity | Thực thể cần được quản lý và lưu trữ
+Attribute | Thuộc tính mô tả thực thể
+Relationship | Mối quan hệ giữa các thực thể
+ERD | Entity Relationship Diagram – Sơ đồ thực thể liên kết
+PK | Primary Key – Khóa chính
+FK | Foreign Key – Khóa ngoại
+UK/UQ | Unique Key/Unique Constraint – Ràng buộc duy nhất
+CK | Check Constraint – Ràng buộc kiểm tra
+NN | Not Null – Không được để trống
+1NF | First Normal Form – Dạng chuẩn thứ nhất
+2NF | Second Normal Form – Dạng chuẩn thứ hai
+3NF | Third Normal Form – Dạng chuẩn thứ ba
+BCNF | Boyce–Codd Normal Form
+PII | Personally Identifiable Information – Dữ liệu có thể định danh cá nhân
+UUID | Universally Unique Identifier
+UTC | Coordinated Universal Time
+Soft Delete | Đánh dấu dữ liệu đã xóa nhưng không xóa vật lý
+Hard Delete | Xóa vật lý bản ghi khỏi cơ sở dữ liệu
+STT | Tài liệu | Mục đích sử dụng
+1 | SyRS – System Requirements Specification | Xác định chức năng, dữ liệu đầu vào, đầu ra và điều kiện nghiệp vụ
+2 | Static Model | Xác định thực thể, thuộc tính, quan hệ và bội số
+3 | Dynamic Model | Xác định trạng thái, quy tắc chuyển trạng thái và cập nhật dữ liệu
+4 | Business Requirements Document | Truy vết nguồn gốc nghiệp vụ
+5 | ISO/IEC 11179 | Tham chiếu tổ chức Metadata Registry
+6 | ISO/IEC/IEEE 29148:2018 | Quản lý và truy vết yêu cầu
+7 | OMG UML 2.5.1 | Cú pháp mô hình lớp và quan hệ
+8 | Quy định bảo vệ dữ liệu cá nhân áp dụng cho dự án | Xác định nguyên tắc bảo vệ thông tin người dùng
+Nguồn | Nội dung được sử dụng | Kết quả suy diễn trong CSDL | Minh chứng
+BRD | BUC01–BUC07, Business Rule | Xác định đối tượng nghiệp vụ cần lưu trữ | Ma trận BUC–thực thể trong Static Model
+SyRS | UC1.1–UC7.4, FR và dữ liệu biểu mẫu | Xác định trường dữ liệu và yêu cầu lưu | SyRS mô tả dữ liệu nhập, kết quả và điều kiện của từng UC.
+Static Model | 12 lớp <<entity>>, thuộc tính, quan hệ, bội số | Chuyển thành bảng, cột, PK và FK | Static Model xác định 12 lớp dữ liệu cốt lõi.
+Dynamic Model | State Machine và Communication Diagram | Xác định miền trạng thái, transaction và ràng buộc | Dynamic Model xác định vòng đời bài đăng, đề xuất, giao dịch và báo cáo.
+SyRS – NFR | Độ tin cậy, bảo mật, hiệu năng | Chính sách lưu trữ, phân quyền và nhất quán | NFR-08–NFR-14 yêu cầu lưu chính xác, không mất dữ liệu, nhất quán và lưu mật khẩu dạng hash.
+Thành phần phân tích | Thành phần cơ sở dữ liệu
+Lớp <<entity>> | Bảng dữ liệu
+Thuộc tính lớp | Cột dữ liệu
+Mã định danh kỹ thuật | Khóa chính
+Quan hệ 1–N | Khóa ngoại tại phía N
+Quan hệ 1–1 | Khóa ngoại kết hợp UNIQUE
+Quan hệ 1–0..1 | Khóa ngoại kết hợp UNIQUE
+Trạng thái trong State Machine | Miền giá trị của cột trạng thái
+Guard Condition | Constraint hoặc kiểm tra nghiệp vụ
+Nhiều thao tác cập nhật liên quan | Database transaction
+Miền dữ liệu | Nội dung
+Tài khoản và hồ sơ | Người dùng, hồ sơ thành viên, hồ sơ uy tín
+Tài sản | Danh mục, bài đăng và hình ảnh
+Thương lượng | Đề xuất và tin nhắn thương lượng
+Giao dịch | Giao dịch, xác nhận, hủy và hoàn tất
+Uy tín | Đánh giá và điểm uy tín
+An toàn cộng đồng | Báo cáo vi phạm và biện pháp xử lý
+STT | Thực thể | Mô tả | Nguồn xác thực
+1 | NguoiDung | Lưu tài khoản, mật khẩu băm và trạng thái | BUC05; UC5.1–UC5.3
+2 | HoSoThanhVien | Lưu thông tin công khai của thành viên | UC5.3
+3 | HoSoUyTin | Lưu điểm uy tín và số liệu đánh giá | UC6.1, UC6.2
+4 | DanhMucTaiSan | Phân loại tài sản | UC1.1, UC2.1
+5 | BaiDangTaiSan | Lưu thông tin và số lượng tài sản | UC1.1–UC1.4
+6 | HinhAnhTaiSan | Lưu hình ảnh thuộc bài đăng | UC1.1, UC1.2, UC2.2
+7 | DeXuatGiaoDich | Lưu đề xuất của người tiếp nhận | UC2.3, UC3.1, UC3.2
+8 | TinNhanThuongLuong | Lưu lịch sử trao đổi | UC3.3
+9 | GiaoDich | Lưu kết quả chốt thỏa thuận và bàn giao | UC3.4, UC4.1–UC4.3
+10 | DanhGia | Lưu điểm sao và nhận xét | UC6.1
+11 | BaoCaoViPham | Lưu nội dung và đối tượng bị báo cáo | UC7.1–UC7.3
+12 | BienPhapXuLy | Lưu kết quả xử lý của quản trị viên | UC7.4
+Thành phần | Quy tắc
+Tên bảng | Chữ thường, tiếng Việt không dấu, phân cách bằng _
+Khóa chính | <ten_thuc_the>_id
+Khóa ngoại | Tên thể hiện vai trò tham chiếu
+Trạng thái | trang_thai hoặc trang_thai_xu_ly
+Thời gian tạo | ngay_tao
+Thời gian cập nhật | ngay_cap_nhat
+Cờ Boolean | Đặt tên theo dạng khẳng định
+Nhóm | Ví dụ | Phân loại
+Dữ liệu xác thực | email, so_dien_thoai, mat_khau_hash | Bảo mật
+Dữ liệu hồ sơ | ho_ten, anh_dai_dien, dia_chi | Cá nhân
+Dữ liệu nghiệp vụ | Bài đăng, đề xuất, giao dịch | Nội bộ
+Dữ liệu uy tín | Điểm sao, nhận xét | Công khai có kiểm soát
+Dữ liệu kiểm duyệt | Báo cáo, minh chứng, biện pháp | Hạn chế truy cập
+Dữ liệu kỹ thuật | ID, ngày tạo, ngày cập nhật | Nội bộ
+Thực thể | Thuộc tính nghiệp vụ chính | Nguồn xác thực
+NguoiDung | email, soDienThoai, matKhauHash, trangThai | UC5.1, UC5.2, UC7.4
+HoSoThanhVien | hoTen, anhDaiDien, diaChi, moTaCaNhan, ngayCapNhat | UC5.3
+HoSoUyTin | diemTrungBinh, tongSoDanhGia, soGiaoDichHoanTat | UC6.1, UC6.2
+DanhMucTaiSan | tenDanhMuc, moTa, trangThai | UC1.1, UC2.1
+BaiDangTaiSan | tenTaiSan, moTaHienTrang, soLuongTong, soLuongKhaDung, soLuongGiuCho, diaDiem, hinhThucChiaSe, hinhThucTraoDoi, trangThai | UC1.1–UC1.4, UC2.2, UC3.4
+HinhAnhTaiSan | duongDanAnh, thuTuHienThi, ngayTaiLen | UC1.1, UC1.2
+DeXuatGiaoDich | soLuongYeuCau, loiNhan, taiSanDoiUng, tienDoiUng, trangThai, ngayGui | UC2.3, UC3.2
+TinNhanThuongLuong | noiDung, thoiGianGui, trangThai | UC3.3
+GiaoDich | soLuongGiaoDich, thoiGianBanGiao, diaDiemBanGiao, xacNhanNguoiSoHuu, xacNhanNguoiTiepNhan, lyDoHuy, trangThai | UC3.4, UC4.1, UC4.2
+DanhGia | diemSao, nhanXet, thoiGianDanhGia | UC6.1
+BaoCaoViPham | loaiBaoCao, lyDoViPham, moTaChiTiet, minhChung, trangThaiXuLy, ngayBaoCao | UC7.1–UC7.3
+BienPhapXuLy | loaiBienPhap, noiDungXuLy, thoiGianXuLy | UC7.4
+STT | Thực thể thứ nhất | Quan hệ | Thực thể thứ hai | Bội số | Minh chứng
+1 | NguoiDung | có | HoSoThanhVien | 1–1 | BRL-004; UC5.3
+2 | NguoiDung | có | HoSoUyTin | 1–1 | UC6.1, UC6.2
+3 | NguoiDung | tạo | BaiDangTaiSan | 1–0..* | UC1.1–UC1.4
+4 | DanhMucTaiSan | phân loại | BaiDangTaiSan | 1–0..* | UC1.1, UC2.1
+5 | BaiDangTaiSan | có | HinhAnhTaiSan | 1–1..* | BRL-009
+6 | NguoiDung | gửi | DeXuatGiaoDich | 1–0..* | UC2.3
+7 | BaiDangTaiSan | nhận | DeXuatGiaoDich | 1–0..* | BRL-014
+8 | DeXuatGiaoDich | phát sinh | TinNhanThuongLuong | 1–0..* | UC3.3
+9 | NguoiDung | gửi | TinNhanThuongLuong | 1–0..* | UC3.3
+10 | DeXuatGiaoDich | tạo | GiaoDich | 1–0..1 | BRL-016
+11 | GiaoDich | phát sinh | DanhGia | 1–0..2 | BRL-022
+12 | NguoiDung | thực hiện | DanhGia | 1–0..* | UC6.1
+13 | NguoiDung | gửi | BaoCaoViPham | 1–0..* | UC7.1
+14 | BaoCaoViPham | hướng đến | NguoiDung hoặc BaiDangTaiSan | 1–0..1 | BRL-025
+15 | BaoCaoViPham | phát sinh | BienPhapXuLy | 1–0..* | UC7.4
+16 | NguoiDung với vai trò quản trị viên | thực hiện | BienPhapXuLy | 1–0..* | UC7.4
+Lớp trong Static Model | Bảng logic
+NguoiDung | nguoi_dung
+HoSoThanhVien | ho_so_thanh_vien
+HoSoUyTin | ho_so_uy_tin
+DanhMucTaiSan | danh_muc_tai_san
+BaiDangTaiSan | bai_dang_tai_san
+HinhAnhTaiSan | hinh_anh_tai_san
+DeXuatGiaoDich | de_xuat_giao_dich
+TinNhanThuongLuong | tin_nhan_thuong_luong
+GiaoDich | giao_dich
+DanhGia | danh_gia
+BaoCaoViPham | bao_cao_vi_pham
+BienPhapXuLy | bien_phap_xu_ly
+Quan hệ | Khóa ngoại được suy ra
+Người dùng – Hồ sơ thành viên | ho_so_thanh_vien.nguoi_dung_id
+Người dùng – Hồ sơ uy tín | ho_so_uy_tin.nguoi_dung_id
+Người dùng – Bài đăng | bai_dang_tai_san.chu_so_huu_id
+Danh mục – Bài đăng | bai_dang_tai_san.danh_muc_id
+Bài đăng – Hình ảnh | hinh_anh_tai_san.bai_dang_id
+Người dùng – Đề xuất | de_xuat_giao_dich.nguoi_gui_id
+Bài đăng – Đề xuất | de_xuat_giao_dich.bai_dang_id
+Đề xuất – Tin nhắn | tin_nhan_thuong_luong.de_xuat_id
+Người dùng – Tin nhắn | tin_nhan_thuong_luong.nguoi_gui_id
+Đề xuất – Giao dịch | giao_dich.de_xuat_id
+Người dùng – Đánh giá | danh_gia.nguoi_danh_gia_id, nguoi_duoc_danh_gia_id
+Giao dịch – Đánh giá | danh_gia.giao_dich_id
+Người dùng – Báo cáo | bao_cao_vi_pham.nguoi_bao_cao_id
+Báo cáo – Đối tượng | nguoi_dung_bi_bao_cao_id hoặc bai_dang_bi_bao_cao_id
+Báo cáo – Biện pháp | bien_phap_xu_ly.bao_cao_id
+Admin – Biện pháp | bien_phap_xu_ly.quan_tri_vien_id
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+nguoi_dung_id | UUID | PK | Mã kỹ thuật
+email | VARCHAR(254) | UQ, NOT NULL | UC5.1
+so_dien_thoai | VARCHAR(20) | UQ, NOT NULL | UC5.1
+mat_khau_hash | VARCHAR(255) | NOT NULL | UC5.1, NFR-14
+vai_tro | VARCHAR(30) | NOT NULL | Actor, NFR-12
+trang_thai | VARCHAR(30) | NOT NULL | UC5.2, UC7.4
+ngay_tao | TIMESTAMP | NOT NULL | Dữ liệu truy vết
+ngay_cap_nhat | TIMESTAMP | NOT NULL | Dữ liệu truy vết
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+ho_so_id | UUID | PK | Mã kỹ thuật
+nguoi_dung_id | UUID | FK, UQ, NOT NULL | Quan hệ 1–1
+ho_ten | VARCHAR(150) | NOT NULL | UC5.3
+anh_dai_dien | VARCHAR(500) | NULL | UC5.3
+dia_chi | VARCHAR(255) | NULL | UC5.3
+mo_ta_ca_nhan | TEXT | NULL | UC5.3
+ngay_cap_nhat | TIMESTAMP | NOT NULL | UC5.3
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+ho_so_uy_tin_id | UUID | PK | Mã kỹ thuật
+nguoi_dung_id | UUID | FK, UQ, NOT NULL | Quan hệ 1–1
+diem_trung_binh | DECIMAL(3,2) | DEFAULT 0 | UC6.2
+tong_so_danh_gia | INTEGER | DEFAULT 0 | UC6.2
+so_giao_dich_hoan_tat | INTEGER | DEFAULT 0 | UC6.2
+ngay_cap_nhat | TIMESTAMP | NOT NULL | UC6.1
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+danh_muc_id | UUID | PK | Mã kỹ thuật
+ten_danh_muc | VARCHAR(100) | UQ, NOT NULL | UC1.1
+mo_ta | TEXT | NULL | Static Model
+trang_thai | VARCHAR(30) | NOT NULL | Static Model
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+bai_dang_id | UUID | PK | Mã kỹ thuật
+chu_so_huu_id | UUID | FK, NOT NULL | Quan hệ người dùng–bài đăng
+danh_muc_id | UUID | FK, NOT NULL | UC1.1
+ten_tai_san | VARCHAR(200) | NOT NULL | UC1.1
+mo_ta_hien_trang | TEXT | NOT NULL | UC1.1
+so_luong_tong | INTEGER | CHECK ≥ 1 | UC1.1
+so_luong_kha_dung | INTEGER | CHECK ≥ 0 | UC2.2
+so_luong_giu_cho | INTEGER | DEFAULT 0 | UC3.4
+so_luong_da_phan_phoi | INTEGER | DEFAULT 0 | Dynamic Model UC4.1
+dia_diem | VARCHAR(255) | NOT NULL | UC1.1
+hinh_thuc_chia_se | VARCHAR(30) | NOT NULL | UC1.1
+hinh_thuc_trao_doi | VARCHAR(30) | NULL | UC1.1
+trang_thai | VARCHAR(30) | NOT NULL | State Machine
+ngay_tao | TIMESTAMP | NOT NULL | UC1.1
+ngay_cap_nhat | TIMESTAMP | NOT NULL | UC1.2
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+hinh_anh_id | UUID | PK | Mã kỹ thuật
+bai_dang_id | UUID | FK, NOT NULL | Quan hệ hợp thành
+duong_dan_anh | VARCHAR(500) | NOT NULL | UC1.1
+thu_tu_hien_thi | INTEGER | NOT NULL | Static Model
+ngay_tai_len | TIMESTAMP | NOT NULL | Static Model
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+de_xuat_id | UUID | PK | Mã kỹ thuật
+bai_dang_id | UUID | FK, NOT NULL | UC2.3
+nguoi_gui_id | UUID | FK, NOT NULL | UC2.3
+so_luong_yeu_cau | INTEGER | CHECK > 0 | UC2.3
+loi_nhan | TEXT | NULL | UC2.3
+tai_san_doi_ung | TEXT | NULL | UC2.3
+tien_doi_ung | DECIMAL(18,2) | NULL | UC2.3
+trang_thai | VARCHAR(30) | NOT NULL | State Machine
+ly_do_tu_choi | TEXT | NULL | UC3.2
+ngay_gui | TIMESTAMP | NOT NULL | UC2.3
+ngay_cap_nhat | TIMESTAMP | NOT NULL | UC3.2
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+tin_nhan_id | UUID | PK | Mã kỹ thuật
+de_xuat_id | UUID | FK, NOT NULL | UC3.3
+nguoi_gui_id | UUID | FK, NOT NULL | UC3.3
+noi_dung | TEXT | NOT NULL | UC3.3
+trang_thai | VARCHAR(30) | NOT NULL | Static Model
+thoi_gian_gui | TIMESTAMP | NOT NULL | UC3.3
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+giao_dich_id | UUID | PK | Mã kỹ thuật
+de_xuat_id | UUID | FK, UQ, NOT NULL | BRL-016
+nguoi_so_huu_id | UUID | FK, NOT NULL | UC3.4
+nguoi_tiep_nhan_id | UUID | FK, NOT NULL | UC3.4
+so_luong_giao_dich | INTEGER | CHECK > 0 | UC3.4
+thoi_gian_ban_giao | TIMESTAMP | NOT NULL | UC3.4
+dia_diem_ban_giao | VARCHAR(255) | NOT NULL | UC3.4
+xac_nhan_nguoi_so_huu | BOOLEAN | DEFAULT FALSE | UC4.1
+xac_nhan_nguoi_tiep_nhan | BOOLEAN | DEFAULT FALSE | UC4.1
+ly_do_huy | TEXT | NULL | UC4.2
+trang_thai | VARCHAR(40) | NOT NULL | State Machine
+ngay_tao | TIMESTAMP | NOT NULL | UC3.4
+ngay_cap_nhat | TIMESTAMP | NOT NULL | UC4.1, UC4.2
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+danh_gia_id | UUID | PK | Mã kỹ thuật
+giao_dich_id | UUID | FK, NOT NULL | UC6.1
+nguoi_danh_gia_id | UUID | FK, NOT NULL | UC6.1
+nguoi_duoc_danh_gia_id | UUID | FK, NOT NULL | UC6.1
+diem_sao | SMALLINT | CHECK 1–5 | UC6.1
+nhan_xet | TEXT | NULL | UC6.1
+thoi_gian_danh_gia | TIMESTAMP | NOT NULL | UC6.1
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+bao_cao_id | UUID | PK | Mã kỹ thuật
+nguoi_bao_cao_id | UUID | FK, NOT NULL | UC7.1
+nguoi_dung_bi_bao_cao_id | UUID | FK, NULL | UC7.1
+bai_dang_bi_bao_cao_id | UUID | FK, NULL | UC7.1
+loai_bao_cao | VARCHAR(30) | NOT NULL | UC7.1
+ly_do_vi_pham | VARCHAR(50) | NOT NULL | UC7.1
+mo_ta_chi_tiet | TEXT | NOT NULL | UC7.1
+minh_chung | VARCHAR(500) | NULL | UC7.1
+trang_thai_xu_ly | VARCHAR(40) | NOT NULL | State Machine
+ngay_bao_cao | TIMESTAMP | NOT NULL | UC7.1
+ngay_cap_nhat | TIMESTAMP | NOT NULL | UC7.4
+Cột | Kiểu dữ liệu | Khóa/Ràng buộc | Nguồn
+bien_phap_id | UUID | PK | Mã kỹ thuật
+bao_cao_id | UUID | FK, NOT NULL | UC7.4
+quan_tri_vien_id | UUID | FK, NOT NULL | UC7.4
+loai_bien_phap | VARCHAR(40) | NOT NULL | UC7.4
+noi_dung_xu_ly | TEXT | NOT NULL | UC7.4
+thoi_gian_xu_ly | TIMESTAMP | NOT NULL | UC7.4
+Quy tắc | Cách thực hiện | Minh chứng
+Mỗi bản ghi có định danh duy nhất | PK UUID | Yêu cầu ánh xạ lớp thành bảng
+Email không trùng | UNIQUE(email) | UC5.1 ngoại lệ email đã tồn tại
+Số điện thoại không trùng | UNIQUE(so_dien_thoai) | UC5.1
+Một người dùng có một hồ sơ | UNIQUE(nguoi_dung_id) | Quan hệ 1–1
+Một đề xuất tối đa một giao dịch | UNIQUE(de_xuat_id) | BRL-016 và Dynamic Model
+Một bên đánh giá một lần | UNIQUE(giao_dich_id, nguoi_danh_gia_id) | UC6.1
+Quan hệ | Chính sách
+Người dùng đã có dữ liệu nghiệp vụ | Không xóa vật lý; cập nhật trạng thái
+Danh mục đang có bài đăng | Không xóa; chuyển trạng thái ngừng sử dụng
+Bài đăng có đề xuất hoặc giao dịch | Từ chối xóa
+Hình ảnh thuộc bài đăng | Có thể xóa cùng bài đăng khi đủ điều kiện
+Đề xuất đã tạo giao dịch | Không xóa
+Giao dịch và đánh giá | Không xóa để bảo đảm lịch sử
+Báo cáo đã xử lý | Không xóa
+Biện pháp xử lý | Luôn phải tham chiếu báo cáo và quản trị viên
+Dữ liệu | Ràng buộc
+so_luong_tong | ≥ 1
+so_luong_kha_dung | ≥ 0
+so_luong_giu_cho | ≥ 0
+so_luong_yeu_cau | > 0 và không vượt khả dụng
+so_luong_giao_dich | > 0
+diem_sao | Từ 1 đến 5
+tien_doi_ung | ≥ 0
+Người sở hữu và người tiếp nhận | Không được là cùng một người
+Đối tượng báo cáo | Là người dùng hoặc bài đăng
+Mật khẩu | Chỉ lưu dạng hash
+Nghiệp vụ | Quy tắc cập nhật | Nguồn
+Gửi đề xuất | 0 < soLuongYeuCau <= soLuongKhaDung | Dynamic Model 3.6.1
+Chốt thỏa thuận | Kiểm tra số lượng, giữ chỗ và tạo giao dịch trong cùng transaction | Dynamic Model 3.6.2–3.6.3
+Hoàn tất | Chỉ khi cả hai bên xác nhận | Dynamic Model 3.6.4
+Hủy giao dịch | Chỉ khi chưa hoàn tất; giải phóng giữ chỗ | Dynamic Model 3.6.5
+Đánh giá | Chỉ sau khi giao dịch hoàn tất | Dynamic Model 3.6.6
+Xóa bài đăng | Không có đề xuất đang xử lý và giao dịch | Dynamic Model 3.6.7

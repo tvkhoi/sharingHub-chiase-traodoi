@@ -1,0 +1,691 @@
+Giới thiệu tài liệu
+Mục đích hệ thống
+Lý do xây dựng hệ thống
+Trong những năm gần đây, nhu cầu tái sử dụng và tái phân phối tài sản cá nhân ngày càng được nhiều người quan tâm nhằm giảm lãng phí, tiết kiệm chi phí và góp phần bảo vệ môi trường. Tuy nhiên, việc kết nối giữa người có nhu cầu chia sẻ tài sản và người có nhu cầu tiếp nhận vẫn chủ yếu được thực hiện thông qua các nhóm mạng xã hội hoặc các kênh trao đổi không chuyên biệt. Điều này khiến quá trình tìm kiếm thông tin, liên hệ và xác minh độ tin cậy của các bên còn gặp nhiều khó khăn.
+Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân được xây dựng nhằm tạo ra một nền tảng tập trung, hỗ trợ người dùng đăng tải, tìm kiếm và trao đổi tài sản một cách thuận tiện, đồng thời nâng cao tính minh bạch và an toàn trong quá trình giao dịch.
+Vấn đề thực tế hệ thống giải quyết
+Hệ thống hướng đến giải quyết một số vấn đề phổ biến trong hoạt động tái phân phối tài sản hiện nay như: 
+Nhiều bài đăng được tạo từ các tài khoản ẩn danh hoặc chưa được xác thực, khiến người dùng gặp khó khăn trong việc đánh giá mức độ tin cậy của đối tượng giao dịch.
+Thông tin về tài sản trên nhiều bài đăng chưa đầy đủ hoặc thiếu tính nhất quán (mô tả, hình ảnh, tình trạng sử dụng...), làm giảm hiệu quả tìm kiếm và gây khó khăn trong quá trình ra quyết định.
+Việc kết nối và trao đổi giữa người sở hữu tài sản và người có nhu cầu tiếp nhận chủ yếu diễn ra trên các nền tảng mạng xã hội, chưa có quy trình quản lý thống nhất để theo dõi trạng thái giao dịch.
+Thiếu cơ chế đánh giá sau giao dịch và tiếp nhận, xử lý các báo cáo vi phạm, dẫn đến việc xây dựng môi trường giao dịch minh bạch và đáng tin cậy còn gặp nhiều hạn chế.
+Giá trị và lợi ích
+Đối với người dùng, hệ thống giúp rút ngắn thời gian tìm kiếm tài sản, hỗ trợ kết nối nhanh giữa người sở hữu và người có nhu cầu tiếp nhận, đồng thời tăng mức độ tin cậy thông qua chức năng đánh giá và báo cáo vi phạm.
+Đối với tổ chức hoặc đơn vị vận hành, hệ thống cung cấp công cụ quản lý thông tin người dùng, bài đăng và các báo cáo vi phạm, góp phần duy trì môi trường giao dịch minh bạch và nâng cao chất lượng dịch vụ.
+Phạm vi hệ thống
+Tên hệ thống: Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân. 
+Hệ thống bao gồm: 
+Hệ thống cung cấp các chức năng phục vụ toàn bộ quá trình kết nối và giao dịch giữa người sở hữu tài sản và người tiếp nhận tài sản, bao gồm: 
+Quản lý tài khoản người dùng.
+Đăng tải và quản lý tin đăng tài sản.
+Tìm kiếm và xem thông tin tài sản.
+Gửi đề xuất trao đổi và thương lượng giao dịch.
+Xác nhận hoặc hủy giao dịch.
+Theo dõi trạng thái và lịch sử giao dịch.
+Đánh giá đối tác sau giao dịch.
+Báo cáo vi phạm.
+Quản lý và xử lý báo cáo vi phạm đối với quản trị viên.
+Hệ thống không bao gồm: 
+Thanh toán trực tuyến.
+Tích hợp dịch vụ vận chuyển.
+Định vị và theo dõi vị trí giao nhận theo thời gian thực.
+Xác thực danh tính bằng các dịch vụ của bên thứ ba.
+Tích hợp với các hệ thống quản lý bên ngoài.
+Giới hạn và phạm vi hoạt động
+Hệ thống hỗ trợ người dùng thực hiện các bước từ đăng tải tài sản đến hoàn tất giao dịch trên môi trường trực tuyến. Việc bàn giao tài sản được thực hiện trực tiếp giữa các bên và nằm ngoài phạm vi kiểm soát của hệ thống.
+Hệ thống ghi nhận kết quả giao dịch dựa trên thông tin xác nhận từ người dùng và không chịu trách nhiệm xác minh chất lượng hoặc tình trạng thực tế của tài sản được trao đổi.
+Thuật ngữ và tài liệu tham khảo
+Bảng 1.1 Thuật ngữ và tài liệu tham khảo
+Bối cảnh kinh doanh
+Lý do và nhu cầu kinh doanh 
+Lý do tổ chức cần xây dựng hệ thống & Vấn đề kinh doanh hiện tại cần giải quyết.
+Qua quá trình khảo sát người dùng và nghiên cứu các hình thức cho tặng, trao đổi, chuyển nhượng tài sản đang được thực hiện trên mạng xã hội, diễn đàn và các kênh trực tuyến hiện nay, nhóm nhận thấy tồn tại nhiều hạn chế ảnh hưởng đến hiệu quả kết nối và trải nghiệm của người dùng.
+KẾ HOẠCH PHƯƠNG PHÁP KHẢO SÁT QUA GOOGLE FORM
+P1. Thông tin tài sản thiếu chuẩn hóa và không đầy đủ
+Phần lớn các bài đăng hiện nay được tạo theo hình thức tự do, không có khuôn mẫu thống nhất về nội dung. Người đăng thường cung cấp thiếu thông tin quan trọng như tình trạng sử dụng, giá trị tài sản, địa điểm giao nhận hoặc hình ảnh minh họa.
+Từ kết quả khảo sát cho thấy khoảng 52.6% người tham gia gặp khó khăn trong việc đánh giá và lựa chọn tài sản do thông tin đăng tải chưa đầy đủ hoặc thiếu rõ ràng. Dẫn đến:
+Người dùng mất nhiều thời gian tìm hiểu thông tin.
+Tăng số lượng trao đổi không cần thiết để xác minh thông tin.
+Giảm khả năng tìm kiếm và đối sánh tài sản phù hợp.
+Gia tăng nguy cơ hiểu nhầm và tranh chấp trong quá trình giao dịch.    
+P2. Khó khăn trong việc tìm kiếm và kết nối đúng nhu cầu 
+Người dùng phải mất nhiều thời gian tìm kiếm ở các hội nhóm khác nhau mới thấy được sản phẩm phù hợp với nhu cầu của mình.
+Theo kết quả khảo sát: 66,7% người dùng gặp khó khăn trong việc tìm đúng người có nhu cầu, 31,6% người dùng gặp khó khăn trong việc tìm được tài sản phù hợp. Điều này làm:
+Tăng thời gian tìm kiếm.
+Giảm hiệu quả kết nối giữa các bên.
+Làm giảm khả năng hoàn tất giao dịch.
+Khiến người dùng dễ bỏ cuộc trong quá trình tìm kiếm.
+P3. Thiếu cơ chế đánh giá độ tin cậy của người tham gia
+Các nền tảng hiện nay chưa cung cấp đầy đủ công cụ để đánh giá uy tín và mức độ tin cậy của người đăng hoặc người nhận tài sản. Người dùng thường phải tự đánh giá thông qua thông tin cá nhân hoặc lịch sử hoạt động rất hạn chế.
+Từ kết quả khảo sát cho thấy: 50% người dùng lo ngại về độ tin cậy của người đăng, 61,1% người dùng lo ngại khi giao dịch với các đối tượng không rõ danh tính. Những lo lắng này làm:
+Giảm mức độ sẵn sàng tham gia giao dịch.
+Tăng nguy cơ xảy ra gian lận hoặc lừa đảo.
+Làm suy giảm niềm tin vào cộng đồng sử dụng nền tảng.
+P4. Quá trình giao dịch thiếu minh bạch và khó theo dõi
+Hiện nay, việc quản lý trạng thái giao dịch chủ yếu được thực hiện thủ công thông qua tin nhắn hoặc bình luận. Người dùng khó biết được tài sản còn khả dụng hay đã được thỏa thuận với người khác. Theo khảo sát: 33,3% người dùng gặp khó khăn trong việc thống nhất thời gian hoặc địa điểm giao dịch, 11,1% người dùng từng gặp tình trạng đối tác thay đổi ý định hoặc hủy giao dịch vào phút cuối. Điều này dẫn đến:
+Lãng phí thời gian trao đổi.
+Tăng khả năng phát sinh tranh chấp.
+Giảm tỷ lệ giao dịch thành công.
+P5. Hoạt động trao đổi thông tin bị phân tán sau khi tìm được tài sản
+Người dùng thường phải chuyển sang các nền tảng nhắn tin bên ngoài để trao đổi thông tin chi tiết sau khi tìm thấy tài sản phù hợp.
+Khoảng 20% người tham gia khảo sát cho biết họ gặp khó khăn trong việc quản lý và theo dõi các cuộc trao đổi do phải sử dụng nhiều công cụ liên lạc khác nhau. Hệ quả là:
+Thông tin bị phân tán trên nhiều nền tảng.
+Khó theo dõi lịch sử trao đổi.
+Khó đối chiếu khi xảy ra tranh chấp.
+Giảm trải nghiệm sử dụng tổng thể.
+P6. Thiếu công cụ kiểm soát chất lượng nội dung
+Các nền tảng hiện nay thường phụ thuộc nhiều vào việc tự quản lý của cộng đồng, dẫn đến tình trạng xuất hiện các bài đăng không phù hợp, nội dung spam, thông tin sai lệch hoặc lợi dụng hoạt động cho tặng để trục lợi. Điều này ảnh hưởng trực tiếp đến:
+Chất lượng nội dung trên nền tảng.
+Trải nghiệm của người dùng.
+Mức độ tin tưởng đối với hệ thống.
+Cơ hội kinh doanh.
+Bên cạnh các vấn đề đang tồn tại, kết quả khảo sát và xu hướng phát triển xã hội cho thấy nhiều cơ hội để xây dựng một hệ thống hỗ trợ trao đổi tài sản chuyên biệt.
+O1. Nhu cầu trao đổi và tái sử dụng tài sản ngày càng tăng
+Người dùng ngày càng quan tâm đến việc tái sử dụng các sản phẩm còn giá trị nhằm tiết kiệm chi phí và giảm lãng phí tài nguyên. Đây là nền tảng thuận lợi để phát triển một hệ thống kết nối người cho và người nhận tài sản.
+O2. Xu hướng chuyển đổi số trong các hoạt động cộng đồng
+Sự phổ biến của các nền tảng trực tuyến tạo điều kiện thuận lợi để số hóa toàn bộ quy trình đăng tải, tìm kiếm, kết nối và quản lý giao dịch tài sản.
+O3. Các vấn đề về độ tin cậy và thông tin không đầy đủ hiện nay làm người dùng có xu hướng tìm kiếm nền tảng có cơ chế xác thực, đánh giá và quản lý giao dịch rõ ràng hơn, mở ra cơ hội phát triển hệ thống. 
+Phạm vi nghiệp vụ
+Tên lĩnh vực nghiệp vụ
+Hệ thống nền tảng hỗ trợ cho tặng, trao đổi và chuyển nhượng tài sản trực tuyến. 
+Phạm vi các hoạt động nghiệp vụ được hỗ trợ
+Hệ thống được xây dựng nhằm hỗ trợ toàn bộ quá trình kết nối, trao đổi và tái phân phối tài sản giữa các thành viên trong cộng đồng thông qua môi trường trực tuyến. Phạm vi nghiệp vụ của hệ thống bao gồm các hoạt động từ khi người dùng tham gia nền tảng, đăng tải thông tin tài sản, tìm kiếm đối tượng phù hợp, trao đổi thông tin cho đến khi hoàn tất quá trình chuyển giao và đánh giá kết quả giao dịch.
+Trước hết, hệ thống hỗ trợ quản lý thông tin người dùng nhằm tạo lập môi trường hoạt động có kiểm soát và đảm bảo tính xác thực của các thành viên tham gia. Người dùng có thể tạo tài khoản, cập nhật thông tin cá nhân và quản lý hồ sơ của mình trong suốt quá trình sử dụng hệ thống. Việc lưu trữ lịch sử hoạt động cũng được thực hiện nhằm hỗ trợ truy vết và nâng cao mức độ minh bạch.
+Đối với hoạt động quản lý tài sản, hệ thống hỗ trợ người dùng đăng tải, cập nhật và theo dõi thông tin các tài sản được chia sẻ trên nền tảng. Người dùng có thể quản lý danh sách tài sản của mình, điều chỉnh trạng thái hiển thị hoặc ngừng cung cấp tài sản khi cần thiết. Các thông tin liên quan đến tài sản được tổ chức theo cấu trúc thống nhất nhằm tăng khả năng tìm kiếm và tiếp cận thông tin.
+Trong quá trình khai thác hệ thống, người dùng được hỗ trợ tìm kiếm và khám phá các tài sản phù hợp với nhu cầu thông qua nhiều tiêu chí khác nhau. Hệ thống cung cấp cơ chế duyệt danh mục, xem thông tin chi tiết và đề xuất các tài sản có liên quan nhằm nâng cao hiệu quả kết nối giữa các bên.
+Khi phát sinh nhu cầu trao đổi hoặc tiếp nhận tài sản, hệ thống hỗ trợ các bên liên hệ và trao đổi thông tin trực tiếp để thống nhất các điều kiện liên quan đến quá trình chuyển giao. Các tương tác giữa người dùng được lưu trữ nhằm hỗ trợ theo dõi và hạn chế các tranh chấp có thể xảy ra.
+Bên cạnh đó, hệ thống còn hỗ trợ quản lý vòng đời giao dịch từ thời điểm gửi yêu cầu tiếp nhận hoặc trao đổi tài sản đến khi quá trình chuyển giao được xác nhận hoàn tất. Trạng thái giao dịch được cập nhật liên tục nhằm giúp các bên theo dõi tiến độ xử lý và đảm bảo tính minh bạch.
+Ngoài các hoạt động hỗ trợ giao dịch, hệ thống còn hỗ trợ xây dựng môi trường cộng đồng đáng tin cậy thông qua cơ chế đánh giá và phản hồi sau giao dịch. Kết quả đánh giá được sử dụng để hình thành hồ sơ uy tín của người dùng, hỗ trợ các thành viên khác trong việc xác định mức độ tin cậy khi tham gia trao đổi.
+Để duy trì môi trường hoạt động ổn định và an toàn, hệ thống cung cấp các chức năng quản trị và kiểm duyệt nội dung. Hoạt động quản trị bao gồm quản lý người dùng, giám sát nội dung đăng tải, xử lý các phản ánh vi phạm và theo dõi tình trạng vận hành của nền tảng.
+Các chức năng nằm ngoài phạm vi hệ thống
+Hệ thống đóng vai trò là nền tảng trung gian hỗ trợ quản lý thông tin, kết nối người dùng và theo dõi tiến trình giao dịch. Hệ thống không tham gia trực tiếp vào việc vận chuyển, thanh toán hoặc chuyển giao tài sản trong thực tế. Việc giao nhận tài sản được thực hiện ngoài hệ thống. 
+Các giả định liên quan đến phạm vi nghiệp vụ
+Người dùng cung cấp thông tin chính xác và trung thực.
+Người dùng tự chịu trách nhiệm về tài sản đăng tải.
+Các bên tự thỏa thuận về điều kiện trao đổi hoặc chuyển nhượng.
+Hệ thống chỉ đóng vai trò hỗ trợ kết nối, quản lý thông tin và lưu vết hoạt động.
+Tổng quan nghiệp vụ
+Các bên ngoài có liên quan
+Hệ thống phục vụ 2 nhóm tác nhân chính bao gồm:
+End-User: 
+Người chia sẻ tài sản 
+Người tiếp nhận tài sản.
+Admin: Quản trị viên hệ thống.
+Mối quan hệ giữa các bộ phận và thực thể
+Hệ thống đóng vai trò là một nền tảng trung gian khép kín kết nối trực tiếp End-User với nhau để thực hiện giao dịch, đồng thời Admin chịu trách nhiệm kiểm duyệt nội dung và quản trị vận hành để duy trì môi trường hoạt động ổn định, lành mạnh cho End-User.
+Các bên liên quan và môi trường kinh doanh
+Các bên liên quan
+Các bên liên quan (Stakeholder) là cá nhân hoặc nhóm người có lợi ích trong một dự án, doanh nghiệp hoặc tổ chức. Họ có thể bị ảnh hưởng bởi kết quả của một quyết định hoặc hoạt động. Các bên liên quan có thể ở trong công ty (như nhân viên) hoặc bên ngoài (như khách hàng hoặc nhà cung cấp). Họ thường đóng vai trò quan trọng trong sự thành công của một dự án. 
+Bảng 3.1 Mô tả các bên liên quan
+Môi trường kinh doanh
+Pháp lý và quy định liên quan
+Tuân thủ bảo vệ dữ liệu cá nhân
+Hệ thống phải tuân thủ các quy định hiện hành của pháp luật Việt Nam về bảo vệ dữ liệu cá nhân, đặc biệt là: 
+Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân
+Các quy định liên quan đến giao dịch điện tử và an toàn thông tin mạng. 
+	Các yêu cầu tuân thủ bao gồm:
+Thu thập dữ liệu cá nhân trên cơ sở có sự đồng ý của người dùng.
+Chỉ sử dụng dữ liệu đúng mục đích đã công bố.
+Cho phép người dùng cập nhật, chỉnh sửa hoặc yêu cầu xóa thông tin cá nhân.
+Mã hóa và bảo vệ dữ liệu người dùng trong quá trình lưu trữ và truyền tải.
+Không chia sẻ dữ liệu cá nhân cho bên thứ ba khi chưa được sự cho phép của người dùng hoặc không có căn cứ pháp lý phù hợp.
+Tuân thủ an toàn và bảo mật thông tin
+Hệ thống phải áp dụng các biện pháp bảo mật nhằm giảm thiểu nguy cơ truy cập trái phép, thất thoát hoặc lạm dụng dữ liệu. 
+Các nguyên tắc áp dụng: 
+Xác thực tài khoản bằng email hoặc số điện thoại.
+Phân quyền truy cập theo vai trò người dùng.
+Mã hóa mật khẩu bằng thuật toán băm một chiều.
+Ghi nhận nhật ký hoạt động (Audit Log) đối với các thao tác quan trọng.
+Thực hiện sao lưu dữ liệu định kỳ để đảm bảo khả năng phục hồi khi có sự cố.
+Tuân thủ tiêu chuẩn nội dung cộng đồng
+Nhằm xây dựng môi trường giao dịch lành mạnh và đáng tin cậy, hệ thống cần thiết lập các quy tắc kiểm duyệt nội dung như sau: 
+Cấm đăng tải thông tin giả mạo hoặc gây hiểu nhầm về tài sản.
+Cấm các hành vi lừa đảo, spam hoặc quấy rối người dùng khác.
+Cấm đăng tải các tài sản thuộc danh mục bị pháp luật cấm lưu thông hoặc chuyển nhượng.
+Cho phép cộng đồng báo cáo nội dung vi phạm để hỗ trợ quá trình kiểm duyệt.
+Quản trị viên có quyền cảnh báo, khóa bài đăng hoặc đình chỉ tài khoản vi phạm.
+Tuân thủ quy định giao dịch điện tử
+Các giao dịch được thực hiện trên nền tảng phải đảm bảo tính minh bạch và khả năng đối soát. 
+Yêu cầu bao gồm: 
+Lưu trữ lịch sử trao đổi giữa các bên trong phạm vi được pháp luật cho phép.
+Ghi nhận trạng thái giao dịch trong toàn bộ vòng đời xử lý.
+Lưu vết các thay đổi quan trọng liên quan đến tài sản và giao dịch.
+Hỗ trợ cơ chế tiếp nhận và xử lý khiếu nại phát sinh giữa các bên.
+Tuân thủ nguyên tắc phát triển bền vững
+Hệ thống được xây dựng theo định hướng thúc đẩy mô hình kinh tế tuần hoàn và tiêu dùng bền vững.
+Các nguyên tắc thực hiện:
+Khuyến khích tái sử dụng và kéo dài vòng đời tài sản.
+Hạn chế phát sinh rác thải từ các sản phẩm còn giá trị sử dụng.
+Hỗ trợ kết nối giữa cá nhân, tổ chức thiện nguyện và cộng đồng có nhu cầu.
+Tạo ra các chỉ số thống kê về số lượng tài sản được tái phân phối nhằm đánh giá tác động xã hội và môi trường của hệ thống.
+Đối thủ cạnh tranh
+Để xây dựng hệ thống phù hợp với nhu cầu thực tế, nhóm đã nghiên cứu và phân tích một số nền tảng đang được sử dụng phổ biến trong hoạt động cho tặng, trao đổi và chuyển nhượng tài sản, gồm VnShare, Facebook Marketplace và các nhóm cộng đồng trên Facebook, cùng Chợ Tốt. Việc phân tích tập trung vào các tiêu chí như cơ chế xác thực người dùng, quản lý thông tin tài sản, hỗ trợ giao tiếp, quản lý giao dịch và kiểm duyệt nội dung. Chi tiết kết quả được trình bày trong tài liệu “PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Qua quá trình phân tích, nhóm nhận thấy VnShare có quy trình đăng tải đơn giản, phù hợp với hoạt động chia sẻ tài sản nhưng còn thiếu cơ chế đánh giá uy tín người dùng và quản lý giao dịch. Facebook Marketplace và các nhóm Facebook có lượng người dùng lớn, dễ kết nối nhưng thông tin tài sản chưa được chuẩn hóa, việc xác minh người dùng còn hạn chế và chưa hỗ trợ quản lý trạng thái giao dịch. Trong khi đó, Chợ Tốt có dữ liệu được chuẩn hóa, hỗ trợ đánh giá người dùng và trò chuyện trực tiếp, tuy nhiên nền tảng chủ yếu phục vụ hoạt động mua bán nên chưa phù hợp với mô hình cho tặng và trao đổi tài sản.
+Từ kết quả phân tích trên, nhóm xác định hệ thống cần tập trung vào các yêu cầu như chuẩn hóa thông tin tài sản, xây dựng cơ chế xác thực và đánh giá uy tín người dùng, hỗ trợ trao đổi trực tiếp trên hệ thống, quản lý toàn bộ quá trình giao dịch và tăng cường kiểm duyệt nội dung. Đây là cơ sở để xây dựng các yêu cầu nghiệp vụ và các chức năng của hệ thống.
+Cơ cấu tổ chức nghiệp vụ
+Cơ cấu tổ chức của đơn vị sử dụng hệ thống
+Hệ thống được xây dựng nhằm phục vụ hoạt động cho tặng, trao đổi và chuyển nhượng tài sản trong cộng đồng. Trong phạm vi nghiệp vụ của hệ thống, các đối tượng tham gia được tổ chức thành các nhóm vai trò chính bao gồm: người sở hữu tài sản, người tiếp nhận tài sản và quản trị viên hệ thống.
+Mỗi nhóm đối tượng thực hiện các chức năng khác nhau trong quy trình nghiệp vụ, từ việc đăng tải thông tin tài sản, tìm kiếm và tiếp nhận tài sản đến giám sát và quản lý hoạt động của toàn bộ nền tảng.
+Cơ cấu tổ chức nghiệp vụ được mô tả như sau:
+Quản trị viên hệ thống chịu trách nhiệm quản lý và giám sát hoạt động của nền tảng.
+Người sở hữu tài sản thực hiện đăng tải và quản lý thông tin tài sản.
+Người tiếp nhận tài sản tìm kiếm, liên hệ và tham gia giao dịch.
+Các tổ chức cộng đồng hoặc tổ chức từ thiện có thể tham gia với vai trò người sở hữu tài sản hoặc người tiếp nhận tài sản tùy theo nhu cầu thực tế.
+Các vai trò người dùng trong hệ thống
+Người sở hữu tài sản là cá nhân hoặc tổ chức có nhu cầu cho tặng, trao đổi hoặc chuyển nhượng tài sản.
+Nhiệm vụ chính:
+Đăng tải thông tin tài sản.
+Cập nhật thông tin tài sản khi cần thiết.
+Tiếp nhận và phản hồi các yêu cầu từ người quan tâm.
+Thực hiện chuyển giao tài sản.
+Đánh giá kết quả giao dịch sau khi hoàn tất.
+Người tiếp nhận tài sản là cá nhân hoặc tổ chức có nhu cầu tìm kiếm và tiếp nhận tài sản được đăng tải trên hệ thống.
+Nhiệm vụ:
+Tìm kiếm tài sản phù hợp.
+Gửi yêu cầu tiếp nhận hoặc trao đổi tài sản.
+Trao đổi thông tin với người sở hữu tài sản.
+Thực hiện tiếp nhận tài sản.
+Đánh giá kết quả giao dịch sau khi hoàn tất.
+Quản trị viên hệ thống là bộ phận chịu trách nhiệm vận hành và quản lý nền tảng.
+Nhiệm vụ:
+Quản lý tài khoản người dùng.i.
+Tiếp nhận và xử lý báo cáo vi phạm.
+Hỗ trợ người dùng trong quá trình sử dụng.
+Phân quyền và trách nhiệm giữa các vai trò
+Bảng 3.2 Phân quyền và trách nhiệm giữa các vai trò
+Trách nhiệm của người sở hữu tài sản
+Cung cấp thông tin tài sản chính xác và trung thực.
+Cập nhật trạng thái tài sản kịp thời.
+Phối hợp với người tiếp nhận trong quá trình giao dịch.
+Chịu trách nhiệm đối với nội dung đã đăng tải.
+Trách nhiệm của người tiếp nhận tài sản
+Cung cấp thông tin liên hệ chính xác.
+Chỉ gửi yêu cầu đối với các tài sản có nhu cầu thực sự.
+Tuân thủ các thỏa thuận đã thống nhất với người sở hữu tài sản.
+Đánh giá khách quan sau khi giao dịch hoàn tất.
+Trách nhiệm của quản trị viên hệ thống
+Duy trì hoạt động ổn định của hệ thống.
+Đảm bảo việc thực thi các chính sách cộng đồng.
+Kiểm soát nội dung vi phạm và xử lý khiếu nại.
+Bảo vệ dữ liệu và quyền lợi của người dùng.
+Giám sát các chỉ số vận hành và cải tiến chất lượng dịch vụ.
+Mục tiêu và mô hình kinh doanh
+Mục tiêu kinh doanh
+Mục tiêu tổng thể 
+Xây dựng một hệ thống trực tuyến hỗ trợ hoạt động cho tặng, trao đổi và chuyển nhượng tài sản cá nhân theo hướng minh bạch, thuận tiện và hiệu quả, góp phần tăng khả năng kết nối giữa các thành viên trong cộng đồng, thúc đẩy tái sử dụng tài nguyên, giảm lãng phí xã hội và hướng đến mô hình phát triển bền vững.
+Hệ thống được xây dựng nhằm hỗ trợ người dùng giải quyết những khó khăn đang tồn tại trong quá trình luân chuyển tài sản hiện nay như thông tin phân tán, thiếu độ tin cậy, khó quản lý trạng thái giao dịch và hạn chế trong việc kết nối đúng nhu cầu giữa các bên tham gia.
+Các mục tiêu cụ thể
+MT-01. Đảm bảo thông tin tài sản được cung cấp đầy đủ, rõ ràng và có cấu trúc thống nhất nhằm giúp người dùng dễ dàng tìm kiếm, đánh giá và đưa ra quyết định phù hợp. Mong muốn:
+Giảm tình trạng bài đăng thiếu thông tin.
+Tăng khả năng tìm kiếm và đối sánh tài sản.
+Hạn chế hiểu nhầm trong quá trình giao dịch.
+MT-02. Rút ngắn thời gian tìm kiếm và tăng khả năng kết nối giữa người sở hữu tài sản với người có nhu cầu tiếp nhận hoặc trao đổi tài sản. Mong muốn: 
+Giảm thời gian tìm kiếm đối tượng phù hợp.
+Tăng số lượng kết nối thành công giữa các bên.
+Nâng cao tỷ lệ hoàn tất giao dịch.
+MT-03. Xây dựng môi trường giao dịch minh bạch, an toàn và đáng tin cậy thông qua các cơ chế xác thực, đánh giá và lưu trữ lịch sử hoạt động. Mong muốn làm:
+Tăng mức độ tin tưởng của người dùng.
+Giảm nguy cơ gian lận hoặc lừa đảo.
+Hình thành hồ sơ uy tín cho người tham gia.
+MT-04. Hỗ trợ quản lý và theo dõi toàn bộ quá trình giao dịch từ khi đăng tải tài sản đến khi hoàn tất chuyển giao nhằm nâng cao khả năng kiểm soát và giảm các vấn đề phát sinh. Mong muốn:
+Giảm tình trạng giao dịch bị bỏ dở.
+Hỗ trợ theo dõi trạng thái tài sản chính xác.
+Tăng tính minh bạch trong quá trình xử lý giao dịch.
+MT-05. Khuyến khích việc tiếp tục sử dụng các tài sản còn giá trị nhằm kéo dài vòng đời sản phẩm, hạn chế lãng phí và góp phần giảm tác động tiêu cực đến môi trường. Mong muốn:
+Gia tăng số lượng tài sản được tái sử dụng.
+Giảm lượng tài sản bị loại bỏ không cần thiết.
+Hỗ trợ các hoạt động phát triển bền vững và kinh tế tuần hoàn.
+Mô hình kinh doanh
+Cách thức hệ thống tạo ra giá trị
+Hệ thống tạo ra giá trị thông qua việc cung cấp một nền tảng tập trung hỗ trợ kết nối giữa người sở hữu tài sản và người có nhu cầu tiếp nhận tài sản. 
+Giá trị mang lại bao gồm: 
+Chuẩn hóa thông tin tài sản giúp người dùng dễ dàng tìm kiếm, đánh giá và lựa chọn tài sản phù hợp.
+Tăng khả năng kết nối giữa các bên có nhu cầu cho tặng, trao đổi hoặc chuyển nhượng tài sản.
+Nâng cao tính minh bạch và độ tin cậy thông qua cơ chế đánh giá, phản hồi và lưu vết giao dịch.
+Hỗ trợ quản lý toàn bộ quá trình giao dịch từ đăng tải, tìm kiếm, kết nối đến xác nhận hoàn tất.
+Thúc đẩy tái sử dụng tài sản còn giá trị sử dụng, góp phần giảm lãng phí nguồn lực xã hội và bảo vệ môi trường.
+Xây dựng cộng đồng chia sẻ tài nguyên dựa trên sự hợp tác và hỗ trợ lẫn nhau.
+Các dịch vụ mà hệ thống cung cấp
+Hệ thống cung cấp các nhóm dịch vụ chính sau: 
+DV01. Chia sẻ thông tin tài sản
+Đăng tải thông tin tài sản.
+Chỉnh sửa và cập nhật thông tin tài sản.
+Quản lý trạng thái tài sản.
+Theo dõi danh sách tài sản cá nhân.
+DV02. Tiếp cận tài sản
+Tìm kiếm theo từ khóa, danh mục hoặc nhu cầu.
+Xem thông tin chi tiết tài sản.
+Khám phá các tài sản phù hợp.
+DV03. Thương lượng giao dịch
+Gửi yêu cầu tiếp nhận hoặc trao đổi tài sản.
+Trao đổi thông tin giữa các bên.
+Theo dõi các cuộc trao đổi.
+DV04. Thực hiện giao dịch
+Theo dõi trạng thái giao dịch.
+Xác nhận hoàn tất giao dịch.
+Lưu trữ lịch sử giao dịch.
+DV05. Đánh giá giao dịch
+Đánh giá người dùng sau giao dịch.
+Ghi nhận phản hồi cộng đồng.
+Xây dựng hồ sơ uy tín thành viên.
+DV06. Đảm bảo an toàn cộng đồng
+Quản lý người dùng.
+Xử lý báo cáo vi phạm.
+Theo dõi hoạt động hệ thống.
+DV07. Xây dựng hồ sơ thành viên
+Đăng ký và đăng nhập tài khoản.
+Quản lý hồ sơ cá nhân.
+Quản lý thông tin liên hệ.
+Theo dõi lịch sử hoạt động.
+Yêu cầu nghiệp vụ (Business Requirements)
+Business Process.
+BP01. Chia sẻ thông tin tài sản
+Bảng 5.1. BP01. Chia sẻ thông tin tài sản
+BP02. Tìm kiếm và tiếp cận tài sản
+Bảng 5.2 Tìm kiếm và tiếp cận tài sản
+BP03. Thương lượng giao dịch
+Bảng 5.3. Thương lượng giao dịch
+BP04. Thực hiện giao dịch
+Bảng 5.4 Thực hiện giao dịch
+BP05. Xây dựng hồ sơ thành viên
+Bảng 5.5 Xây dựng hồ sơ thành viên 
+BP06. Đánh giá giao dịch
+Bảng 5.6 Đánh giá giao dịch
+BP07. Đảm bảo an toàn cộng đồng
+Bảng 5.7 Đảm bảo an toàn cộng đồng
+Ma trận truy vết Business Process – Business Use Case 
+Bảng 5.8 Ma trận truy vết Business Process – Business Use Case
+Danh sách Business Use Cases (BUC)
+Danh sách Business Use Cases theo mức độ ưu tiên:
+BIÊN BẢN ĐÁNH GIÁ MỨC ĐỘ ƯU TIÊN BUSINESS USE CASE
+BUC01. Chia sẻ thông tin tài sản 
+BUC02. Tiếp cận tài sản 
+BUC03. Thương lượng giao dịch 
+BUC04. Thực hiện giao dịch 
+BUC05. Xây dựng hồ sơ thành viên 
+BUC06. Đánh giá giao dịch 
+BUC07. Đảm bảo an toàn cộng đồng 
+Business Use Case Diagram 
+   Hình 5.1 Sơ đồ tổng quát Business Use Case Diagram
+Đặc tả Business Use Cases
+BUC01. Chia sẻ thông tin tài sản 
+Bảng 5.8 Chia sẻ thông tin tài sản
+Hình 5.2. Sơ đồ Activity diagram Chia sẻ thông tin tài sản
+BUC02. Tiếp cận tài sản  
+Bảng 5.9 Tiếp cận tài sản
+Hình 5.3 Sơ đồ Activity dìgram Tiếp cận tài sản
+BUC03. Thương lượng giao dịch 
+Bảng 5.10 Thương lượng giao dịch
+Hình 5.4 Sơ đồ Activity diagram Thương lượng giao dịch 
+BUC04. Thực hiện giao dịch 
+Bảng 5.11 Thực hiện giao dịch
+Hình 5.5 Sơ đồ Activity diagram Thương lượng giao dịch
+BUC05. Xây dựng hồ sơ thành viên
+Bảng 5.12 Xây dựng hồ sơ thành viên
+Hình 5.6 Sơ đồ Activity diagram Xây dựng hồ sơ thành viên
+BUC06. Đánh giá giao dịch 
+Bảng 5.13 Đánh giá giao dịch
+Hình 5.7 Sơ đồ Activity diagram Đánh giá giao dịch
+BUC07. Đảm bảo an toàn cộng đồng 
+Bảng 5.14 Đảm bảo an toàn cộng đồng
+Hình 5.8 Sơ đồ Activity diagram Đảm bảo an toàn cộng đồng
+Quy tắc nghiệp vụ
+Mục đích
+Quy tắc nghiệp vụ được xây dựng nhằm xác định các ràng buộc, điều kiện và nguyên tắc xử lý trong quá trình người dùng tham gia chia sẻ, tìm kiếm, thương lượng, giao dịch, đánh giá và báo cáo vi phạm trên nền tảng. Các quy tắc này giúp đảm bảo hoạt động của hệ thống minh bạch, an toàn và phù hợp với mục tiêu tái phân phối tài sản cá nhân.
+Danh sách quy tắc nghiệp vụ
+Bảng 6.1 Danh sách quy tắc nghiệp vụ
+Ma trận liên kết Business Rules với Business Use Case
+Bảng 6.3 Ma trận liên kết Business Rules với Business Use Case
+Yêu cầu vận hành
+Ràng buộc nghiệp vụ
+Ràng buộc về thời gian xử lý: Mã xác thực OTP qua Email/SMS có hiệu lực trong vòng 60 giây. Các yêu cầu đàm phán tài sản nếu không được phản hồi trong vòng 48 giờ sẽ tự động bị hủy bỏ.
+Ràng buộc về pháp lý và quy định: Toàn bộ dữ liệu định danh cá nhân phải được thu thập dưới sự đồng ý (Consent) của người dùng, tuân thủ Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân.
+Ràng buộc trong quá trình vận hành hệ thống: Quản trị viên phải xử lý các báo cáo vi phạm (Report) từ cộng đồng trong thời gian tối đa 24 giờ kể từ lúc tiếp nhận.
+Chế độ vận hành hệ thống
+Chế độ hoạt động bình thường: Hệ thống vận hành 24/7, cung cấp đầy đủ các tính năng cho toàn bộ End-User và Admin.
+Chế độ hoạt động khi tải cao: Khi lượng truy cập vượt ngưỡng 80% tài nguyên máy chủ, hệ thống tạm thời vô hiệu hóa tính năng làm mới (refresh) liên tục trên bảng tin để ưu tiên tài nguyên cho các luồng thanh toán/xác nhận giao dịch đang diễn ra.
+Chế độ dự phòng khi xảy ra sự cố: Nếu máy chủ chính gặp sự cố, hệ thống tự động chuyển sang cơ sở dữ liệu dự phòng (Failover), đảm bảo dữ liệu giao dịch không bị thất thoát.
+cầu chất lượng nghiệp vụ
+Hiệu quả hoạt động của hệ thống: Tốc độ phản hồi của các API đầu cuối phải đạt chuẩn (dưới 500ms đối với các tác vụ tìm kiếm, tải trang).
+Độ tin cậy trong quá trình vận hành: Đảm bảo thời gian hoạt động (Uptime) đạt 99.9% mỗi tháng. Quá trình kiểm thử phần mềm phải kiểm soát chặt chẽ để không lọt lỗi (bug leakage) ở các luồng chức năng quan trọng (P01 - P05) trước khi phát hành.
+Mức độ an toàn và bảo mật: Toàn bộ giao tiếp dữ liệu phải được mã hóa qua giao thức HTTPS. Mật khẩu lưu trong cơ sở dữ liệu phải được băm một chiều (Hash).
+Trải nghiệm và mức độ hài lòng của người dùng: Giao diện trực quan, luồng thao tác ngắn gọn sao cho người dùng mới có thể đăng tải tài sản thành công không quá 5 cú nhấp chuột.
+Môi trường thông tin và bối cảnh hệ thống
+Môi trường thông tin
+Các hệ thống thông tin liên quan: Nền tảng cần tích hợp API với các dịch vụ bên thứ ba bao gồm: Cổng gửi SMS/Email tự động (dùng cho xác thực định danh).
+Chính sách quản lý dữ liệu: Dữ liệu được lưu trữ tập trung trên nền tảng điện toán đám mây. Dữ liệu giao dịch được lưu trữ vĩnh viễn nhằm mục đích đối soát; hình ảnh tài sản sau khi hoàn tất giao dịch 6 tháng sẽ được nén lại hoặc xóa bỏ để tối ưu dung lượng.
+Hạ tầng thông tin của tổ chức: Đội ngũ quản trị thao tác trên một trang web Admin Dashboard nội bộ, tách biệt hoàn toàn với môi trường mạng của người dùng cuối.
+Khái niệm vận hành hệ thống ở mức cao
+Mô tả tổng quan về hệ thống: Ứng dụng hoạt động theo mô hình Client-Server. Hệ thống cung cấp hai môi trường tách biệt: Ứng dụng dành cho người dùng cuối (trên nền tảng Web hoặc App) để tương tác cộng đồng, và Công cụ quản trị dành cho Admin để kiểm soát nền tảng.
+Các nhóm người dùng sử dụng hệ thống: Đã định nghĩa tại mục 5 (Người sở hữu, Người tiếp nhận, Admin).
+Môi trường vận hành của hệ thống: Máy chủ lưu trữ đám mây (Cloud Server) hoạt động trên môi trường Internet toàn cầu.
+Kịch bản vận hành nghiệp vụ
+Kịch bản người dùng đăng sản phẩm: Người dùng đăng nhập thành công -> Nhấn nút "Đăng tài sản" -> Nhập tên, mô tả, tải ảnh và chọn hình thức (cho tặng/trao đổi) -> Hệ thống rà soát từ khóa cấm -> Đăng tải thành công lên bảng tin cộng đồng.
+Kịch bản người dùng trao đổi tài sản: Người dùng A tìm thấy tài sản của B -> A gửi yêu cầu trao đổi (kèm lời nhắn) -> B nhận thông báo và chấp nhận -> A và B trò chuyện để chốt lịch hẹn -> Gặp mặt bàn giao ngoài đời -> Cả hai bấm xác nhận hoàn tất trên ứng dụng.
+Kịch bản quản trị viên kiểm duyệt nội dung: Quản trị viên theo dõi bảng điều khiển -> Nhận cảnh báo một bài đăng bị 3 người dùng khác báo cáo lừa đảo -> Quản trị viên xem xét bằng chứng -> Bấm nút khóa bài đăng và đình chỉ tài khoản vi phạm -> Hệ thống gửi email thông báo lý do khóa cho người dùng đó.
+Vòng đời hệ thống và ràng buộc dự án
+Vòng đời hệ thống
+Giai đoạn phát triển hệ thống: Thu thập yêu cầu (BRD), thiết kế hệ thống, lập trình cơ sở dữ liệu và tích hợp API.
+Giai đoạn kiểm thử và triển khai: Tiến hành viết Test Case, kiểm thử tính năng, rà soát hiệu năng hệ thống để nghiệm thu trước khi đưa lên môi trường thật (Go-live).
+Giai đoạn vận hành hệ thống: Hỗ trợ người dùng, thu thập dữ liệu hành vi cộng đồng và giám sát sự ổn định của máy chủ.
+Giai đoạn bảo trì hệ thống: Cập nhật các bản vá lỗi (nếu có) và nâng cấp phiên bản định kỳ hàng quý.
+Giai đoạn kết thúc và ngừng hệ thống: Trích xuất và sao lưu toàn bộ dữ liệu người dùng, xóa bỏ dữ liệu trên máy chủ và chính thức đóng máy chủ vận hành.
+Ràng buộc dự án
+Ràng buộc về thời gian thực hiện: Thời gian tối đa để hoàn thiện phiên bản thử nghiệm khả thi (MVP) phục vụ cho quá trình đánh giá thị trường là 3 đến 4 tháng.
+Ràng buộc về ngân sách: Chi phí phát triển, kiểm thử, thuê máy chủ và các dịch vụ API bên thứ ba phải nằm trong hạn mức ngân sách đã được Ban Giám đốc phê duyệt ban đầu.
+Ràng buộc về nhân lực: Dự án cần đảm bảo đủ các vị trí nòng cốt bao gồm Product Owner, Lập trình viên (Backend/Frontend), Kỹ sư Đảm bảo Chất lượng (QA/Tester) và Thiết kế UI/UX.
+Ràng buộc về công nghệ sử dụng: Ưu tiên sử dụng các framework mã nguồn mở phổ biến, đảm bảo tính dễ bảo trì và mở rộng trong tương lai. Kiến trúc hệ thống phải được thiết kế dạng chuẩn RESTful API để dễ dàng tích hợp và mở rộng đa nền tảng (Web, Mobile App) sau này.
+STT | Thuật ngữ | Giải thích
+1 | BRD (Business Requirements Document) | Tài liệu mô tả các yêu cầu nghiệp vụ của dự án, làm cơ sở cho việc phân tích, thiết kế và phát triển hệ thống.
+2 | Business Process (BP) | Quy trình nghiệp vụ ở mức tổng quan, mô tả các hoạt động chính của doanh nghiệp nhằm đạt được mục tiêu kinh doanh.
+3 | Business Use Case (BUC) | Mô tả chi tiết cách các bên liên quan thực hiện một quy trình nghiệp vụ để đạt được mục tiêu cụ thể.
+4 | Business Rule (BRL) | Quy tắc nghiệp vụ quy định các điều kiện, ràng buộc và chính sách phải được tuân thủ trong quá trình thực hiện nghiệp vụ.
+Mã | Đối tượng | Mô tả / Định nghĩa | Vai trò | Mối quan tâm
+SH01 | Người sở hữu tài sản | Cá nhân hoặc tổ chức có nhu cầu cho tặng, trao đổi hoặc chuyển nhượng tài sản thông qua nền tảng. | - Đăng tải thông tin tài sản.
+- Tìm kiếm được người phù hợp.
+- Cập nhật trạng thái tài sản.
+- Trao đổi thông tin với người quan tâm.
+- Thực hiện quá trình chuyển giao tài sản. | - Dễ dàng đăng tải tài sản.
+
+- Tiếp cận đúng đối tượng có nhu cầu.
+- Đảm bảo an toàn khi giao dịch.
+- Giảm thời gian tìm kiếm người nhận phù hợp.
+SH02 | Người có nhu cầu tiếp nhận tài sản | Cá nhân hoặc tổ chức có nhu cầu nhận tặng, trao đổi hoặc mua lại tài sản. | - Tìm kiếm tài sản.Liên hệ với người sở hữu.
+- Tham gia quá trình giao dịch.
+- Đánh giá trải nghiệm sau giao dịch. | - Tìm được tài sản phù hợp.
+- Tiếp cận thông tin minh bạch.
+
+- Đảm bảo độ tin cậy của người đăng.
+
+- Tiết kiệm thời gian tìm kiếm.
+SH03 | Quản trị viên hệ thống | Cá nhân hoặc bộ phận chịu trách nhiệm vận hành và quản lý nền tảng. | - Quản lý người dùng.
+- Kiểm duyệt nội dung.
+- Xử lý vi phạm.
+- Theo dõi hiệu suất hoạt động của hệ thống. | - Duy trì môi trường hoạt động lành mạnh.
+- Kiểm soát nội dung vi phạm.
+- Đảm bảo hệ thống vận hành ổn định.
+- Theo dõi các chỉ số hoạt động của nền tảng.
+Nghiệp vụ | Người sở hữu tài sản | Người tiếp nhận tài sản | Admin
+Quản lý tài khoản | Đăng ký, đăng nhập, cập nhật hồ sơ cá nhân | Đăng ký, đăng nhập, cập nhật hồ sơ cá nhân | Quản lý tài khoản người dùng, khóa/mở khóa tài khoản
+Đăng tải tài sản | Tạo mới bài đăng tài sản |  | Kiểm duyệt bài đăng khi cần thiết
+Quản lý tài sản | Chỉnh sửa, cập nhật trạng thái, xoá tài sản |  | Gỡ bỏ hoặc khóa bài đăng vi phạm
+Tìm kiếm & xem tài sản | Tìm kiếm và xem thông tin tài sản trên hệ thống | Tìm kiếm và xem thông tin tài sản trên hệ thống | Theo dõi danh sách tài sản trên hệ thống
+Gửi yêu cầu giao dịch | Tiếp nhận và phản hồi yêu cầu từ người dùng khác | Gửi yêu cầu nhận tặng hoặc trao đổi tài sản | Theo dõi trạng thái xử lý khi cần
+Trao đổi thông tin | Tham gia trao đổi, thỏa thuận điều kiện giao dịch | Tham gia trao đổi, thỏa thuận điều kiện giao dịch | Không tham gia nội dung trao đổi, chỉ hỗ trợ xử lý khiếu nại
+Quản lý giao dịch | Cập nhật và xác nhận hoàn tất giao dịch | Theo dõi và xác nhận hoàn tất giao dịch | Theo dõi lịch sử giao dịch và xử lý tranh chấp
+Đánh giá uy tín | Đánh giá đối tác sau giao dịch | Đánh giá đối tác sau giao dịch | Quản lý và giám sát hệ thống đánh giá
+Báo cáo vi phạm | Gửi báo cáo nội dung hoặc người dùng vi phạm | Gửi báo cáo nội dung hoặc người dùng vi phạm | Tiếp nhận và xử lý
+Quản trị hệ thống |  |  | Quản lý người dùng, dữ liệu, danh mục và hoạt động hệ thống
+Thuộc tính | Nội dung
+Tên quy trình | BP01. Chia sẻ thông tin tài sản
+Mục 5.1 PHƯƠNG PHÁP QUAN SÁT
+Mục tiêu | Chuẩn hóa việc công bố thông tin tài sản để người sở hữu có thể chia sẻ, cho tặng hoặc trao đổi tài sản với cộng đồng.
+Tác nhân | Người sở hữu tài sản
+Trigger | Người sở hữu có tài sản không còn nhu cầu sử dụng và muốn chia sẻ.
+Điều kiện bắt đầu | Người sở hữu có tài sản còn giá trị sử dụng và có nhu cầu công bố thông tin.
+Điều kiện kết thúc | Thông tin tài sản được công bố để cộng đồng có thể tiếp cận.
+Đầu vào | Tên tài sản, tình trạng, hình ảnh, địa điểm, số lượng, hình thức chia sẻ.
+Đầu ra | Bài đăng tài sản được công bố.
+Mô tả chi tiết | 1. Người sở hữu chuẩn bị thông tin tài sản.
+2. Người sở hữu xác định hình thức chia sẻ: cho tặng hoặc trao đổi.
+3. Người sở hữu công bố thông tin tài sản đến cộng đồng.
+Luồng thay thế | Người sở hữu bổ sung hoặc điều chỉnh thông tin trước khi công bố.
+Luồng ngoại lệ | Thông tin tài sản thiếu, sai lệch hoặc không đủ cơ sở để người khác đánh giá.
+Thuộc tính | Nội dung
+Tên quy trình | BP02. Tìm kiếm và tiếp cận tài sản
+Mục 5.2 PHƯƠNG PHÁP QUAN SÁT
+Mục tiêu | Giúp người có nhu cầu tìm kiếm, tiếp cận và lựa chọn tài sản phù hợp.
+Tác nhân | Người tiếp nhận tài sản
+Trigger | Người dùng phát sinh nhu cầu tìm kiếm tài sản.
+Điều kiện bắt đầu | Có các tài sản được công bố trong cộng đồng.
+Điều kiện kết thúc | Người dùng lựa chọn được tài sản quan tâm hoặc kết thúc tìm kiếm.
+Đầu vào | Nhu cầu tìm kiếm, từ khóa, danh mục, khu vực, tình trạng tài sản.
+Đầu ra | Tài sản phù hợp được lựa chọn để tiếp tục liên hệ hoặc gửi đề xuất.
+Mô tả chi tiết | 1. Người tiếp nhận xác định nhu cầu.
+2. Người tiếp nhận tìm kiếm tài sản theo tiêu chí.
+3. Người tiếp nhận xem và đánh giá thông tin tài sản.
+4. Người tiếp nhận lựa chọn tài sản phù hợp.
+Luồng thay thế | Người tiếp nhận thay đổi tiêu chí tìm kiếm hoặc tiếp tục tìm ở danh mục khác.
+Luồng ngoại lệ | Không tìm thấy tài sản phù hợp hoặc tài sản không còn khả dụng.
+Thuộc tính | Nội dung
+Tên quy trình | BP03. Thương lượng giao dịch
+Mục 5.3 PHƯƠNG PHÁP QUAN SÁT
+Mục tiêu | Giúp người sở hữu và người tiếp nhận trao đổi để thống nhất điều kiện chuyển giao tài sản.
+Tác nhân | Người sở hữu tài sản, Người tiếp nhận tài sản
+Trigger | Người tiếp nhận quan tâm đến một tài sản và muốn trao đổi với người sở hữu.
+Điều kiện bắt đầu | Người tiếp nhận đã lựa chọn được tài sản phù hợp.
+Điều kiện kết thúc | Hai bên đạt được thỏa thuận hoặc dừng thương lượng.
+Đầu vào | Thông tin tài sản, nhu cầu tiếp nhận, điều kiện trao đổi, thời gian và địa điểm dự kiến.
+Đầu ra | Thỏa thuận giao dịch hoặc kết quả từ chối/hủy thương lượng.
+Mô tả chi tiết | 1. Người tiếp nhận gửi đề xuất hoặc liên hệ với người sở hữu.
+2. Hai bên trao đổi về tình trạng tài sản, hình thức giao dịch, thời gian và địa điểm.
+3. Hai bên thống nhất hoặc từ chối giao dịch.
+Luồng thay thế | Hai bên điều chỉnh điều kiện trao đổi trước khi thống nhất.
+Luồng ngoại lệ | Một bên không phản hồi, từ chối hoặc không đạt được thống nhất.
+Thuộc tính | Nội dung
+Tên quy trình | BP04. Thực hiện giao dịch
+Mục 2.3 PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Mục tiêu | Đảm bảo việc chuyển giao tài sản được thực hiện theo thỏa thuận giữa các bên.
+Tác nhân | Người sở hữu tài sản, Người tiếp nhận tài sản
+Trigger | Hai bên đã thống nhất điều kiện giao dịch.
+Điều kiện bắt đầu | Có thỏa thuận về tài sản, thời gian và địa điểm bàn giao.
+Điều kiện kết thúc | Tài sản được bàn giao thành công hoặc giao dịch bị hủy.
+Đầu vào | Thỏa thuận giao dịch, thông tin tài sản, thời gian và địa điểm bàn giao.
+Đầu ra | Kết quả giao dịch: hoàn tất hoặc hủy.
+Mô tả chi tiết | 1. Hai bên xác nhận lại thời gian và địa điểm bàn giao.
+2. Người sở hữu bàn giao tài sản.
+3. Người tiếp nhận kiểm tra và tiếp nhận tài sản.
+4. Hai bên xác nhận kết quả giao dịch.
+Luồng thay thế | Hai bên thay đổi lịch hẹn hoặc địa điểm bàn giao.
+Luồng ngoại lệ | Một bên không đến, tài sản không đúng mô tả hoặc giao dịch bị hủy.
+Thuộc tính | Nội dung
+Tên quy trình | BP05. Xây dựng hồ sơ thành viên
+Mục 2.3 PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Mục tiêu | Thiết lập và duy trì hồ sơ thành viên nhằm tăng độ tin cậy khi tham gia chia sẻ và giao dịch.
+Tác nhân | Thành viên
+Trigger | Người dùng muốn tham gia cộng đồng hoặc cập nhật thông tin cá nhân.
+Điều kiện bắt đầu | Người dùng có nhu cầu sử dụng nền tảng để chia sẻ hoặc tiếp nhận tài sản.
+Điều kiện kết thúc | Hồ sơ thành viên được thiết lập hoặc cập nhật.
+Đầu vào | Thông tin cá nhân, thông tin liên hệ, ảnh đại diện, khu vực sinh sống.
+Đầu ra | Hồ sơ thành viên phục vụ quá trình giao dịch và đánh giá uy tín.
+Mô tả chi tiết | 1. Thành viên cung cấp thông tin cá nhân.
+2. Thành viên xác minh thông tin liên hệ.
+3. Thành viên hoàn thiện hồ sơ công khai.
+4. Thành viên cập nhật hồ sơ khi có thay đổi.
+Luồng thay thế | Thành viên chỉ cập nhật một phần thông tin hồ sơ.
+Luồng ngoại lệ | Thông tin không hợp lệ, không xác minh được hoặc trùng với tài khoản khác.
+Thuộc tính | Nội dung
+Tên quy trình | BP06. Đánh giá giao dịch
+Mục 2.3 PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Mục tiêu | Ghi nhận phản hồi sau giao dịch nhằm hình thành uy tín thành viên và hỗ trợ cộng đồng lựa chọn đối tác đáng tin cậy.
+Tác nhân | Người sở hữu tài sản, Người tiếp nhận tài sản
+Trigger | Giao dịch đã hoàn tất.
+Điều kiện bắt đầu | Hai bên đã thực hiện xong việc chuyển giao tài sản.
+Điều kiện kết thúc | Kết quả đánh giá được ghi nhận vào hồ sơ uy tín.
+Đầu vào | Điểm đánh giá, nội dung nhận xét, thông tin giao dịch.
+Đầu ra | Uy tín thành viên được hình thành từ kết quả đánh giá.
+Mô tả chi tiết | 1. Hai bên thực hiện đánh giá sau giao dịch.
+2. Hai bên đưa ra nhận xét về quá trình giao dịch.
+3. Kết quả đánh giá trở thành cơ sở tham khảo cho các giao dịch sau.
+Luồng thay thế | Chỉ một bên thực hiện đánh giá.
+Luồng ngoại lệ | Giao dịch chưa hoàn tất hoặc đã được đánh giá trước đó.
+Thuộc tính | Nội dung
+Tên quy trình | BP07. Đảm bảo an toàn cộng đồng
+Mục 2.2 PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Mục tiêu | Tiếp nhận và xử lý phản ánh về nội dung hoặc hành vi vi phạm nhằm duy trì môi trường cộng đồng an toàn, minh bạch.
+Tác nhân | Người dùng, Quản trị viên
+Trigger | Người dùng phát hiện bài đăng hoặc hành vi có dấu hiệu vi phạm.
+Điều kiện bắt đầu | Có báo cáo vi phạm được gửi.
+Điều kiện kết thúc | Báo cáo được xác minh và xử lý.
+Đầu vào | Nội dung báo cáo, đối tượng bị báo cáo, lý do, minh chứng.
+Đầu ra | Kết quả xử lý báo cáo.
+Mô tả chi tiết | 1. Người dùng gửi báo cáo vi phạm.
+2. Quản trị viên tiếp nhận và phân loại báo cáo.
+3. Quản trị viên xác minh nội dung báo cáo.
+4. Quản trị viên đưa ra biện pháp xử lý phù hợp.
+Luồng thay thế | Người dùng bổ sung minh chứng khi báo cáo chưa đủ thông tin.
+Luồng ngoại lệ | Báo cáo không đủ căn cứ hoặc nội dung bị báo cáo không còn tồn tại.
+Business Objective | Business Process | Business Use Case
+MT-01, MT-02 | BP01. Chia sẻ thông tin tài sản | BUC01
+MT-01, MT-02 | BP02. Tiếp cận tài sản | BUC02
+MT-02, MT-03 | BP03. Thương lượng giao dịch | BUC03
+MT-03, MT-04 | BP04. Thực hiện giao dịch | BUC04
+MT-03 | BP05. Xây dựng hồ sơ thành viên | BUC05
+MT-03 | BP06. Đánh giá giao dịch | BUC06
+MT-03, MT-04 | BP07. Đảm bảo an toàn cộng đồng | BUC07
+Tên quy trình | BUC01. Chia sẻ thông tin tài sản
+Mục tiêu | Chuẩn hóa quy trình công bố và quản lý thông tin tài sản nhằm giúp người sở hữu chia sẻ tài sản đến cộng đồng theo hình thức phù hợp, đồng thời tạo điều kiện để người có nhu cầu dễ dàng tìm kiếm, đánh giá và tiếp cận tài sản.
+Tác nhân | Người sở hữu tài sản.
+Trigger | Người sở hữu có nhu cầu chia sẻ một loại tài sản còn giá trị sử dụng đến cộng đồng.
+Điều kiện bắt đầu | Người dùng đã có tài khoản hợp lệ, hồ sơ đã được thiết lập và có tài sản đủ điều kiện để chia sẻ.
+Điều kiện kết thúc | Bài đăng được công bố công khai theo danh mục giao dịch đã lựa chọn và sẵn sàng tiếp nhận đề xuất từ cộng đồng.
+Đầu vào | Tên tài sản, danh mục tài sản, mô tả, tình trạng sử dụng, hình ảnh thực tế, địa điểm giao nhận, số lượng tài sản, danh mục giao dịch (Cho tặng hoặc Trao đổi); nếu chọn Trao đổi, người sở hữu xác định hình thức trao đổi (đồ vật hoặc tiền).
+Đầu ra | Bài đăng chia sẻ tài sản được công bố; tài sản ở trạng thái sẵn sàng tiếp nhận đề xuất; cộng đồng có thể tìm kiếm, xem thông tin và gửi đề xuất giao dịch phù hợp với danh mục đã công bố.
+Luồng chính | Mục 5.1 PHƯƠNG PHÁP QUAN SÁT 
+Bước 1: Người sở hữu chuẩn bị và chuẩn hóa thông tin tài sản, bao gồm tên tài sản, danh mục, mô tả hiện trạng, hình ảnh, địa điểm giao nhận và số lượng tài sản muốn chia sẻ. 
+Bước 2: Người sở hữu lựa chọn danh mục giao dịch cho bài đăng gồm Cho tặng hoặc Trao đổi. Nếu lựa chọn Trao đổi, người sở hữu xác định hình thức trao đổi bằng đồ vật hoặc tiền, đồng thời mô tả các yêu cầu trao đổi (nếu có). 
+Bước 3: Người sở hữu công bố thông tin tài sản đến cộng đồng để những người có nhu cầu có thể tiếp cận và gửi đề xuất giao dịch.
+Luồng thay thế | Bước 2a: Người sở hữu thay đổi danh mục giao dịch trước khi bài đăng được công bố.
+Luồng ngoại lệ | Bước 1e: Thông tin tài sản không đầy đủ hoặc không đáp ứng quy định cộng đồng nên chưa đủ điều kiện để công bố. 
+Bước 2e: Người sở hữu lựa chọn danh mục Trao đổi nhưng không xác định rõ hình thức trao đổi hoặc điều kiện trao đổi.
+Tên quy trình | BUC02. Tiếp cận tài sản
+Mục tiêu | Hỗ trợ người có nhu cầu chủ động tìm kiếm, sàng lọc và tiếp cận chính xác nguồn tài sản phù hợp, tối ưu hóa thời gian và tăng hiệu quả kết nối giữa các bên.
+Tác nhân | Người tiếp nhận tài sản.
+Trigger | Người dùng phát sinh nhu cầu tìm kiếm hoặc tiếp nhận tài sản.
+Điều kiện bắt đầu | Trên hệ thống tồn tại các bài đăng tài sản đang ở trạng thái sẵn sàng chia sẻ.
+Điều kiện kết thúc | Người dùng lựa chọn được tài sản phù hợp và sẵn sàng chuyển sang quy trình thương lượng giao dịch.
+Đầu vào | Từ khóa tìm kiếm, danh mục, khu vực, hình thức chia sẻ, tình trạng tài sản và các tiêu chí tìm kiếm khác.
+Đầu ra | Danh sách tài sản phù hợp; người dùng lựa chọn được tài sản để gửi đề xuất giao dịch.
+Luồng chính | ( Bảng 2.3
+PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH 
+Kết luận INS05
+PHƯƠNG PHÁP KHẢO SÁT QUA GOOGLE FORM)
+Bước 1. Người dùng xác định nhu cầu tiếp nhận tài sản và thiết lập các tiêu chí tìm kiếm. 
+Bước 2. Người dùng tìm kiếm và xem danh sách các tài sản đáp ứng tiêu chí đã lựa chọn. 
+Bước 3. Người dùng xem thông tin chi tiết của từng tài sản để đánh giá mức độ phù hợp, bao gồm tình trạng, hình ảnh, số lượng còn lại và thông tin người sở hữu. 
+Bước 4. Người dùng lựa chọn tài sản phù hợp và quyết định chuyển sang bước gửi đề xuất giao dịch.
+Luồng thay thế | Bước 2a. Người dùng thay đổi hoặc mở rộng tiêu chí tìm kiếm để tìm thêm các tài sản khác. 
+Bước 4a. Người dùng lưu lại bài đăng quan tâm để xem xét sau mà chưa gửi đề xuất giao dịch.
+Ngoại lệ | Bước 2e. Không tìm thấy tài sản phù hợp với tiêu chí tìm kiếm hiện tại. 
+Bước 3e. Tài sản không còn sẵn sàng chia sẻ do đã được phân phối hết hoặc đang trong giao dịch.
+Tên quy trình | BUC03. Thương lượng giao dịch
+Mục tiêu | Chuẩn hóa quy trình tương tác và đàm phán trực tiếp giữa hai bên để đi đến thống nhất các điều khoản chuyển giao tài sản, hạn chế thông tin bị phân tán và giảm tranh chấp.
+Tác nhân | Người sở hữu tài sản, Người tiếp nhận tài sản.
+Trigger | Người tiếp nhận lựa chọn một tài sản phù hợp và quyết định gửi đề xuất giao dịch đến người sở hữu.
+Điều kiện bắt đầu | Người tiếp nhận đã tìm thấy tài sản phù hợp và tài sản đó đang ở trạng thái sẵn sàng giao dịch.
+Điều kiện kết thúc | Hai bên chốt thành công thỏa thuận chuyển giao hoặc chấm dứt thương lượng do không đạt được tiếng nói chung.
+Đầu vào | Thông tin bài đăng, nội dung đề xuất, số lượng tài sản mong muốn, hình thức giao dịch, thông tin tài sản đối ứng (nếu có).
+Đầu ra | Thỏa thuận giao dịch được xác lập hoặc thương lượng bị hủy.
+Luồng chính | Mục 5.3. PHƯƠNG PHÁP QUAN SÁT
+Bước 1. Người tiếp nhận gửi đề xuất giao dịch đến người sở hữu. 
+Bước 2. Người sở hữu xem xét các đề xuất nhận được và lựa chọn đề xuất phù hợp để bắt đầu thương lượng. 
+Bước 3. Hai bên trao đổi và thống nhất các điều kiện chuyển giao như số lượng tài sản, thời gian, địa điểm và các nội dung liên quan. 
+Bước 4. Hai bên xác nhận thỏa thuận giao dịch và chuẩn bị chuyển sang quy trình thực hiện giao dịch.
+Luồng thay thế | Bước 2a. Người sở hữu từ chối đề xuất giao dịch. 
+Bước 3a. Hai bên tiếp tục điều chỉnh các điều kiện cho đến khi đạt được thống nhất.
+Ngoại lệ | Bước 1e. Người tiếp nhận lựa chọn hình thức trao đổi nhưng không có tài sản đối ứng phù hợp. 
+Bước 3e. Một trong hai bên hủy thương lượng trước khi đạt được thỏa thuận.
+Tên quy trình | BUC04. Thực hiện giao dịch
+Mục tiêu | Chuẩn hóa quá trình bàn giao tài sản nhằm đảm bảo việc chuyển giao được thực hiện đúng thỏa thuận và ghi nhận kết quả giao dịch một cách minh bạch.
+Tác nhân | Người sở hữu tài sản, Người tiếp nhận tài sản.
+Trigger | Hai bên đạt được thỏa thuận giao dịch sau quá trình thương lượng và quyết định tiến hành bàn giao tài sản.
+Điều kiện bắt đầu | Hai bên đã thống nhất đầy đủ các điều kiện giao dịch.
+Điều kiện kết thúc | Giao dịch được hoàn tất hoặc bị hủy theo thỏa thuận giữa các bên.
+Đầu vào | Thông tin giao dịch, thông tin tài sản, số lượng tài sản, thời gian và địa điểm bàn giao.
+Đầu ra | Giao dịch được hoàn tất hoặc bị hủy, số lượng tài sản còn lại được cập nhật, bài đăng tiếp tục hoặc kết thúc chia sẻ.
+Luồng chính | Mục 3. PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Bước 1. Hai bên thống nhất thời gian, địa điểm và các điều kiện cuối cùng trước khi bàn giao. 
+Bước 2. Người sở hữu thực hiện bàn giao tài sản, người tiếp nhận kiểm tra và tiếp nhận tài sản theo thỏa thuận.  
+Bước 3. Hai bên xác nhận kết quả bàn giao sau khi việc chuyển giao hoàn tất. 
+Bước 4. Sau khi giao dịch hoàn tất, số lượng tài sản còn lại được cập nhật; nếu vẫn còn tài sản thì quá trình chia sẻ tiếp tục, nếu đã phân phối hết thì kết thúc quá trình chia sẻ.
+Luồng thay thế | Bước 1a. Hai bên thống nhất thay đổi thời gian hoặc địa điểm bàn giao. 
+Bước 4a. Sau giao dịch, bài đăng vẫn tiếp tục chia sẻ do còn số lượng tài sản chưa được phân phối.
+Ngoại lệ | Bước 2e. Một trong hai bên không thể thực hiện bàn giao theo thỏa thuận. 
+Bước 3e. Một trong hai bên hủy giao dịch trước khi hoàn tất việc bàn giao.
+Tên quy trình | BUC05. Xây dựng hồ sơ thành viên
+Mục tiêu | Thiết lập và duy trì hồ sơ thành viên nhằm xác lập danh tính, nâng cao mức độ tin cậy và tạo nền tảng cho việc tham gia các hoạt động chia sẻ, giao dịch trong cộng đồng.
+Tác nhân | Người dùng có nhu cầu tham gia hệ thống (Người sở hữu/Người tiếp nhận).
+Trigger | Người dùng đăng ký tham gia hệ thống hoặc có nhu cầu cập nhật hồ sơ cá nhân.
+Điều kiện bắt đầu | Người dùng mong muốn tham gia hoặc tiếp tục sử dụng hệ thống.
+Điều kiện kết thúc | Hồ sơ thành viên được thiết lập đầy đủ và sẵn sàng tham gia các hoạt động trên hệ thống.
+Đầu vào | Họ tên, email hoặc số điện thoại, ảnh đại diện, khu vực sinh sống, thông tin giới thiệu bản thân.
+Đầu ra | Hồ sơ thành viên được thiết lập hoặc cập nhật; thành viên đủ điều kiện tham gia chia sẻ và giao dịch.
+Luồng chính | Bước 1. Người dùng cung cấp các thông tin cơ bản để xác lập danh tính và tạo hồ sơ thành viên. 
+Bảng 2.3
+ PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH 
+ Mục 1 Phần VIII. Kết luận
+PHƯƠNG PHÁP KHẢO SÁT QUA GOOGLE FORM  )
+Bước 2. Người dùng xác minh thông tin liên lạc nhằm đảm bảo tính chính xác của hồ sơ. 
+Bước 3. Người dùng bổ sung thông tin công khai như ảnh đại diện, khu vực sinh sống và thông tin giới thiệu để nâng cao mức độ tin cậy.  
+Bước 4. Trong quá trình sử dụng hệ thống, thành viên cập nhật hồ sơ khi có thay đổi nhằm đảm bảo thông tin luôn phản ánh đúng thực tế.
+Luồng thay thế | Bước 4a. Thành viên chỉ cập nhật một phần thông tin hồ sơ mà không thay đổi các thông tin còn lại.
+Ngoại lệ | Bước 2e.  Thông tin liên hệ đã được sử dụng bởi tài khoản khác. Người dùng không hoàn thành việc xác minh thông tin nên chưa đủ điều kiện tham gia giao dịch.
+Tên quy trình | BUC06. Đánh giá giao dịch
+Mục tiêu | Ghi nhận các đánh giá và phản hồi sau giao dịch nhằm xây dựng uy tín của thành viên, đồng thời nâng cao chất lượng các giao dịch trong cộng đồng.
+Tác nhân | Người sở hữu tài sản, Người tiếp nhận tài sản.
+Trigger | Hai bên đã hoàn tất giao dịch và có nhu cầu đánh giá lẫn nhau.
+Điều kiện bắt đầu | Giao dịch đã được cả hai bên xác nhận hoàn tất.
+Điều kiện kết thúc | Kết quả đánh giá được ghi nhận và bổ sung vào hồ sơ uy tín của thành viên.
+Đầu vào | Thông tin giao dịch, điểm đánh giá, nội dung nhận xét.
+Đầu ra | Đánh giá được ghi nhận, hồ sơ uy tín của các bên được cập nhật.
+Mô tả chi tiết | ( Hình 3.1. Hệ thống đánh giá người dùng bằng sao (Rating) và tỷ lệ phản hồi trên Chợ Tốt.
+PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH )
+Bước 1. Sau khi giao dịch hoàn tất, người sở hữu và người tiếp nhận có quyền đánh giá lẫn nhau. 
+Bước 2. Mỗi bên thực hiện chấm điểm và đưa ra nhận xét về quá trình giao dịch, mức độ trung thực của thông tin tài sản và việc thực hiện các cam kết. 
+Bước 3. Kết quả đánh giá được ghi nhận vào hồ sơ uy tín của thành viên để cộng đồng tham khảo trong các giao dịch tiếp theo.
+Luồng chính | Bước 1a. Một hoặc cả hai bên lựa chọn không thực hiện đánh giá sau giao dịch.
+Ngoại lệ | Bước 2e. Giao dịch chưa được xác nhận hoàn tất nên không đủ điều kiện đánh giá. 
+Bước 3e. Thành viên đã gửi đánh giá cho giao dịch này trước đó.
+Tên quy trình | BUC07. Đảm bảo an toàn cộng đồng
+Mục tiêu | Tiếp nhận, xác minh và xử lý các phản ánh về hành vi hoặc nội dung vi phạm nhằm bảo vệ quyền lợi của người dùng và duy trì môi trường chia sẻ tài sản an toàn, minh bạch.
+Tác nhân | Quản trị viên hệ thống (Admin), Người dùng phát hiện vi phạm.
+Trigger | Người dùng phát hiện bài đăng hoặc hành vi có dấu hiệu vi phạm và gửi báo cáo đến quản trị viên.
+Điều kiện bắt đầu | Có báo cáo vi phạm được gửi đến quản trị viên.
+Điều kiện kết thúc | Báo cáo được xác minh và áp dụng biện pháp xử lý phù hợp theo quy định cộng đồng.
+Đầu vào | Thông tin báo cáo, đối tượng bị báo cáo, lý do báo cáo, minh chứng (nếu có).
+Đầu ra | Báo cáo được xử lý, kết quả xử lý được thông báo đến các bên liên quan.
+Luồng chính | Bảng 2.2. PHÂN TÍCH VÀ ĐÁNH GIÁ ĐỐI THỦ CẠNH TRANH
+Bước 1. Người dùng gửi báo cáo về bài đăng hoặc hành vi có dấu hiệu vi phạm kèm theo lý do. 
+Bước 2. Quản trị viên tiếp nhận, xem xét báo cáo. 
+Bước 3. Quản trị viên xác minh nội dung báo cáo bằng cách đối chiếu với quy định cộng đồng và thông tin liên quan. 
+Bước 4. Căn cứ vào kết quả xác minh, quản trị viên áp dụng biện pháp xử lý phù hợp và thông báo kết quả cho các bên liên quan.
+Ngoại lệ | Bước 3e. Báo cáo không đủ căn cứ để xác minh. Nội dung bị báo cáo không còn tồn tại hoặc đã được xử lý trước đó.
+Mã quy tắc | Nhóm quy tắc | Nội dung
+BRL-001 | Tài khoản | Mỗi người dùng cá nhân chỉ được sở hữu một tài khoản định danh trên nền tảng.
+BRL-002 | Tài khoản | Tài khoản phải gắn với một email hoặc số điện thoại hợp lệ.
+BRL-003 | Tài khoản | Người dùng chỉ được tham gia đăng tải, thương lượng và giao dịch khi tài khoản đang hoạt động.
+BRL-004 | Hồ sơ | Thông tin hồ sơ thành viên phải phản ánh trung thực danh tính và thông tin liên hệ của người dùng.
+BRL-005 | Hồ sơ | Chỉ chủ sở hữu hồ sơ mới được cập nhật thông tin cá nhân của mình.
+BRL-006 | Bài đăng tài sản | Một bài đăng chỉ đại diện cho một loại tài sản.
+BRL-007 | Bài đăng tài sản | Một bài đăng có thể bao gồm nhiều đơn vị tài sản cùng loại.
+BRL-008 | Bài đăng tài sản | Nội dung bài đăng phải phản ánh đúng tình trạng thực tế của tài sản.
+BRL-009 | Bài đăng tài sản | Mỗi bài đăng phải có ít nhất một hình ảnh minh họa thực tế.
+BRL-010 | Bài đăng tài sản | Không được đăng tải tài sản thuộc danh mục bị pháp luật cấm lưu thông hoặc chuyển nhượng.
+BRL-011 | Bài đăng tài sản | Người đăng không được yêu cầu chuyển khoản hoặc đặt cọc trước dưới mọi hình thức nhằm tránh rủi ro lừa đảo.
+BRL-012 | Tìm kiếm tài sản | Người dùng có thể tìm kiếm và xem thông tin tài sản mà không cần đăng nhập.
+BRL-013 | Tìm kiếm tài sản | Chỉ các tài sản còn sẵn sàng chia sẻ mới được đưa vào quá trình tiếp nhận đề xuất.
+BRL-014 | Thương lượng | Một đề xuất chỉ được áp dụng cho một bài đăng tại một thời điểm.
+BRL-015 | Thương lượng | Một đơn vị tài sản không được đồng thời cam kết cho nhiều giao dịch khác nhau.
+BRL-016 | Thương lượng | Giao dịch chỉ được hình thành khi hai bên thống nhất các điều kiện chuyển giao.
+BRL-017 | Giao dịch | Người tiếp nhận có quyền kiểm tra tình trạng thực tế của tài sản trước khi nhận.
+BRL-018 | Giao dịch | Giao dịch chỉ được xem là hoàn tất khi cả người sở hữu và người tiếp nhận cùng xác nhận việc bàn giao.
+BRL-019 | Giao dịch | Sau khi giao dịch hoàn tất, số lượng tài sản còn lại phải được cập nhật.
+BRL-020 | Giao dịch | Nếu toàn bộ tài sản đã được phân phối, quá trình chia sẻ của bài đăng được kết thúc.
+BRL-021 | Giao dịch | Một trong hai bên có quyền hủy giao dịch nếu điều kiện bàn giao không được đáp ứng.
+BRL-022 | Đánh giá | Chỉ giao dịch đã hoàn tất mới được phép đánh giá.
+BRL-023 | Đánh giá | Mỗi thành viên chỉ được đánh giá một lần cho mỗi giao dịch.
+BRL-024 | Đánh giá | Nội dung đánh giá phải trung thực, khách quan và tuân thủ quy định cộng đồng.
+BRL-025 | Báo cáo vi phạm | Người dùng có quyền gửi báo cáo khi phát hiện bài đăng hoặc hành vi có dấu hiệu vi phạm.
+BRL-026 | Báo cáo vi phạm | Mọi báo cáo phải được tiếp nhận và xem xét trước khi đưa ra kết luận xử lý.
+BRL-027 | Báo cáo vi phạm | Chỉ quản trị viên mới có quyền xử lý báo cáo vi phạm.
+BRL-028 | Báo cáo vi phạm | Việc xử lý vi phạm phải căn cứ trên quy định cộng đồng và mức độ vi phạm.
+BRL-029 | Báo cáo vi phạm | Kết quả xử lý phải được thông báo đến các bên liên quan.
+BRL-030 | Pháp lý | Dữ liệu cá nhân của người dùng phải được thu thập và sử dụng dựa trên sự đồng ý của người dùng, phù hợp với quy định pháp luật hiện hành.
+Business Use Case | Business Rules liên quan
+BUC01 – Chia sẻ thông tin tài sản | BRL-006, BRL-007, BRL-008, BRL-009, BRL-0010, BRL-011
+BUC02 – Tiếp cận tài sản | BRL-012, BRL-013
+BUC03 – Thương lượng giao dịch | BRL-014, BRL-015, BRL-016
+BUC04 – Thực hiện giao dịch | BRL-017, BRL-018, BRL-019, BRL-020,  BRL-021
+BUC05 – Xây dựng hồ sơ thành viên | BRL-001, BRL-002, BRL-003, BRL-004, BRL-005
+BUC06 – Đánh giá giao dịch | BRL-022, BRL-023, BRL-024
+BUC07 – Đảm bảo an toàn cộng đồng | BRL-025, BRL-026, BRL-027, BRL-028, BRL-029, BRL-030

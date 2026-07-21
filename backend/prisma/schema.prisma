@@ -1,0 +1,230 @@
+// Prisma Schema for Asset Sharing Backend System (100% Strict DSD Alignment)
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------------
+// MODELS (Matching DSD exact 12 tables & columns)
+// --------------------------------------------------------
+
+model NguoiDung {
+  nguoi_dung_id String   @id @default(uuid()) @db.Uuid
+  email         String?  @unique @db.VarChar(254)
+  so_dien_thoai String?  @unique @db.VarChar(20)
+  mat_khau_hash String   @db.VarChar(255)
+  vai_tro       String   @default("THANH_VIEN") @db.VarChar(30)
+  trang_thai    String   @default("CHO_XAC_THUC") @db.VarChar(30)
+  ngay_tao      DateTime @default(now()) @db.Timestamptz
+  ngay_cap_nhat DateTime @default(now()) @updatedAt @db.Timestamptz
+
+  // Relations
+  ho_so                         HoSoThanhVien?
+  ho_so_uy_tin                  HoSoUyTin?
+  bai_dang                      BaiDangTaiSan[]        @relation("ChuSoHuuBaiDang")
+  de_xuat_da_gui                DeXuatGiaoDich[]       @relation("NguoiGuiDeXuat")
+  tin_nhan                      TinNhanThuongLuong[]   @relation("NguoiGuiTinNhan")
+  giao_dich_so_huu              GiaoDich[]             @relation("GiaoDichNguoiSoHuu")
+  giao_dich_tiep_nhan           GiaoDich[]             @relation("GiaoDichNguoiTiepNhan")
+  danh_gia_da_gui               DanhGia[]              @relation("NguoiDanhGia")
+  danh_gia_da_nhan              DanhGia[]              @relation("NguoiDuocDanhGia")
+  bao_cao_da_gui                BaoCaoViPham[]         @relation("NguoiBaoCao")
+  bao_cao_bi_to                 BaoCaoViPham[]         @relation("NguoiBiBaoCao")
+  bien_phap_da_lam              BienPhapXuLy[]         @relation("QuanTriVienBienPhap")
+
+  @@map("nguoi_dung")
+}
+
+model HoSoThanhVien {
+  ho_so_id      String    @id @default(uuid()) @db.Uuid
+  nguoi_dung_id String    @unique @db.Uuid
+  ho_ten        String    @db.VarChar(150)
+  anh_dai_dien  String?   @db.VarChar(500)
+  dia_chi       String?   @db.VarChar(255)
+  mo_ta_ca_nhan String?   @db.Text
+  ngay_cap_nhat DateTime? @default(now()) @updatedAt @db.Timestamptz
+
+  nguoi_dung    NguoiDung @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: Restrict)
+
+  @@map("ho_so_thanh_vien")
+}
+
+model HoSoUyTin {
+  ho_so_uy_tin_id       String    @id @default(uuid()) @db.Uuid
+  nguoi_dung_id         String    @unique @db.Uuid
+  diem_trung_binh       Decimal   @default(0.00) @db.Decimal(3, 2)
+  tong_so_danh_gia      Int       @default(0)
+  so_giao_dich_hoan_tat Int       @default(0)
+  ngay_cap_nhat         DateTime? @default(now()) @updatedAt @db.Timestamptz
+
+  nguoi_dung            NguoiDung @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: Cascade)
+
+  @@map("ho_so_uy_tin")
+}
+
+model DanhMucTaiSan {
+  danh_muc_id  String          @id @default(uuid()) @db.Uuid
+  ten_danh_muc String          @unique @db.VarChar(100)
+  mo_ta        String?         @db.Text
+  trang_thai   String          @default("HOAT_DONG") @db.VarChar(30)
+  ngay_tao     DateTime?       @default(now()) @db.Timestamptz
+
+  bai_dang     BaiDangTaiSan[]
+
+  @@map("danh_muc_tai_san")
+}
+
+model BaiDangTaiSan {
+  bai_dang_id           String           @id @default(uuid()) @db.Uuid
+  chu_so_huu_id         String           @db.Uuid
+  danh_muc_id           String           @db.Uuid
+  ten_tai_san           String           @db.VarChar(200)
+  mo_ta_hien_trang       String           @db.Text
+  so_luong_tong         Int
+  so_luong_kha_dung     Int
+  so_luong_giu_cho      Int              @default(0)
+  so_luong_da_phan_phoi Int              @default(0)
+  dia_diem              String           @db.VarChar(255)
+  hinh_thuc_chia_se     String           @db.VarChar(30)
+  hinh_thuc_trao_doi    String?          @db.VarChar(30)
+  trang_thai            String           @default("KHA_DUNG") @db.VarChar(30)
+  ngay_tao              DateTime?        @default(now()) @db.Timestamptz
+  ngay_cap_nhat         DateTime?        @default(now()) @updatedAt @db.Timestamptz
+
+  chu_so_huu            NguoiDung        @relation("ChuSoHuuBaiDang", fields: [chu_so_huu_id], references: [nguoi_dung_id])
+  danh_muc              DanhMucTaiSan    @relation(fields: [danh_muc_id], references: [danh_muc_id])
+  hinh_anh              HinhAnhTaiSan[]
+  de_xuat               DeXuatGiaoDich[]
+  bao_cao               BaoCaoViPham[]   @relation("BaiDangBiBaoCao")
+
+  @@map("bai_dang_tai_san")
+}
+
+model HinhAnhTaiSan {
+  hinh_anh_id     String        @id @default(uuid()) @db.Uuid
+  bai_dang_id     String        @db.Uuid
+  duong_dan_anh   String        @db.VarChar(500)
+  thu_tu_hien_thi Int           @default(1)
+  ngay_tai_len    DateTime      @default(now()) @db.Timestamptz
+
+  bai_dang        BaiDangTaiSan @relation(fields: [bai_dang_id], references: [bai_dang_id], onDelete: Cascade)
+
+  @@unique([bai_dang_id, thu_tu_hien_thi])
+  @@map("hinh_anh_tai_san")
+}
+
+model DeXuatGiaoDich {
+  de_xuat_id       String               @id @default(uuid()) @db.Uuid
+  bai_dang_id      String               @db.Uuid
+  nguoi_gui_id     String               @db.Uuid
+  so_luong_yeu_cau Int
+  loi_nhan         String?              @db.Text
+  tai_san_doi_ung  String?              @db.Text
+  tien_doi_ung     Decimal?             @db.Decimal(18, 2)
+  trang_thai       String               @default("CHO_XU_LY") @db.VarChar(30)
+  ly_do_tu_choi    String?              @db.Text
+  ngay_gui         DateTime             @default(now()) @db.Timestamptz
+  ngay_cap_nhat    DateTime             @default(now()) @updatedAt @db.Timestamptz
+
+  bai_dang         BaiDangTaiSan        @relation(fields: [bai_dang_id], references: [bai_dang_id], onDelete: Restrict)
+  nguoi_gui        NguoiDung            @relation("NguoiGuiDeXuat", fields: [nguoi_gui_id], references: [nguoi_dung_id], onDelete: Restrict)
+  tin_nhan         TinNhanThuongLuong[]
+  giao_dich        GiaoDich?
+
+  @@map("de_xuat_giao_dich")
+}
+
+model TinNhanThuongLuong {
+  tin_nhan_id   String         @id @default(uuid()) @db.Uuid
+  de_xuat_id    String         @db.Uuid
+  nguoi_gui_id  String         @db.Uuid
+  noi_dung      String         @db.Text
+  trang_thai    String         @default("DA_GUI") @db.VarChar(30)
+  thoi_gian_gui DateTime       @default(now()) @db.Timestamptz
+
+  de_xuat       DeXuatGiaoDich @relation(fields: [de_xuat_id], references: [de_xuat_id], onDelete: Restrict)
+  nguoi_gui     NguoiDung      @relation("NguoiGuiTinNhan", fields: [nguoi_gui_id], references: [nguoi_dung_id], onDelete: Restrict)
+
+  @@map("tin_nhan_thuong_luong")
+}
+
+model GiaoDich {
+  giao_dich_id             String         @id @default(uuid()) @db.Uuid
+  de_xuat_id               String         @unique @db.Uuid
+  nguoi_so_huu_id          String         @db.Uuid
+  nguoi_tiep_nhan_id       String         @db.Uuid
+  so_luong_giao_dich       Int
+  thoi_gian_ban_giao       DateTime       @default(now()) @db.Timestamptz
+  dia_diem_ban_giao        String         @db.VarChar(255)
+  xac_nhan_nguoi_so_huu    Boolean        @default(false)
+  xac_nhan_nguoi_tiep_nhan Boolean        @default(false)
+  ly_do_huy                String?        @db.Text
+  trang_thai               String         @default("CHO_BAN_GIAO") @db.VarChar(40)
+  ngay_tao                 DateTime       @default(now()) @db.Timestamptz
+  ngay_cap_nhat            DateTime       @default(now()) @updatedAt @db.Timestamptz
+
+  de_xuat                  DeXuatGiaoDich @relation(fields: [de_xuat_id], references: [de_xuat_id], onDelete: Restrict)
+  nguoi_so_huu             NguoiDung      @relation("GiaoDichNguoiSoHuu", fields: [nguoi_so_huu_id], references: [nguoi_dung_id], onDelete: Restrict)
+  nguoi_tiep_nhan          NguoiDung      @relation("GiaoDichNguoiTiepNhan", fields: [nguoi_tiep_nhan_id], references: [nguoi_dung_id], onDelete: Restrict)
+  danh_gia                 DanhGia[]
+
+  @@map("giao_dich")
+}
+
+model DanhGia {
+  danh_gia_id            String    @id @default(uuid()) @db.Uuid
+  giao_dich_id           String    @db.Uuid
+  nguoi_danh_gia_id      String    @db.Uuid
+  nguoi_duoc_danh_gia_id String    @db.Uuid
+  diem_sao               Int       @db.SmallInt
+  nhan_xet               String?   @db.Text
+  thoi_gian_danh_gia     DateTime  @default(now()) @db.Timestamptz
+
+  giao_dich              GiaoDich  @relation(fields: [giao_dich_id], references: [giao_dich_id], onDelete: Restrict)
+  nguoi_danh_gia         NguoiDung @relation("NguoiDanhGia", fields: [nguoi_danh_gia_id], references: [nguoi_dung_id], onDelete: Restrict)
+  nguoi_duoc_danh_gia    NguoiDung @relation("NguoiDuocDanhGia", fields: [nguoi_duoc_danh_gia_id], references: [nguoi_dung_id], onDelete: Restrict)
+
+  @@unique([giao_dich_id, nguoi_danh_gia_id])
+  @@map("danh_gia")
+}
+
+model BaoCaoViPham {
+  bao_cao_id               String         @id @default(uuid()) @db.Uuid
+  nguoi_bao_cao_id         String         @db.Uuid
+  nguoi_dung_bi_bao_cao_id String?        @db.Uuid
+  bai_dang_bi_bao_cao_id   String?        @db.Uuid
+  loai_bao_cao             String         @db.VarChar(30)
+  ly_do_vi_pham             String         @db.VarChar(50)
+  mo_ta_chi_tiet           String         @db.Text
+  minh_chung               String?        @db.VarChar(500)
+  trang_thai_xu_ly         String         @default("CHO_KIEM_DUYET") @db.VarChar(40)
+  ngay_bao_cao             DateTime       @default(now()) @db.Timestamptz
+  ngay_cap_nhat            DateTime       @default(now()) @updatedAt @db.Timestamptz
+
+  nguoi_bao_cao            NguoiDung      @relation("NguoiBaoCao", fields: [nguoi_bao_cao_id], references: [nguoi_dung_id], onDelete: Restrict)
+  nguoi_dung_bi_bao_cao    NguoiDung?     @relation("NguoiBiBaoCao", fields: [nguoi_dung_bi_bao_cao_id], references: [nguoi_dung_id], onDelete: Restrict)
+  bai_dang_bi_bao_cao      BaiDangTaiSan? @relation("BaiDangBiBaoCao", fields: [bai_dang_bi_bao_cao_id], references: [bai_dang_id], onDelete: Restrict)
+  bien_phap                BienPhapXuLy[]
+
+  @@map("bao_cao_vi_pham")
+}
+
+model BienPhapXuLy {
+  bien_phap_id     String       @id @default(uuid()) @db.Uuid
+  bao_cao_id       String       @db.Uuid
+  quan_tri_vien_id String       @db.Uuid
+  loai_bien_phap   String       @db.VarChar(40)
+  noi_dung_xu_ly   String       @db.Text
+  thoi_gian_xu_ly   DateTime     @default(now()) @db.Timestamptz
+
+  bao_cao          BaoCaoViPham @relation(fields: [bao_cao_id], references: [bao_cao_id], onDelete: Restrict)
+  quan_tri_vien    NguoiDung    @relation("QuanTriVienBienPhap", fields: [quan_tri_vien_id], references: [nguoi_dung_id], onDelete: Restrict)
+
+  @@map("bien_phap_xu_ly")
+}

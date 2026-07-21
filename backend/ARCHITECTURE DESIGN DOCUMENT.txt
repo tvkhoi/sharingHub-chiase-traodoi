@@ -1,0 +1,310 @@
+I. Giới thiệu
+1.1 Mục đích
+Tài liệu Thiết kế Kiến trúc Phần mềm mô tả kiến trúc tổng thể của hệ thống Hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân. Tài liệu trình bày các quyết định thiết kế kiến trúc, mô hình triển khai, tổ chức các thành phần của hệ thống, cơ chế giao tiếp giữa các thành phần và các giải pháp kỹ thuật được lựa chọn nhằm đáp ứng các yêu cầu chức năng và phi chức năng của hệ thống. 
+1.2 Phạm vi
+Tài liệu tập trung mô tả kiến trúc phần mềm của hệ thống từ các góc nhìn khác nhau, bao gồm:
+Các quyết định thiết kế kiến trúc và cơ sở lựa chọn.
+Kiến trúc triển khai của hệ thống trên hạ tầng điện toán đám mây.
+Tổ chức các package và module trong quá trình phát triển.
+Cấu trúc các thành phần phần mềm và mối quan hệ giữa chúng.
+Luồng xử lý nghiệp vụ thông qua các biểu đồ trình tự.
+Các cơ chế bảo mật và giao tiếp giữa các thành phần.
+Đánh giá khả năng đáp ứng các yêu cầu phi chức năng của kiến trúc.
+Tài liệu không trình bày chi tiết về phân tích yêu cầu, thiết kế cơ sở dữ liệu hay thiết kế giao diện người dùng vì các nội dung này đã được mô tả trong các tài liệu liên quan.
+1.3 Thuật ngữ, từ viết tắt và định nghĩa
+ 1.4 Tài liệu tham khảo
+II. Bối cảnh kiến trúc
+2.1 Tổng quan hệ thống
+Hệ thống Hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân được xây dựng nhằm tạo ra một nền tảng trực tuyến hỗ trợ kết nối giữa những người có nhu cầu chia sẻ, tặng hoặc trao đổi tài sản với những người có nhu cầu tiếp nhận. Hệ thống góp phần thúc đẩy việc tái sử dụng tài sản, hạn chế lãng phí tài nguyên và xây dựng cộng đồng chia sẻ bền vững.
+Hệ thống cung cấp các chức năng chính như quản lý tài khoản người dùng, quản lý bài đăng tài sản, tìm kiếm và tiếp cận tài sản, gửi đề xuất trao đổi hoặc tiếp nhận, quản lý giao dịch, trò chuyện giữa các bên tham gia, đánh giá sau giao dịch và tiếp nhận báo cáo vi phạm. Ngoài ra, hệ thống còn hỗ trợ quản trị viên trong việc quản lý người dùng, bài đăng, giao dịch và xử lý các báo cáo nhằm đảm bảo môi trường sử dụng an toàn và minh bạch.
+Để đáp ứng các yêu cầu về hiệu năng, độ tin cậy, khả năng mở rộng và bảo mật, hệ thống cần một kiến trúc phần mềm phù hợp, cho phép các thành phần hoạt động độc lập nhưng vẫn phối hợp hiệu quả trong quá trình xử lý nghiệp vụ
+2.2 Các yếu tố chi phối kiến trúc
+Kiến trúc phần mềm của hệ thống không được lựa chọn một cách ngẫu nhiên mà được hình thành dựa trên các yếu tố chi phối (Architectural Drivers). Đây là những yêu cầu và ràng buộc có ảnh hưởng trực tiếp đến việc lựa chọn kiến trúc, công nghệ, cách tổ chức các thành phần và cơ chế giao tiếp trong hệ thống.
+Đối với hệ thống Hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân, các yếu tố chi phối kiến trúc bao gồm yêu cầu chức năng, yêu cầu phi chức năng, các ràng buộc kỹ thuật và các giả định trong quá trình thiết kế, triển khai. Những yếu tố này đóng vai trò làm cơ sở cho các quyết định kiến trúc được trình bày ở các phần tiếp theo.
+2.2.1 Yêu cầu chức năng (Functional Requirements)
+2.2.2 Yêu cầu phi chức năng (Non-functional Requirements)
+2.2.3 Các ràng buộc và giả định
+Trong quá trình thiết kế kiến trúc, ngoài các yêu cầu của hệ thống còn tồn tại một số ràng buộc và giả định cần được xem xét nhằm đảm bảo tính khả thi của giải pháp.
+Các ràng buộc:
+Hệ thống được xây dựng dưới dạng ứng dụng web.
+Hệ thống phải hoạt động trên môi trường Internet.
+Hệ thống cần hỗ trợ cả giao tiếp theo mô hình yêu cầu - phản hồi .
+Dữ liệu được quản lý tập trung nhằm đảm bảo tính nhất quán.
+Người dùng phải được xác thực trước khi truy cập các chức năng yêu cầu quyền hạn.
+Kiến trúc cần phù hợp với môi trường triển khai trên nền tảng điện toán đám mây.
+Các giả định: 
+Người dùng sử dụng trình duyệt web hiện đại có hỗ trợ các chuẩn web hiện hành.
+Kết nối Internet của người dùng đủ ổn định để sử dụng các chức năng của hệ thống.
+Các dịch vụ hạ tầng và dịch vụ bên ngoài hoạt động ổn định trong quá trình vận hành.
+Dữ liệu được sao lưu theo chính sách của hệ thống.
+Người dùng tuân thủ các quy định sử dụng và chịu trách nhiệm đối với thông tin do mình cung cấp.
+III. Các quyết định thiết kế kiến trúc
+3.1 Kiến trúc được lựa chọn
+3.1.1 Kiến trúc Client–Server
+Hệ thống được xây dựng theo mô hình kiến trúc Client–Server, trong đó các thành phần được phân chia thành hai phía: Client và Server. Phía Client đảm nhiệm vai trò cung cấp giao diện tương tác với người dùng, tiếp nhận các thao tác từ người dùng và gửi yêu cầu đến Server thông qua các giao thức truyền thông phù hợp. Phía Server chịu trách nhiệm tiếp nhận và xử lý các yêu cầu từ Client, thực hiện các nghiệp vụ của hệ thống, truy cập cơ sở dữ liệu và trả kết quả xử lý về phía Client.
+Việc áp dụng kiến trúc Client–Server giúp tách biệt rõ ràng giữa tầng trình bày và tầng xử lý nghiệp vụ, từ đó giảm sự phụ thuộc giữa Frontend và Backend. Nhờ đó, hai thành phần có thể được phát triển, kiểm thử và triển khai độc lập, đồng thời tạo điều kiện thuận lợi cho việc mở rộng hệ thống hoặc thay đổi công nghệ ở từng phía mà không ảnh hưởng đáng kể đến các thành phần còn lại.
+3.1.2 Kiến trúc Layer cho Backend
+Đối với phía Backend, hệ thống áp dụng kiến trúc phân lớp (Layer Architecture) nhằm tổ chức mã nguồn theo nguyên tắc phân tách trách nhiệm. Theo kiến trúc này, các chức năng của hệ thống được chia thành ba tầng chính gồm Controller Layer, Service Layer và Repository Layer, trong đó mỗi tầng đảm nhận một vai trò riêng biệt và chỉ tương tác với các tầng liền kề.
+Tầng Controller chịu trách nhiệm tiếp nhận các yêu cầu từ Client, kiểm tra dữ liệu đầu vào và chuyển tiếp yêu cầu đến tầng xử lý nghiệp vụ. Tầng Service là nơi hiện thực các quy tắc nghiệp vụ của hệ thống, điều phối luồng xử lý và phối hợp giữa các module chức năng. Tầng Repository đảm nhiệm việc truy cập cơ sở dữ liệu, thực hiện các thao tác truy vấn và lưu trữ dữ liệu. Cách tổ chức này giúp giảm mức độ phụ thuộc giữa các thành phần, nâng cao khả năng tái sử dụng mã nguồn, thuận lợi cho việc kiểm thử và bảo trì, đồng thời tạo điều kiện mở rộng hệ thống trong tương lai.
+3.2 Công nghệ sử dụng
+Để hiện thực hóa kiến trúc đã lựa chọn, hệ thống sử dụng các công nghệ sau:
+ReactJS: Xây dựng giao diện người dùng (Frontend).
+Node.js: Phát triển các dịch vụ Backend và cung cấp RESTful API.
+PostgreSQL: Lưu trữ và quản lý dữ liệu của hệ thống.
+Vercel: Triển khai và phân phối ứng dụng Frontend.
+Render: Triển khai ứng dụng Backend và cơ sở dữ liệu trên nền tảng đám mây.
+Cloudflare: Cung cấp dịch vụ CDN, Reverse Proxy, SSL/TLS và bảo vệ hệ thống trước các truy cập từ Internet.
+JSON Web Token (JWT): Thực hiện xác thực và phân quyền người dùng đối với các API của hệ thống.
+RESTful API (HTTPS): Giao thức giao tiếp chính giữa Frontend và Backend.
+WebSocket Secure (WSS): Hỗ trợ truyền nhận dữ liệu hai chiều theo thời gian thực cho chức năng trò chuyện.
+SMTP (Simple Mail Transfer Protocol): Gửi email xác thực tài khoản, thông báo và hỗ trợ khôi phục mật khẩu.
+3.3 Cơ sở lựa chọn kiến trúc và công nghệ
+- Để đáp ứng yêu cầu hệ thống có thời gian phản hồi tìm kiếm không vượt quá 03 giây (NFR-05) và hỗ trợ tối thiểu 50 người dùng truy cập đồng thời (NFR-07), hệ thống lựa chọn:
+Node.js với mô hình xử lý bất đồng bộ (Asynchronous I/O) và Event Loop giúp xử lý đồng thời nhiều yêu cầu từ người dùng.
+ReactJS sử dụng Virtual DOM nhằm tối ưu tốc độ cập nhật giao diện và giảm thời gian phản hồi.
+Cloudflare hỗ trợ CDN và tối ưu đường truyền, góp phần giảm độ trễ khi truy cập hệ thống.
+WebSocket (WSS) được sử dụng cho chức năng trò chuyện thời gian thực, giảm chi phí thiết lập kết nối so với việc sử dụng HTTP liên tục.
+Để đảm bảo dữ liệu không bị mất khi xảy ra sự cố (NFR-09) và duy trì tính nhất quán của bài đăng, đề xuất và giao dịch (NFR-10), hệ thống lựa chọn:
+PostgreSQL vì hỗ trợ đầy đủ các thuộc tính ACID, đảm bảo tính toàn vẹn và nhất quán của dữ liệu.
+Client–Server Architecture giúp tập trung xử lý nghiệp vụ và quản lý dữ liệu tại Backend, hạn chế sai lệch dữ liệu giữa các Client.
+Render cung cấp môi trường triển khai ổn định và hỗ trợ cơ chế sao lưu, góp phần nâng cao độ tin cậy của hệ thống.
+Để đáp ứng yêu cầu chỉ người dùng đã xác thực mới được phép truy cập các chức năng bảo vệ (NFR-11), kiểm soát quyền truy cập dữ liệu (NFR-13) và lưu mật khẩu dưới dạng Hash (NFR-14), hệ thống lựa chọn:
+JWT để thực hiện xác thực và phân quyền người dùng đối với các API.
+HTTPS và WSS nhằm bảo vệ dữ liệu trong quá trình truyền giữa Client và Server.
+Cloudflare để cung cấp SSL/TLS và tăng cường khả năng bảo vệ hệ thống trước các truy cập trái phép.
+Password Hashing trước khi lưu mật khẩu vào cơ sở dữ liệu nhằm giảm nguy cơ lộ thông tin xác thực.
+Mặc dù không được quy định thành một NFR riêng, khả năng mở rộng và bảo trì là mục tiêu quan trọng trong quá trình thiết kế hệ thống. Để đáp ứng mục tiêu này, hệ thống lựa chọn:
+Client–Server Architecture giúp Frontend và Backend có thể phát triển, triển khai và mở rộng độc lập.
+Layer Architecture phân tách Backend thành các tầng Controller, Service và Repository, giảm sự phụ thuộc giữa các thành phần.
+Tổ chức Backend theo các module nghiệp vụ (Account, Asset, Proposal, Transaction, Chat, Rating, Report và Admin), giúp việc bổ sung hoặc thay đổi chức năng không ảnh hưởng đến toàn bộ hệ thống.
+ReactJS với kiến trúc Component-Based giúp tăng khả năng tái sử dụng mã nguồn và thuận lợi cho việc bảo trì giao diện.
+IV. Góc nhìn triển khai (Deployment View)
+4.1 Kiến trúc triển khai
+Hệ thống được triển khai theo mô hình Client–Server trên nền tảng điện toán đám mây. Các thành phần của hệ thống được phân tách thành các nút triển khai độc lập, bao gồm thiết bị người dùng, dịch vụ phân phối và bảo vệ lưu lượng truy cập, máy chủ ứng dụng, cơ sở dữ liệu và các dịch vụ bên ngoài.
+Người dùng truy cập hệ thống thông qua trình duyệt web trên thiết bị cá nhân. Các yêu cầu từ trình duyệt được chuyển đến Cloudflare để thực hiện bảo mật kết nối và tối ưu hóa lưu lượng trước khi được định tuyến đến các dịch vụ Frontend và Backend. Frontend được triển khai trên nền tảng Vercel, trong khi Backend được triển khai trên Render và chịu trách nhiệm xử lý toàn bộ nghiệp vụ của hệ thống.
+Trong quá trình xử lý, Backend truy cập cơ sở dữ liệu PostgreSQL để lưu trữ và truy xuất dữ liệu, đồng thời sử dụng dịch vụ Email thông qua giao thức SMTP để gửi thư xác thực, khôi phục mật khẩu và các thông báo cần thiết. Đối với chức năng trò chuyện, Backend duy trì kết nối WebSocket với Client nhằm hỗ trợ truyền nhận dữ liệu theo thời gian thực.
+4.2 Biểu đồ triển khai (Deployment Diagram)
+Hình 4.2 Kiến trúc tổng thể hệ thống
+Biểu đồ triển khai mô tả các nút triển khai vật lý của hệ thống, môi trường thực thi, các thành phần phần mềm được cài đặt trên từng nút và cơ chế giao tiếp giữa các thành phần thông qua các giao thức mạng. Biểu đồ thể hiện rõ vị trí triển khai của Frontend, Backend, cơ sở dữ liệu, dịch vụ Email và lớp trung gian Cloudflare trong toàn bộ kiến trúc hệ thống. 
+4.3 Mô tả các nút triển khai 
+4.4 Cơ chế giao tiếp giữa các nút
+Các nút triển khai giao tiếp với nhau thông qua nhiều giao thức khác nhau tùy theo mục đích sử dụng. HTTPS được sử dụng để trao đổi dữ liệu giữa trình duyệt, Cloudflare, Frontend và Backend. Giao thức WebSocket Secure (WSS) được sử dụng cho các chức năng yêu cầu truyền dữ liệu hai chiều theo thời gian thực như trò chuyện. Backend kết nối với cơ sở dữ liệu PostgreSQL thông qua giao thức TCP/IP để thực hiện các thao tác truy vấn và cập nhật dữ liệu. Việc gửi thư điện tử được thực hiện thông qua giao thức SMTP tới dịch vụ Email của bên thứ ba. 
+V. Góc nhìn phát triển (Development View)
+5.1 Package diagram
+Hình 5.1. package diagram của hệ thống
+Biểu đồ package mô tả các package chính của hệ thống và quan hệ phụ thuộc giữa chúng. Frontend chịu trách nhiệm giao tiếp với người dùng và trao đổi dữ liệu với Backend. Backend được tổ chức thành các tầng độc lập gồm Security, Application Layer, Business Layer và Data Access Layer. Ngoài ra, Backend còn tương tác với cơ sở dữ liệu PostgreSQL và các dịch vụ bên ngoài để hoàn thiện quá trình xử lý nghiệp vụ.
+5.2 Frontend Application
+Frontend Application là thành phần trực tiếp tương tác với người dùng thông qua trình duyệt Web. Package này được chia thành hai phần là UI và Communication.
+Package UI đảm nhiệm việc hiển thị giao diện, tiếp nhận thao tác từ người dùng và chuyển các yêu cầu đến Communication. Package Communication chịu trách nhiệm giao tiếp với Backend thông qua các giao thức HTTP và WebSocket, tiếp nhận dữ liệu phản hồi và chuyển kết quả về giao diện để hiển thị. Việc tách riêng hai package này giúp phần giao diện không phụ thuộc trực tiếp vào cơ chế truyền thông, từ đó nâng cao khả năng bảo trì và mở rộng.
+5.3 Backend Application
+Backend Application thực hiện xử lý toàn bộ nghiệp vụ của hệ thống và được tổ chức theo kiến trúc phân tầng nhằm đảm bảo tính độc lập giữa các thành phần.
+Package Security chịu trách nhiệm xác thực và phân quyền người dùng trước khi các yêu cầu được chuyển đến các tầng xử lý phía sau. Mọi yêu cầu từ Frontend đều phải đi qua package này để kiểm tra tính hợp lệ của thông tin xác thực.
+Sau khi được xác thực, yêu cầu được chuyển đến Application Layer. Đây là tầng tiếp nhận yêu cầu từ phía Client, điều phối luồng xử lý và chuyển tiếp đến các chức năng nghiệp vụ tương ứng. Tầng này không chứa các quy tắc nghiệp vụ mà chỉ đóng vai trò kết nối giữa giao diện và tầng nghiệp vụ.
+Business Layer là nơi cài đặt các quy tắc nghiệp vụ của hệ thống. Tầng này xử lý các chức năng như quản lý tài khoản, quản lý tài sản, đề xuất, giao dịch, trò chuyện, đánh giá và các chức năng quản trị. Trong quá trình xử lý, Business Layer có thể truy cập dữ liệu hoặc sử dụng các dịch vụ bên ngoài khi cần thiết.
+Data Access Layer là tầng làm việc trực tiếp với cơ sở dữ liệu. Tầng này chịu trách nhiệm thực hiện các thao tác truy vấn, lưu trữ và cập nhật dữ liệu, đồng thời cung cấp dữ liệu cho Business Layer thông qua các cơ chế truy cập dữ liệu thống nhất.
+5.4 Quan hệ giữa các package
+Các package trong hệ thống được tổ chức theo nguyên tắc phụ thuộc một chiều nhằm giảm mức độ liên kết giữa các thành phần. Frontend chỉ giao tiếp với Backend thông qua package Communication. Tại Backend, mọi yêu cầu trước tiên được xử lý bởi Security, sau đó chuyển đến Application Layer để điều phối và tiếp tục được xử lý tại Business Layer. Khi cần truy cập dữ liệu, Business Layer sử dụng Data Access Layer để làm việc với cơ sở dữ liệu PostgreSQL. Đối với các chức năng như gửi thư xác thực hoặc thông báo, Business Layer thực hiện giao tiếp với các dịch vụ bên ngoài thông qua các giao diện tích hợp.
+Cách tổ chức này giúp mỗi package đảm nhận một nhóm chức năng riêng biệt, hạn chế sự phụ thuộc giữa các thành phần và tạo điều kiện thuận lợi cho việc phát triển, kiểm thử, bảo trì cũng như mở rộng hệ thống trong tương lai.
+VI. Góc nhìn thành phần (Component View)
+6.1 Component diagram
+Hình 6.1 Componet digram tổng thể hệ thống
+Biểu đồ Component thể hiện cấu trúc các thành phần phần mềm và các giao diện giao tiếp giữa chúng. Hệ thống được chia thành hai khối chính là Client Side và Server Side. Client Side đảm nhiệm việc hiển thị giao diện và giao tiếp với máy chủ thông qua HTTP Client và WebSocket Client. Server Side được tổ chức theo kiến trúc phân tầng gồm Security, Application Layer, Business Layer và Data Access Layer. Ngoài ra, hệ thống còn tương tác với cơ sở dữ liệu PostgreSQL và dịch vụ Email nhằm đáp ứng các yêu cầu lưu trữ dữ liệu và gửi thông báo. 
+6.2 Mô tả các thành phần
+6.3 Giao diện và cổng giao tiếp của các thành phần
+Các thành phần trong hệ thống giao tiếp với nhau thông qua các giao diện được định nghĩa rõ ràng nhằm giảm sự phụ thuộc giữa các tầng kiến trúc. Mỗi thành phần chỉ sử dụng các dịch vụ được cung cấp bởi thành phần liền kề, đảm bảo nguyên tắc phụ thuộc một chiều. 
+6.4 Quan hệ giữa các thành phần
+Các thành phần của hệ thống được tổ chức theo mô hình phụ thuộc từ trên xuống dưới.
+Đầu tiên, người dùng tương tác với UI. Các yêu cầu nghiệp vụ được chuyển đến HTTP Client hoặc WebSocket Client tùy theo loại chức năng. HTTP Client được sử dụng cho các yêu cầu REST API, trong khi WebSocket Client được sử dụng cho các chức năng yêu cầu truyền dữ liệu theo thời gian thực như trò chuyện.
+Khi yêu cầu đến Server Side, thành phần JWTAuth thực hiện xác thực và phân quyền người dùng. Sau khi xác thực thành công, yêu cầu được chuyển đến các Controller hoặc ChatGateway thuộc Application Layer. Application Layer có nhiệm vụ điều phối yêu cầu và gọi các dịch vụ tương ứng trong Business Layer.
+Business Layer thực hiện các quy tắc nghiệp vụ của hệ thống. Khi cần lưu trữ hoặc truy xuất dữ liệu, tầng này sử dụng các Repository trong Data Access Layer để làm việc với cơ sở dữ liệu PostgreSQL. Đối với các chức năng gửi email xác thực, đặt lại mật khẩu hoặc thông báo, Business Layer sử dụng Email Service thông qua giao thức SMTP.
+Kiến trúc này đảm bảo các thành phần chỉ giao tiếp với thành phần liền kề thông qua các giao diện đã được định nghĩa, giúp giảm mức độ phụ thuộc, tăng khả năng thay thế thành phần và hỗ trợ mở rộng hệ thống trong tương lai.
+VII. Góc nhìn xử lý (Process View)
+6.1 Kiến trúc xử lý yêu cầu
+Mọi yêu cầu từ phía người dùng đều được xử lý theo cùng một cơ chế. Người dùng thực hiện thao tác trên giao diện, sau đó yêu cầu được gửi đến máy chủ thông qua HTTP Client. Trước khi thực hiện nghiệp vụ, JWTAuth kiểm tra tính hợp lệ của mã xác thực và quyền truy cập của người dùng. Khi xác thực thành công, Controller tiếp nhận yêu cầu và chuyển đến Service để xử lý nghiệp vụ. Service thực hiện kiểm tra dữ liệu, áp dụng các quy tắc nghiệp vụ và gọi Repository để truy cập cơ sở dữ liệu PostgreSQL. Sau khi hoàn thành xử lý, kết quả được trả ngược qua Controller và HTTP Client để cập nhật giao diện người dùng.
+Mô hình xử lý này được áp dụng thống nhất cho toàn bộ các chức năng của hệ thống, giúp tách biệt trách nhiệm giữa các tầng và đảm bảo khả năng mở rộng, bảo trì.
+6.2 Quy trình xử lý đăng tải tài sản
+ Hình 6.2.  Sequence diagram UC1.1 đăng tải tài sản.
+Người sở hữu lựa chọn chức năng đăng tải tài sản và nhập các thông tin cần thiết trên giao diện. Sau khi người dùng xác nhận đăng tải, yêu cầu được gửi đến AssetController thông qua HTTP Client và được xác thực bởi JWTAuth.
+AssetController chuyển yêu cầu đến AssetService để kiểm tra tính hợp lệ của dữ liệu đầu vào, bao gồm các trường bắt buộc, hình thức chia sẻ và điều kiện trao đổi đối với các bài đăng trao đổi. Khi dữ liệu hợp lệ, AssetService gọi AssetRepository để lưu bài đăng vào cơ sở dữ liệu PostgreSQL. Kết quả xử lý sau đó được trả về giao diện dưới dạng thông báo thành công. Nếu dữ liệu không hợp lệ hoặc hình ảnh không đáp ứng yêu cầu, hệ thống trả về thông báo lỗi tương ứng và không thực hiện thao tác lưu dữ liệu.
+6.3 Quy trình xử lý gửi đề xuất trao đổi
+Hình 6.3.  Sequence diagram UC2.3 gửi đề xuất giao dịch
+Sau khi người tiếp nhận lựa chọn chức năng gửi đề xuất, hệ thống hiển thị biểu mẫu để nhập các thông tin giao dịch. Khi người dùng xác nhận gửi đề xuất, yêu cầu được chuyển đến ProposalController sau khi hoàn thành bước xác thực JWT.
+ProposalService thực hiện kiểm tra tính đầy đủ của thông tin đề xuất, đồng thời kiểm tra trạng thái hiện tại của tài sản để bảo đảm tài sản vẫn còn khả dụng trước khi tạo đề xuất mới. Nếu các điều kiện đều được đáp ứng, ProposalRepository lưu thông tin đề xuất vào cơ sở dữ liệu PostgreSQL và hệ thống trả về kết quả thành công. Trong các trường hợp thông tin chưa đầy đủ, tài sản không còn khả dụng hoặc phát sinh lỗi khi lưu dữ liệu, hệ thống trả về các thông báo lỗi tương ứng.
+6.4 Quy trình xử lý chốt thỏa thuận giao dịch
+Hình 6.4.  Sequence diagram UC 3.4 chốt thỏa thuận giao dịch
+Quá trình chốt thỏa thuận bắt đầu khi người sở hữu tài sản xác nhận các điều kiện giao dịch đã thống nhất. Sau khi yêu cầu được xác thực, TransactionController chuyển yêu cầu đến TransactionService để xử lý.
+TransactionService ghi nhận yêu cầu xác nhận và chờ phản hồi từ bên còn lại. Khi cả hai bên đều xác nhận, hệ thống kiểm tra lại trạng thái tài sản nhằm bảo đảm tài sản vẫn còn đủ điều kiện để thực hiện giao dịch. Nếu điều kiện được đáp ứng, TransactionRepository cập nhật trạng thái giao dịch sang Chờ bàn giao trong cơ sở dữ liệu PostgreSQL và hệ thống thông báo kết quả thành công cho cả hai bên. Trong trường hợp một bên từ chối xác nhận hoặc tài sản không còn khả dụng, trạng thái giao dịch không được cập nhật và hệ thống trả về thông báo lỗi phù hợp.
+6.5 Đặc điểm xử lý
+Các quy trình xử lý trong hệ thống được xây dựng dựa trên các nguyên tắc sau:
+Tất cả các yêu cầu cần xác thực đều phải được kiểm tra bởi JWTAuth trước khi chuyển đến tầng nghiệp vụ.
+Controller chỉ tiếp nhận và điều phối yêu cầu, không chứa logic nghiệp vụ.
+Service là nơi thực hiện các quy tắc nghiệp vụ, kiểm tra dữ liệu và điều phối việc truy cập dữ liệu.
+Repository là thành phần duy nhất thực hiện các thao tác đọc và ghi dữ liệu với PostgreSQL.
+Các kết quả xử lý được phản hồi thông qua HTTP Client để giao diện người dùng cập nhật trạng thái và hiển thị thông báo phù hợp.
+Các trường hợp ngoại lệ được xử lý tại tầng Service trước khi trả kết quả về Controller nhằm bảo đảm tính nhất quán của dữ liệu.
+VIII. Góc nhìn bảo mật
+7.1 Kiến trúc bảo mật
+Trong kiến trúc của hệ thống, các cơ chế bảo mật được bố trí tại nhiều vị trí khác nhau thay vì tập trung vào một thành phần riêng biệt.
+Cloudflare được triển khai tại lớp biên của hệ thống để tiếp nhận toàn bộ lưu lượng truy cập từ Internet. Thành phần này cung cấp kết nối SSL/TLS, Web Application Firewall (WAF) và hỗ trợ giảm thiểu các hình thức tấn công phổ biến trước khi yêu cầu được chuyển đến máy chủ ứng dụng.
+Thành phần JWTAuth nằm trước các Controller của Application Layer. Mọi yêu cầu cần xác thực đều phải đi qua thành phần này để kiểm tra Access Token trước khi được xử lý.
+Sau khi xác thực thành công, các Controller chuyển yêu cầu xuống các Service tương ứng. Tại Business Layer, hệ thống tiếp tục kiểm tra quyền truy cập theo vai trò và quyền sở hữu dữ liệu trước khi thực hiện các nghiệp vụ hoặc truy cập cơ sở dữ liệu.
+Nhờ việc bố trí các cơ chế bảo mật theo nhiều lớp, các yêu cầu không hợp lệ được loại bỏ ngay từ giai đoạn đầu, giảm thiểu rủi ro ảnh hưởng đến dữ liệu và các thành phần phía sau.
+7.2 Xác thực người dùng
+Hệ thống sử dụng cơ chế Stateless Authentication dựa trên JSON Web Token (JWT).Sau khi người dùng đăng nhập thành công, hệ thống sinh một Access Token chứa thông tin định danh và vai trò của người dùng. Token này được gửi về Client và được đính kèm trong các yêu cầu tiếp theo.
+Khi nhận yêu cầu, thành phần JWTAuth kiểm tra tính hợp lệ của Token, bao gồm chữ ký số, thời gian hiệu lực và các thông tin xác thực khác. Chỉ những yêu cầu mang Token hợp lệ mới được chuyển đến các Controller để tiếp tục xử lý. Việc sử dụng JWT giúp máy chủ không cần lưu trạng thái đăng nhập của người dùng, phù hợp với kiến trúc phân tầng và hỗ trợ mở rộng hệ thống khi số lượng yêu cầu tăng lên.
+7.3 Phân quyền truy cập
+Sau khi hoàn thành bước xác thực, hệ thống thực hiện phân quyền theo mô hình Role-Based Access Control (RBAC).
+Mỗi tài khoản được gán một vai trò khi đăng nhập. Thông tin vai trò được lấy từ Access Token và sử dụng trong quá trình xử lý yêu cầu.
+Hệ thống hiện hỗ trợ ba nhóm vai trò:
+Người sở hữu tài sản.
+Người tiếp nhận tài sản.
+Quản trị viên.
+Các Controller và Service chỉ cho phép người dùng thực hiện những chức năng tương ứng với vai trò của mình. Những yêu cầu vượt quá phạm vi quyền hạn sẽ bị từ chối trước khi truy cập tới tầng nghiệp vụ.
+7.4 Kiểm soát quyền sở hữu dữ liệu
+Ngoài việc phân quyền theo vai trò, hệ thống còn áp dụng cơ chế Resource Ownership Validation để kiểm soát quyền thao tác trên dữ liệu.Đối với các chức năng như chỉnh sửa tài sản, xóa bài đăng, cập nhật giao dịch hoặc xử lý đề xuất, Business Service sẽ kiểm tra người gửi yêu cầu có phải là chủ sở hữu của tài nguyên hay không.
+Nếu thông tin định danh trong Access Token không trùng với chủ sở hữu dữ liệu được lưu trong cơ sở dữ liệu thì yêu cầu sẽ bị từ chối và không được chuyển xuống Repository.Cơ chế này giúp ngăn chặn việc người dùng truy cập hoặc chỉnh sửa dữ liệu của người khác mặc dù đã đăng nhập hợp lệ.
+7.5 Bảo mật truyền thông
+Tất cả dữ liệu trao đổi giữa Client và Server đều được truyền qua các giao thức mã hóa.
+Các yêu cầu REST API sử dụng HTTPS, trong khi các kết nối thời gian thực giữa Client và Chat Gateway sử dụng WSS (WebSocket Secure). Việc mã hóa đường truyền giúp bảo vệ dữ liệu khỏi các nguy cơ nghe lén, thay đổi nội dung hoặc giả mạo trong quá trình truyền tải.
+Cloudflare đồng thời cung cấp lớp bảo vệ bổ sung thông qua SSL/TLS và Web Application Firewall (WAF), hỗ trợ phát hiện và ngăn chặn nhiều dạng tấn công phổ biến như SQL Injection, Cross-Site Scripting (XSS) và các cuộc tấn công từ chối dịch vụ (DDoS).
+7.6 Quan hệ giữa các thành phần bảo mật
+Trong kiến trúc hệ thống, quá trình xử lý một yêu cầu diễn ra theo thứ tự sau:
+Client gửi yêu cầu thông qua HTTP Client hoặc WebSocket Client.
+Yêu cầu được chuyển đến Cloudflare để kiểm tra và bảo vệ kết nối.
+Máy chủ tiếp nhận yêu cầu và chuyển đến thành phần JWTAuth để xác thực Access Token.
+Sau khi xác thực thành công, yêu cầu được chuyển đến Controller tương ứng.
+Business Service kiểm tra quyền truy cập theo RBAC và quyền sở hữu tài nguyên trước khi thực hiện nghiệp vụ.
+Repository chỉ được truy cập khi yêu cầu đã vượt qua toàn bộ các bước kiểm tra bảo mật.
+IX. Đánh giá kiến trúc
+9.1 Khả năng đáp ứng hiệu năng
+Kiến trúc phân tầng giúp giảm mức độ phụ thuộc giữa các thành phần, cho phép mỗi tầng chỉ thực hiện đúng trách nhiệm của mình. Các yêu cầu từ người dùng được xử lý theo luồng Client → Controller → Service → Repository → Database, hạn chế việc xử lý dư thừa và giảm thời gian phản hồi.
+Việc sử dụng PostgreSQL kết hợp Repository Pattern giúp truy vấn dữ liệu có tổ chức và dễ tối ưu. Những chức năng thường xuyên sử dụng như tìm kiếm tài sản, quản lý bài đăng và quản lý giao dịch đều được thực hiện thông qua các Service chuyên biệt, góp phần giảm thời gian xử lý nghiệp vụ.
+Với quy mô thiết kế hiện tại, kiến trúc đáp ứng các yêu cầu:
+NFR-01: Thời gian phản hồi chức năng tìm kiếm không quá 03 giây.
+NFR-02: Thời gian thực hiện thao tác tạo, cập nhật và xóa dữ liệu không quá 05 giây.
+9.2 Khả năng đáp ứng độ tin cậy
+Kiến trúc phân chia rõ ràng giữa tầng nghiệp vụ và tầng truy cập dữ liệu giúp đảm bảo tính nhất quán trong quá trình xử lý.
+Toàn bộ các thay đổi đối với bài đăng, đề xuất và giao dịch đều được xử lý thông qua Business Service trước khi ghi xuống cơ sở dữ liệu, hạn chế việc cập nhật trực tiếp từ Controller. Điều này giúp dữ liệu luôn được kiểm tra và xác thực trước khi lưu trữ.
+PostgreSQL hỗ trợ cơ chế giao dịch (Transaction) nhằm đảm bảo các thao tác ghi dữ liệu được thực hiện theo nguyên tắc toàn vẹn. Khi xảy ra lỗi trong quá trình xử lý, giao dịch có thể được hủy bỏ để tránh phát sinh dữ liệu không nhất quán.
+Kiến trúc cũng được triển khai trên môi trường máy chủ có khả năng hoạt động liên tục, đáp ứng yêu cầu về tính sẵn sàng của hệ thống.
+Các yêu cầu được đáp ứng gồm:
+NFR-04: Đảm bảo tính nhất quán của dữ liệu.
+NFR-05: Hạn chế mất dữ liệu sau khi lưu thành công.
+NFR-06: Đảm bảo hệ thống sẵn sàng phục vụ người dùng, ngoại trừ thời gian bảo trì.
+9.3 Khả năng đáp ứng bảo mật
+Kiến trúc tích hợp các cơ chế bảo mật tại nhiều tầng khác nhau. Thành phần JWTAuth thực hiện xác thực người dùng theo cơ chế Stateless Authentication. Sau khi xác thực thành công, hệ thống sử dụng mô hình Role-Based Access Control (RBAC) để kiểm soát quyền truy cập của từng nhóm người dùng. Tại Business Layer, cơ chế Resource Ownership Validation được áp dụng để đảm bảo người dùng chỉ được thao tác trên dữ liệu thuộc quyền quản lý của mình.
+Bên ngoài hệ thống, Cloudflare cung cấp SSL/TLS, Web Application Firewall (WAF) và bảo vệ kết nối HTTPS/WSS nhằm giảm thiểu nguy cơ nghe lén hoặc tấn công vào ứng dụng. Ngoài ra, mật khẩu người dùng được lưu dưới dạng giá trị băm (Hash) thay vì văn bản thuần, góp phần bảo vệ thông tin xác thực trong trường hợp dữ liệu bị rò rỉ.
+Kiến trúc đáp ứng các yêu cầu:
+NFR-07: Chỉ người dùng đã xác thực mới được truy cập các chức năng yêu cầu đăng nhập.
+NFR-08: Phân quyền theo vai trò người sở hữu tài sản, người tiếp nhận tài sản và quản trị viên.
+NFR-09: Kiểm soát quyền truy cập đối với tài nguyên thuộc sở hữu của người dùng.
+NFR-10: Mật khẩu được lưu dưới dạng Hash.
+9.4 Khả năng mở rộng
+Việc phân chia hệ thống thành các tầng độc lập và các module nghiệp vụ riêng biệt giúp giảm sự phụ thuộc giữa các thành phần.
+Mỗi chức năng như quản lý tài khoản, tài sản, đề xuất, giao dịch, trò chuyện, đánh giá, báo cáo và quản trị đều được triển khai dưới dạng các Service và Repository độc lập. Khi bổ sung chức năng mới, chỉ cần thêm các thành phần tương ứng mà không ảnh hưởng đáng kể đến các module hiện có.
+Kiến trúc cũng cho phép mở rộng theo chiều ngang bằng cách triển khai nhiều phiên bản máy chủ ứng dụng phía sau Cloudflare mà không cần thay đổi cấu trúc tổng thể của hệ thống.
+Kiến trúc đáp ứng:
+NFR-03: Hỗ trợ tối thiểu 50 người dùng truy cập đồng thời và có khả năng mở rộng khi nhu cầu sử dụng tăng.
+9.5 Khả năng bảo trì
+Kiến trúc phân tầng kết hợp với nguyên tắc phân tách trách nhiệm giúp mã nguồn được tổ chức rõ ràng và dễ quản lý.
+Controller chỉ tiếp nhận và điều phối yêu cầu, Service xử lý nghiệp vụ, còn Repository chịu trách nhiệm truy cập dữ liệu. Việc tách biệt này giúp giảm sự phụ thuộc giữa các thành phần, thuận lợi cho việc kiểm thử, sửa lỗi và nâng cấp.
+Các module được thiết kế độc lập nên việc thay đổi hoặc bổ sung chức năng ở một module ít ảnh hưởng đến các module khác. Điều này giúp giảm chi phí bảo trì và nâng cao khả năng phát triển hệ thống trong tương lai.
+Ngoài ra, việc sử dụng giao diện thống nhất, kiểm tra dữ liệu đầu vào và hỗ trợ nhiều nền tảng truy cập cũng góp phần nâng cao khả năng sử dụng và duy trì hệ thống, đáp ứng các yêu cầu:
+NFR-11: Giao diện thống nhất trên toàn hệ thống.
+NFR-12: Kiểm tra dữ liệu đầu vào và thông báo lỗi rõ ràng.
+NFR-13: Hoạt động ổn định trên Google Chrome, Microsoft Edge và Mozilla Firefox.
+NFR-14: Giao diện tương thích với máy tính, máy tính bảng và điện thoại thông minh.
+Thuật ngữ/Từ viết tắt | Ý nghĩa
+API | Application Programming Interface - Giao diện lập trình ứng dụng
+JWT | JSON Web Token - Chuẩn xác thực và truyền thông tin giữa các thành phần
+REST | Representational State Transfer - Kiến trúc giao tiếp dịch vụ web
+HTTPS | HyperText Transfer Protocol Secure - Giao thức truyền tải siêu văn bản bảo mật
+WSS | WebSocket Secure - Giao thức WebSocket bảo mật
+SMTP | Simple Mail Transfer Protocol - Giao thức gửi thư điện tử
+PostgreSQL | Hệ quản trị cơ sở dữ liệu quan hệ mã nguồn mở
+Node.js | Môi trường thực thi JavaScript phía máy chủ
+ReactJS | Thư viện JavaScript xây dựng giao diện người dùng
+Vercel | Nền tảng triển khai ứng dụng Frontend
+Render | Nền tảng triển khai dịch vụ Backend và cơ sở dữ liệu
+Cloudflare | Dịch vụ CDN và bảo mật mạng, bảo vệ ứng dụng trước các cuộc tấn công và tối ưu lưu lượng truy cập
+Component | Thành phần phần mềm thực hiện một hoặc nhiều chức năng của hệ thống
+Package | Nhóm các thành phần có liên quan được tổ chức theo chức năng hoặc kiến trúc
+Deployment Node | Nút triển khai vật lý hoặc logic nơi hệ thống được cài đặt và thực thi
+Layer Architecture | Kiến trúc phân lớp, chia hệ thống thành các tầng chức năng độc lập
+Client–Server Architecture | Kiến trúc trong đó phía Client gửi yêu cầu và phía Server xử lý, phản hồi kết quả
+Mã FR | Nội dung yêu cầu
+FR-01 | Hệ thống cho phép người sở hữu đăng tải thông tin tài sản.
+FR-02 | Hệ thống cho phép người sở hữu chỉnh sửa thông tin tài sản đã đăng.
+FR-03 | Hệ thống cho phép người sở hữu xóa hoặc ngừng hiển thị bài đăng.
+FR-04 | Hệ thống cho phép người sở hữu xem danh sách tài sản đã chia sẻ.
+FR-05 | Hệ thống cho phép người tiếp nhận tìm kiếm và lọc tài sản.
+FR-06 | Hệ thống cho phép xem chi tiết tài sản.
+FR-07 | Hệ thống cho phép gửi đề xuất giao dịch.
+FR-08 | Hệ thống cho phép người sở hữu xem danh sách đề xuất.
+FR-09 | Hệ thống cho phép chấp nhận hoặc từ chối đề xuất.
+FR-10 | Hệ thống hỗ trợ hai bên trao đổi thông tin giao dịch.
+FR-11 | Hệ thống cho phép chốt thỏa thuận giao dịch.
+FR-12 | Hệ thống cho phép xác nhận hoàn tất giao dịch.
+FR-13 | Hệ thống cho phép hủy giao dịch.
+FR-14 | Hệ thống cho phép theo dõi trạng thái giao dịch.
+FR-15 | Hệ thống cho phép đăng ký tài khoản.
+FR-16 | Hệ thống cho phép đăng nhập hệ thống.
+FR-17 | Hệ thống cho phép cập nhật hồ sơ cá nhân.
+FR-18 | Hệ thống cho phép đánh giá đối tác giao dịch.
+FR-19 | Hệ thống cho phép xem hồ sơ uy tín thành viên.
+FR-20 | Hệ thống cho phép gửi báo cáo vi phạm.
+FR-21 | Hệ thống cho phép quản trị viên xem danh sách báo cáo.
+FR-22 | Hệ thống cho phép quản trị viên xem chi tiết báo cáo.
+FR-23 | Hệ thống cho phép quản trị viên xử lý báo cáo vi phạm.
+Mã NFR | Yêu cầu phi chức năng | Nhóm chất lượng
+NFR-01 | Hệ thống phải đảm bảo thời gian phản hồi đối với chức năng tìm kiếm tài sản không quá 03 giây trong điều kiện tối đa 50 người dùng đồng thời. | Performance
+NFR-02 | Các thao tác tạo, cập nhật hoặc xóa dữ liệu phải hoàn thành trong thời gian không quá 05 giây kể từ khi người dùng xác nhận thao tác. | Performance
+NFR-03 | Hệ thống phải hỗ trợ tối thiểu 50 người dùng truy cập đồng thời mà vẫn đảm bảo các chức năng chính hoạt động bình thường. | Scalability
+NFR-04 | Hệ thống phải đảm bảo dữ liệu bài đăng, đề xuất và giao dịch luôn nhất quán trong mọi quá trình cập nhật trạng thái. | Reliability / Integrity
+NFR-05 | Dữ liệu đã được hệ thống xác nhận lưu thành công không được phép bị mất khi xảy ra lỗi hệ thống hoặc mất kết nối. | Reliability
+NFR-06 | Hệ thống phải sẵn sàng phục vụ người dùng 24 giờ/ngày, 7 ngày/tuần, ngoại trừ thời gian bảo trì đã được thông báo trước. | Availability
+NFR-07 | Chỉ người dùng đã được xác thực mới được phép truy cập các chức năng yêu cầu đăng nhập. | Access Security
+NFR-08 | Hệ thống phải phân quyền theo đúng vai trò Người sở hữu tài sản, Người tiếp nhận tài sản và Quản trị viên. | Access Security
+NFR-09 | Người dùng chỉ được phép xem, chỉnh sửa hoặc xóa dữ liệu thuộc quyền quản lý của mình. | Confidentiality
+NFR-10 | Mật khẩu phải được lưu dưới dạng giá trị băm (Hash) và không được lưu dưới dạng văn bản thuần. | Confidentiality
+NFR-11 | Hệ thống phải sử dụng giao diện thống nhất về bố cục, màu sắc, biểu tượng và cách trình bày trên toàn bộ các chức năng. | Usability
+NFR-12 | Hệ thống phải kiểm tra dữ liệu đầu vào và hiển thị thông báo lỗi rõ ràng trước khi lưu hoặc xử lý dữ liệu. | Usability
+NFR-13 | Hệ thống phải hoạt động ổn định trên các trình duyệt Google Chrome, Microsoft Edge và Mozilla Firefox. | Compatibility
+NFR-14 | Giao diện phải hiển thị phù hợp trên máy tính, máy tính bảng và điện thoại thông minh. | Accessibility
+STT | Nút triển khai | Loại nút | Thành phần triển khai | Chức năng
+1 | Client Device | Device | Web Browser | Thiết bị người dùng truy cập hệ thống thông qua trình duyệt web.
+2 | Web Browser | Execution Environment | UI, HTTP Client, WebSocket Client | Hiển thị giao diện, gửi yêu cầu HTTPS và duy trì kết nối WebSocket với Backend.
+3 | Cloudflare | Reverse Proxy/CDN/WAF | Cloudflare Service | Tiếp nhận toàn bộ lưu lượng từ Client, bảo vệ hệ thống, tối ưu hóa truyền tải và định tuyến đến Frontend hoặc Backend.
+4 | Vercel Platform | Execution Environment | Frontend Application | Lưu trữ và cung cấp ứng dụng Frontend cho người dùng.
+5 | Render Platform | Execution Environment | Backend Application | Xử lý nghiệp vụ, xác thực, API, WebSocket và điều phối toàn bộ hoạt động của hệ thống.
+6 | PostgreSQL Server | Database Server | Database | Lưu trữ dữ liệu người dùng, tài sản, giao dịch, tin nhắn và các dữ liệu nghiệp vụ khác.
+7 | Email Service | external system | Mail Server | Gửi email xác thực tài khoản, khôi phục mật khẩu và thông báo hệ thống thông qua SMTP.
+STT | Nguồn | Đích | Giao thức | Mục đích
+1 | HTTP Client (Web Browser) | Cloudflare | HTTPS | Gửi yêu cầu HTTP/REST từ trình duyệt.
+2 | Cloudflare | Frontend Application (Vercel) | HTTPS | Phân phối giao diện và tài nguyên tĩnh.
+3 | HTTP Client (Web Browser) | Cloudflare | HTTPS | Gửi yêu cầu API đến Backend thông qua Cloudflare.
+4 | Cloudflare | Backend Application (Render) | HTTPS | Chuyển tiếp các yêu cầu API đến Backend.
+5 | WebSocket Client | Cloudflare | WSS | Thiết lập kết nối thời gian thực từ trình duyệt.
+6 | Cloudflare | Backend Application | WSS | Chuyển tiếp kết nối WebSocket đến Backend.
+7 | Backend Application | PostgreSQL Database | TCP/IP | Truy vấn, cập nhật và lưu trữ dữ liệu hệ thống.
+8 | Backend Application | Email Service | SMTP | Gửi email xác thực, đặt lại mật khẩu và thông báo.
+Thành phần | Mô tả chức năng
+UI | Hiển thị giao diện người dùng, tiếp nhận thao tác và chuyển yêu cầu đến HTTP Client hoặc WebSocket Client.
+HTTP Client | Gửi và nhận các yêu cầu HTTP/HTTPS giữa Client và Backend.
+WebSocket Client | Thiết lập kết nối WebSocket để trao đổi dữ liệu thời gian thực với ChatGateway.
+Security (JWTAuth) | Thực hiện xác thực và phân quyền người dùng dựa trên JWT trước khi chuyển yêu cầu đến các Controller.
+Application Layer | Tiếp nhận yêu cầu từ Client, điều phối luồng xử lý và trả kết quả về Client. Bao gồm các Controller và ChatGateway.
+Business Layer | Cài đặt các quy tắc nghiệp vụ của hệ thống, xử lý các chức năng quản lý tài khoản, tài sản, giao dịch, đề xuất, đánh giá, báo cáo và quản trị.
+Data Access Layer | Thực hiện truy vấn, lưu trữ và cập nhật dữ liệu thông qua các Repository.
+PostgreSQL Database | Lưu trữ toàn bộ dữ liệu của hệ thống.
+Email Service | Cung cấp chức năng gửi email xác thực, đặt lại mật khẩu và các thông báo của hệ thống.
+Thành phần | Giao diện cung cấp | Giao diện sử dụng | Giao thức
+UI |  | IRESTClient, IWebSocketClient | Nội bộ
+HTTP Client | IRESTClient | REST API | HTTPS
+WebSocket Client | IWebSocketClient | WebSocket Endpoint | WSS
+JWTAuth | IAuthentication |  | Nội bộ
+Controller | REST API | IAuthentication, Service Interface | HTTPS
+ChatGateway | WebSocket Endpoint | ChatService | WSS
+Business Service | Service Interface | Repository Interface | Nội bộ
+Repository | Repository Interface | PostgreSQL | TCP/IP
+Business Service | Email Interface | Email Service | SMTP

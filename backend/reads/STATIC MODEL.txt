@@ -1,0 +1,550 @@
+MÔ HÌNH HÓA TĨNH (STATIC MODEL)
+I. GIỚI THIỆU (INTRODUCTION)
+1.1. Mục đích tài liệu
+Tài liệu Mô hình hóa tĩnh (Static Model) được xây dựng nhằm mô tả cấu trúc tĩnh của hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân. Nội dung của tài liệu tập trung xác định các thực thể nghiệp vụ, các lớp khái niệm, thuộc tính và các mối quan hệ giữa chúng trong phạm vi miền nghiệp vụ, không xét đến trình tự thực hiện hay sự thay đổi trạng thái của hệ thống theo thời gian.
+Kết quả của tài liệu là cơ sở cho việc xây dựng mô hình dữ liệu ở mức phân tích, đồng thời làm đầu vào cho các hoạt động mô hình hóa động, thiết kế lớp, thiết kế cơ sở dữ liệu và kiểm thử hệ thống ở các giai đoạn tiếp theo.
+1.2. Phạm vi mô hình hóa
+Tài liệu tập trung mô hình hóa các thành phần cấu trúc của hệ thống trong phạm vi miền nghiệp vụ của bài toán. Nội dung mô hình hóa bao gồm việc xác định các đối tượng nghiệp vụ cần quản lý, xây dựng các lớp khái niệm, xác định thuộc tính và các quan hệ giữa các lớp, đồng thời kiểm chứng tính hợp lệ của mô hình thông qua các biểu đồ đối tượng và ma trận truy vết.
+Phạm vi của tài liệu bao gồm:
+Mô hình hóa bối cảnh hệ thống nhằm xác định ranh giới giữa hệ thống với các tác nhân và các thành phần bên ngoài.
+Xác định và đặc tả các thực thể nghiệp vụ được hình thành từ các quy trình nghiệp vụ, Business Use Case và Business Rule.
+Xây dựng mô hình lớp khái niệm, xác định các thuộc tính và các quan hệ giữa các lớp.
+Kiểm chứng mô hình bằng các biểu đồ đối tượng tại các thời điểm đại diện của nghiệp vụ.
+Thiết lập các ma trận truy vết nhằm kiểm tra tính đầy đủ và tính nhất quán giữa yêu cầu nghiệp vụ với mô hình tĩnh.
+1.3. Tài liệu tham chiếu
+Tài liệu Mô hình hóa tĩnh được xây dựng trên cơ sở kế thừa và đối chiếu với các tài liệu đặc tả của dự án, đồng thời tham khảo các tiêu chuẩn và tài liệu chuyên ngành liên quan đến phân tích, mô hình hóa hệ thống và kỹ nghệ yêu cầu. Các tài liệu được sử dụng bao gồm:
+Business Requirements Document (BRD) – Tài liệu đặc tả yêu cầu nghiệp vụ của hệ thống.BRD - Business Requirements Document
+System Requirements Specification (SyRS) – Tài liệu đặc tả yêu cầu hệ thống.SyRS - System requirements specification 
+ISO/IEC/IEEE 29148:2018 – Systems and Software Engineering – Life Cycle Processes – Requirements Engineering.
+https://cdn.standards.iteh.ai/samples/72089/62bb2ea1ef8b4f33a80d984f826267c1/ISO-IEC-IEEE-29148-2018.pdf 
+Software Modeling and Design: UML, Use Cases, Patterns, and Software Architectures – Hassan Gomaa.
+https://archive.org/details/SoftwareModelingAndDesign_633 
+OMG Unified Modeling Language (UML) Specification 2.5.
+https://www.omg.org/spec/UML/2.5/PDF 
+1.4. Thuật ngữ và từ viết tắt
+Các thuật ngữ và từ viết tắt được sử dụng thống nhất trong tài liệu nhằm bảo đảm cách hiểu giữa các bên liên quan trong quá trình phân tích và thiết kế hệ thống.
+Bảng 1.1: Danh mục các thuật ngữ và từ viết tắt 
+II. MÔ HÌNH HÓA BỐI CẢNH HỆ THỐNG (SYSTEM CONTEXT MODELING)
+Mô hình hóa bối cảnh hệ thống nhằm xác định phạm vi của hệ thống và các thành phần bên ngoài có tương tác với hệ thống trong quá trình thực hiện nghiệp vụ. Việc xác định đúng bối cảnh giúp làm rõ ranh giới giữa hệ thống với môi trường bên ngoài, đồng thời xác định các tác nhân và hệ thống bên ngoài cần trao đổi thông tin trong quá trình vận hành. 
+2.1. Xác định các tác nhân và lớp ngoại vi
+Dựa trên tài liệu Đặc tả yêu cầu nghiệp vụ (BRD) và Đặc tả yêu cầu hệ thống (SyRS), hệ thống có ba nhóm tác nhân chính tham gia trực tiếp vào các quy trình nghiệp vụ.
+Các tác nhân (Actors): Hệ thống phục vụ ba nhóm tác nhân chính đại diện cho các vai trò trong cộng đồng: 
+Các tác nhân Người dùng và Quản trị viên tương tác trực tiếp với hệ thống thông qua giao diện web trên các thiết bị như máy tính cá nhân, máy tính bảng hoặc điện thoại thông minh. Trong mô hình hóa tĩnh, các tác nhân này được biểu diễn dưới dạng các lớp <<external user>>. 
+Phân loại lớp ngoại vi theo Stereotype: 
+Nhóm Lớp người dùng ngoại vi (<<external user>>): Các tác nhân (Người dùng, Quản trị viên) đều tương tác với phần mềm thông qua các thiết bị I/O tiêu chuẩn (như màn hình, bàn phím máy tính hoặc điện thoại thông minh). Do đó, trong mô hình tĩnh, họ được biểu diễn thành các lớp <<external user>>.
+Nhóm Lớp hệ thống ngoại vi (<<external system>>): Trong phạm vi của đề tài, hệ thống không tích hợp với các hệ thống phần mềm hoặc dịch vụ của bên thứ ba. Tất cả các chức năng như đăng ký tài khoản, đăng nhập, quản lý tài sản, giao dịch, đánh giá và xử lý báo cáo đều được thực hiện hoàn toàn bên trong hệ thống. Vì vậy, mô hình bối cảnh không bao gồm lớp <<external system>>. 
+2.2. Biểu đồ ngữ cảnh hệ thống (Software System Context Diagram)
+Hình 2.1. Biểu đồ ngữ cảnh Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân. 
+2.3. Phân tích bối cảnh hệ thống
+Biểu đồ ngữ cảnh phần mềm cung cấp góc nhìn tĩnh ở mức trừu tượng cao nhất. Thay vì đi sâu vào các chức năng, toàn bộ phần mềm được đóng gói thành một hộp đen (black box) duy nhất <<software system>> 
+Thông qua biểu đồ, các luồng giao tiếp tại đường biên của hệ thống được quy định chặt chẽ bằng các quan hệ (Associations) chuẩn UML:
+Quan hệ tương tác (Interacts with): Mối quan hệ giữa Người dùng, Quản trị viên với hệ thống là Interacts with. Theo chuẩn UML, điều này thể hiện luồng giao tiếp hai chiều thông qua giao diện người dùng. Người dùng cung cấp thông tin đầu vào (ví dụ: tạo bài đăng, duyệt tìm tài sản, gửi báo cáo vi phạm) và hệ thống phản hồi kết quả hiển thị lên màn hình. 
+Bản số 1..* - 1 mang ý nghĩa tại bất kỳ thời điểm nào, một hệ thống duy nhất có thể phục vụ và tương tác đồng thời với nhiều người dùng khác nhau.
+III. XÁC ĐỊNH THỰC THỂ NGHIỆP VỤ (BUSINESS ENTITY IDENTIFICATION)
+3.1. Phương pháp xác định thực thể nghiệp vụ
+Quá trình xác định thực thể nghiệp vụ (Business Entity) được thực hiện dựa trên phương pháp phân tích từ vựng (Noun-phrase analysis) và truy vết yêu cầu. Cụ thể, nhóm phân tích tiến hành bóc tách các danh từ chỉ người, sự vật, sự việc và các khái niệm mang tính lưu trữ thông tin lâu dài từ hai nguồn tài liệu cốt lõi:
+Tài liệu Đặc tả yêu cầu nghiệp vụ (BRD): Rà soát các quy trình nghiệp vụ (Business Process) từ BP01 đến BP07, kết hợp với các Quy tắc nghiệp vụ (Business Rules - BRL) để tìm ra các đối tượng chịu sự tác động của luồng công việc.
+Tài liệu Đặc tả yêu cầu hệ thống (SyRS): Trích xuất từ các System Use Case và các biểu mẫu dữ liệu thực tế (như form đăng tin, form gửi đề xuất) để xác định chính xác các trường thông tin cần quản lý.
+Mục tiêu của phương pháp này là đảm bảo mọi thực thể được định nghĩa đều bắt nguồn từ nhu cầu thực tiễn của quy trình luân chuyển tài sản, không dư thừa và không bỏ sót.
+3.2. Ma trận truy vết thực thể nghiệp vụ
+Để đảm bảo tính đầy đủ (Completeness) của quá trình xác định thực thể, một ma trận truy vết được thiết lập nhằm ánh xạ trực tiếp các thực thể nghiệp vụ về các Business Use Case (BUC) gốc đã định nghĩa trong giai đoạn khảo sát. 
+Bảng 3.1. Ma trận truy vết Business Use Case - Thực thể nghiệp vụ
+3.3. Danh sách thực thể nghiệp vụ
+Từ ma trận truy vết trên, danh sách các thực thể nghiệp vụ cốt lõi của “Hệ thống hỗ trợ kết nối cộng đồng và tái phân phối tài sản cá nhân“ được tổng hợp và phân nhóm như sau:
+Nhóm Định danh và hồ sơ: 
+Người dùng: SyRS - System requirements specification  
+ Hồ sơ thành viên: UC5.3 SyRS - System requirements specification  
+Hồ sơ uy tín: UC6.2 SyRS - System requirements specification  
+Nhóm Quản lý tài sản: 
+Bài đăng tài sản: UC1.1-UC1.4 SyRS - System requirements specification  
+Danh mục tài sản: UC1.1, UC2.1 SyRS - System requirements specification  
+Hình ảnh tài sản: UC1.1, UC2.1 SyRS - System requirements specification  
+Nhóm Thương lượng và giao dịch: 
+Đề xuất giao dịch: UC2.3, UC3.1, UC3.2 SyRS - System requirements specification  
+Tin nhắn giao dịch: UC3.3 SyRS - System requirements specification  
+Giao dịch: UC3.4, UC4.1–UC4.3 SyRS - System requirements specification  
+Nhóm hậu điểm và an toàn cộng đồng: 
+Đánh giá: UC6.1 SyRS - System requirements specification  
+Báo cáo vi phạm: UC7.1–UC7.3 SyRS - System requirements specification  
+Biện pháp xử lý: UC7.4 SyRS - System requirements specification  
+3.4. Đặc tả thực thể nghiệp vụ
+Mỗi thực thể đóng một vai trò chuyên biệt trong không gian bài toán (Problem Domain). Việc đặc tả giúp làm rõ ngữ nghĩa và ranh giới thông tin mà thực thể đó đại diện trong thực tế.
+Người dùng: Đại diện cho cá nhân hoặc tổ chức tham gia hệ thống. Một người dùng có thể vừa đóng vai trò người sở hữu tài sản, vừa đóng vai trò người tiếp nhận tài sản tùy theo từng nghiệp vụ cụ thể.
+Hồ sơ thành viên: Lưu thông tin công khai của người dùng như họ tên, ảnh đại diện, số điện thoại, email, địa chỉ và mô tả cá nhân.
+Hồ sơ uy tín: Lưu điểm uy tín tổng hợp, số lượt đánh giá và lịch sử đánh giá liên quan đến một thành viên.
+Danh mục tài sản: Dùng để phân loại tài sản, hỗ trợ tìm kiếm, lọc và chuẩn hóa dữ liệu bài đăng.
+Bài đăng tài sản: Lưu thông tin tài sản được chia sẻ, bao gồm tên tài sản, mô tả, tình trạng, số lượng, địa điểm, hình thức chia sẻ và trạng thái bài đăng.
+Hình ảnh tài sản: Lưu các hình ảnh minh họa cho bài đăng. Một bài đăng có thể có nhiều hình ảnh.
+Đề xuất giao dịch: Lưu yêu cầu nhận hoặc trao đổi tài sản do người tiếp nhận gửi đến người sở hữu.
+Tin nhắn giao dịch: Lưu lịch sử trao đổi giữa người sở hữu và người tiếp nhận trong quá trình thương lượng giao dịch.
+Giao dịch: Lưu thông tin giao dịch được tạo sau khi hai bên chốt thỏa thuận. Giao dịch dùng để theo dõi số lượng giữ chỗ, thời gian, địa điểm bàn giao, trạng thái hoàn tất hoặc hủy.
+Đánh giá: Lưu điểm số và nhận xét của người dùng sau khi giao dịch hoàn tất.
+Báo cáo vi phạm: Lưu thông tin báo cáo đối với bài đăng hoặc người dùng có dấu hiệu vi phạm.
+Biện pháp xử lý: Lưu kết quả xử lý báo cáo của quản trị viên.
+3.5. Quan hệ giữa các thực thể nghiệp vụ
+Hình 3.1 : Sơ đồ quan hệ thực thể nghiệp vụ 
+Phân tích quan hệ: Các thực thể nghiệp vụ có sự ràng buộc chặt chẽ với nhau, tuân thủ các quy tắc kinh doanh (Business Rules) nhằm mô phỏng chính xác vòng đời luân chuyển của một món đồ trong thực tế:
+Quan hệ Người dùng – Hồ sơ thành viên: BRL-004 BRD - Business Requirements Document 
+ Mỗi người dùng có một hồ sơ thành viên để lưu thông tin cá nhân và thông tin công khai phục vụ quá trình giao dịch.
+Quan hệ Người dùng – Hồ sơ uy tín: BRD - Business Requirements Document 
+ Mỗi người dùng có một hồ sơ uy tín, được cập nhật dựa trên kết quả đánh giá sau các giao dịch đã hoàn tất.
+Quan hệ Người dùng – Bài đăng tài sản: SyRS - System requirements specification  
+ Một người dùng có thể tạo nhiều bài đăng tài sản. Mỗi bài đăng chỉ thuộc về một người dùng cụ thể.
+Quan hệ Danh mục tài sản – Bài đăng tài sản: BRD - Business Requirements Document 
+ Một danh mục có thể chứa nhiều bài đăng. Mỗi bài đăng thuộc một danh mục để phục vụ tìm kiếm và lọc tài sản.
+Quan hệ Bài đăng tài sản – Hình ảnh tài sản: BRL-009 SyRS - System requirements specification  
+ Một bài đăng phải có ít nhất một hình ảnh minh họa. Hình ảnh phụ thuộc vào bài đăng nên được mô hình hóa bằng quan hệ hợp thành.
+Quan hệ Bài đăng tài sản – Đề xuất giao dịch: BRD - Business Requirements Document , BRL-014
+ Một bài đăng có thể nhận nhiều đề xuất giao dịch. Một đề xuất chỉ nhắm đến một bài đăng cụ thể.
+Quan hệ Người dùng – Đề xuất giao dịch: SyRS - System requirements specification  
+ Một người dùng có thể gửi nhiều đề xuất giao dịch. Mỗi đề xuất được gửi bởi một người dùng cụ thể.
+Quan hệ Đề xuất giao dịch – Tin nhắn thương lượng: SyRS - System requirements specification  
+ Một đề xuất có thể phát sinh nhiều tin nhắn thương lượng. Các tin nhắn này được lưu lại để phục vụ truy vết và xử lý tranh chấp nếu có.
+Quan hệ Đề xuất giao dịch – Giao dịch: BRL-016
+ Một đề xuất có thể không tạo giao dịch nếu bị từ chối hoặc hủy. Khi được chấp nhận và chốt thỏa thuận, một đề xuất tạo tối đa một giao dịch.
+Quan hệ Giao dịch – Đánh giá: BRL-022
+ Một giao dịch hoàn tất có thể phát sinh tối đa hai đánh giá, tương ứng với đánh giá của hai bên tham gia giao dịch.
+Quan hệ Báo cáo vi phạm: BRL-025 
+ Một báo cáo có thể hướng đến một người dùng hoặc một bài đăng vi phạm. Báo cáo được quản trị viên xem xét và xử lý thông qua các biện pháp xử lý phù hợp.
+Quan hệ Báo cáo vi phạm – Biện pháp xử lý: Phân tích đối thủ cạnh tranh (Mục 2.2) BRD - Business Requirements Document 
+ Một báo cáo có thể có một hoặc nhiều biện pháp xử lý. Mỗi biện pháp xử lý được thực hiện bởi quản trị viên và được lưu lại để phục vụ kiểm tra, truy vết và minh bạch hóa quá trình xử lý.
+IV. MÔ HÌNH HÓA KHÁI NIỆM (CONCEPTUAL MODELING)
+4.1. Phương pháp xây dựng mô hình khái niệm
+Mô hình khái niệm được xây dựng nhằm cung cấp một góc nhìn cấu trúc tĩnh của không gian bài toán (problem domain) độc lập với yếu tố thời gian. Dựa trên phương pháp luận COMET, quá trình này tập trung vào việc chuyển đổi các thực thể nghiệp vụ (đã bóc tách ở Chương 3) thành các lớp đối tượng phần mềm tương ứng.
+Trong giai đoạn phân tích này, sự tập trung được dồn toàn bộ vào các lớp mang thông tin bền vững (data-intensive classes). Các lớp này được phân loại bằng stereotype <<entity>> nhằm xác định vai trò lưu trữ và cung cấp dữ liệu lõi cho toàn bộ hệ thống. Việc xác định các phương thức xử lý (operations) được trì hoãn cho đến pha thiết kế chi tiết (Design Modeling), do đó mô hình khái niệm hiện tại chỉ biểu diễn các thuộc tính và các mối quan hệ cấu trúc
+4.2. Danh sách lớp khái niệm
+Đối chiếu với tập thực thể nghiệp vụ và áp dụng chuẩn phân loại của UML, toàn bộ các đối tượng lưu trữ dữ liệu của Nền tảng tái phân phối tài sản được ánh xạ thành các lớp <<entity>>. Danh sách bao gồm:
+Tangible : đại diện cho những đối tượng vật lý, có thể định lượng, chiếm không gian và tồn tại thực sự trong thế giới thực 
+Intangible : đại diện cho các khái niệm nghiệp vụ, sự kiện, giao dịch, hồ sơ, hoặc các ràng buộc logic. Chúng không có hình thái vật lý, nhưng là những thực thể thông tin bắt buộc phải tồn tại để hệ thống có thể vận hành và kiểm soát được các quy trình nghiệp vụ. 
+4.3. Thuộc tính các lớp khái niệm
+Theo nguyên tắc che giấu thông tin (Information Hiding) trong thiết kế hướng đối tượng, mọi thuộc tính của lớp khái niệm đều được thiết lập phạm vi truy cập ở mức Private (ký hiệu -) 
+4.3.1. Lớp NguoiDung
+4.3.2. Lớp HoSoThanhVien
+4.3.3. Lớp HoSoUyTin
+4.3.4. Lớp DanhMucTaiSan
+4.3.5. Lớp BaiDangTaiSan
+4.3.6. Lớp HinhAnhTaiSan
+4.3.7. Lớp DeXuatGiaoDich
+4.3.8. Lớp TinNhanThuongLuong
+4.3.9. Lớp GiaoDich
+4.3.10. Lớp DanhGia
+4.3.11. Lớp BaoCaoViPham
+4.3.12. Lớp BienPhapXuLy
+4.4. Quan hệ giữa các lớp khái niệm
+Các lớp <<entity>> được liên kết với nhau bằng các mối quan hệ cấu trúc tĩnh nhằm quy định cách thức dữ liệu luân chuyển và phụ thuộc lẫn nhau. 
+4.4.1. Quan hệ kết hợp (Association)
+Quan hệ kết hợp (Association) là một mối quan hệ cấu trúc mang tính ngang hàng giữa các lớp độc lập. 
+Các quan hệ kết hợp chính gồm:
+NguoiDung tạo nhiều BaiDangTaiSan.
+NguoiDung gửi nhiều DeXuatGiaoDich.
+NguoiDung gửi nhiều TinNhanThuongLuong.
+NguoiDung tạo nhiều DanhGia.
+NguoiDung gửi nhiều BaoCaoViPham.
+GiaoDich phát sinh tối đa hai DanhGia.
+4.4.2. Quan hệ kết tập (Aggregation)
+Kết tập (Aggregation) là một hình thức yếu của quan hệ toàn thể - bộ phận (whole/part relationship), trong đó bộ phận có thể tồn tại độc lập với tổng thể. 
+Quan hệ kết tập được sử dụng giữa DanhMucTaiSan và BaiDangTaiSan. Một danh mục có thể chứa nhiều bài đăng, nhưng bài đăng vẫn là một đối tượng độc lập. Nếu danh mục bị thay đổi hoặc tái cấu trúc, bài đăng không bị xóa mà có thể được chuyển sang danh mục khác. 
+4.4.3. Quan hệ hợp thành (Composition)
+Hợp thành (Composition) là hình thức liên kết mạnh nhất của quan hệ toàn thể - bộ phận. 
+BaiDangTaiSan hợp thành nhiều HinhAnhTaiSan.
+BaoCaoViPham hợp thành nhiều BienPhapXuLy.
+Đối với BaiDangTaiSan và DeXuatGiaoDich, trong phiên bản này có thể sử dụng quan hệ hợp thành có điều kiện vì bài đăng bị xóa vật lý theo quyết định nghiệp vụ. Tuy nhiên, hệ thống chỉ cho phép xóa bài đăng khi bài đăng chưa có giao dịch hoặc đề xuất đang xử lý. Nếu bài đăng đã phát sinh giao dịch, việc xóa phải bị từ chối để đảm bảo dữ liệu lịch sử. 
+4.4.4. Quan hệ giữa đề xuất và giao dịch
+Một DeXuatGiaoDich có thể không tạo ra giao dịch nếu bị từ chối hoặc bị hủy. Khi đề xuất được chấp nhận và hai bên chốt thỏa thuận, hệ thống tạo tối đa một GiaoDich.
+4.4.5. Quan hệ giữa giao dịch và đánh giá
+Một GiaoDich chỉ được đánh giá khi đã ở trạng thái hoàn tất. Mỗi giao dịch có tối đa hai đánh giá, tương ứng với hai bên tham gia giao dịch.
+4.4.6. Quan hệ giữa báo cáo vi phạm và biện pháp xử lý
+Một BaoCaoViPham có thể có một hoặc nhiều BienPhapXuLy. Mỗi biện pháp xử lý được thực hiện bởi quản trị viên và được lưu lại để phục vụ truy vết.
+4.5. Biểu đồ lớp khái niệm (Conceptual Class Diagram)
+Hình 4.1 :Biểu đồ lớp khái niệm hệ thống Tái phân phối tài sản 
+4.6. Đặc tả lớp khái niệm
+Bảng đặc tả dưới đây cung cấp chi tiết định dạng, cấu trúc lưu trữ và các ràng buộc dữ liệu cho các lớp <<entity>> cốt lõi, làm cơ sở ánh xạ trực tiếp sang cơ sở dữ liệu vật lý trong giai đoạn thiết kế kiến trúc. 
+V. KIỂM CHỨNG MÔ HÌNH (MODEL VALIDATION)
+Kiểm chứng mô hình (Model Validation) là bước bắt buộc trong phương pháp luận COMET nhằm đảm bảo Sơ đồ lớp khái niệm (Conceptual Class Diagram) được thiết kế không chỉ đúng về mặt cú pháp UML mà còn đáp ứng trọn vẹn, logic các yêu cầu nghiệp vụ thực tiễn. Quá trình kiểm chứng được thực hiện thông qua hai phương pháp: (1) Rà soát độ bao phủ đối với các Use Case và (2) Mô phỏng trạng thái hệ thống thông qua Biểu đồ đối tượng (Object Diagram) tại các mốc thời gian (snapshots) quan trọng của vòng đời dữ liệu 
+5.1. Kiểm chứng mô hình với Business Use Case và System Use Case
+Mục tiêu của bước này là đánh giá tính đầy đủ của mô hình tĩnh. Toàn bộ các lớp khái niệm phải cung cấp đủ không gian lưu trữ cho dữ liệu phát sinh từ các Business Use Case và System Use Case.
+Mô hình khái niệm hiện tại gồm 12 lớp chính: NguoiDung, HoSoThanhVien, HoSoUyTin, DanhMucTaiSan, BaiDangTaiSan, HinhAnhTaiSan, DeXuatGiaoDich, TinNhanThuongLuong, GiaoDich, DanhGia, BaoCaoViPham và BienPhapXuLy.
+5.2. Kiểm chứng bằng biểu đồ đối tượng tại thời điểm khởi tạo bài đăng tài sản.
+Hình 5.1 :Biểu đồ đối tượng mô phỏng trạng thái dữ liệu tại thời điểm khởi tạo bài đăng tài sản. 
+Phân tích trạng thái dữ liệu
+Thời điểm này mô phỏng khi người sở hữu tài sản tạo một bài đăng mới trên hệ thống.
+user1 là người dùng đang hoạt động.
+profile1 lưu thông tin hồ sơ thành viên của người dùng.
+rep1 lưu thông tin uy tín ban đầu của người dùng.
+post1 là bài đăng tài sản được tạo bởi user1.
+post1 thuộc danh mục dm1.
+post1 có ít nhất một hình ảnh minh họa img1.
+Kết quả kiểm chứng
+Mô hình đáp ứng các ràng buộc sau:
+Một bài đăng phải thuộc về một người dùng.
+Một bài đăng phải thuộc một danh mục tài sản.
+Một bài đăng phải có ít nhất một hình ảnh.
+Số lượng tài sản đăng tải phải lớn hơn hoặc bằng 1.
+Khi mới khởi tạo, số lượng giữ chỗ bằng 0 và số lượng khả dụng bằng tổng số lượng.
+5.3. Kiểm chứng bằng biểu đồ đối tượng tại thời điểm thương lượng và chốt thoả thuận.
+Hình 5.2 :Biểu đồ đối tượng mô phỏng trạng thái dữ liệu tại thời điểm chốt thỏa thuận giao dịch. 
+Phân tích trạng thái dữ liệu
+Thời điểm này mô phỏng khi một bài đăng nhận được nhiều đề xuất và một đề xuất được chấp nhận để tạo giao dịch.
+receiver1 gửi prop1.
+receiver2 gửi prop2.
+prop1 phát sinh các tin nhắn thương lượng msg1, msg2.
+Sau khi hai bên thống nhất, prop1 được chấp nhận và tạo trans1.
+Hệ thống giữ chỗ số lượng cho giao dịch bằng cách cập nhật:
+soLuongGiuCho = 1
+soLuongKhaDung = 1
+Giao dịch mới ở trạng thái ChoBanGiao.
+Kết quả kiểm chứng
+Mô hình đáp ứng các ràng buộc sau:
+Một bài đăng có thể nhận nhiều đề xuất giao dịch.
+Một đề xuất có thể phát sinh nhiều tin nhắn thương lượng.
+Một đề xuất được chấp nhận chỉ tạo tối đa một giao dịch.
+Khi chốt thỏa thuận, hệ thống chỉ giữ chỗ số lượng, chưa cập nhật hoàn tất chính thức.
+Các đề xuất khác vẫn tồn tại theo trạng thái nghiệp vụ phù hợp, không bị xóa tự động nếu chưa có lý do nghiệp vụ.
+5.4. Kiểm chứng bằng biểu đồ đối tượng tại thời điểm xây dựng hồ sơ thành viên
+Hình 5.3: Biểu đồ đối tượng mô phỏng trạng thái dữ liệu tại thời điểm xây dựng hồ sơ thành viên
+Phân tích trạng thái dữ liệu
+Thời điểm này mô phỏng khi một người dùng mới hoàn tất đăng ký tài khoản, hệ thống khởi tạo hồ sơ thành viên và hồ sơ uy tín, sau đó người dùng chỉnh sửa lại hồ sơ của mình.
+user2 được khởi tạo với trangThai = "ChoXacThuc", chưa thể đăng bài hay thực hiện giao dịch nào.
+profile2 được tạo đồng thời với user2, chứa thông tin công khai (họ tên, ảnh đại diện, địa chỉ, mô tả cá nhân) — tách biệt với dữ liệu bảo mật trên user2.
+rep2 được khởi tạo mặc định với mọi chỉ số bằng 0 (diemTrungBinh, tongSoDanhGia, soGiaoDichHoanTat), vì người dùng chưa phát sinh giao dịch nào.
+Sau khi xác thực email, trangThai của user2 chuyển từ "ChoXacThuc" sang "HoatDong", cho phép user2 thực hiện các nghiệp vụ khác (đăng bài, gửi đề xuất, nhắn tin thương lượng...).
+profile2 sau đó được chính người dùng chỉnh sửa (đổi ảnh đại diện, địa chỉ, mô tả cá nhân), tạo thành phiên bản mới profile2b — thể hiện hồ sơ thành viên có thể cập nhật độc lập, không phụ thuộc vào trạng thái tài khoản.
+rep2 không thay đổi ở thời điểm này vì hồ sơ uy tín chỉ được cập nhật khi có giao dịch hoàn tất kèm đánh giá (xem thêm mục 5.4 và 5.7).
+Kết quả kiểm chứng
+Mô hình đáp ứng các ràng buộc sau:
+Mỗi NguoiDung khi khởi tạo luôn có đúng một HoSoThanhVien và một HoSoUyTin đi kèm (quan hệ 1-1 bắt buộc).
+HoSoUyTin luôn khởi tạo với giá trị mặc định bằng 0, không được gán sẵn số liệu.
+HoSoThanhVien có thể được cập nhật nhiều lần độc lập mà không ảnh hưởng đến trangThai của NguoiDung hay số liệu của HoSoUyTin.
+NguoiDung chỉ chuyển sang trangThai = "HoatDong" sau bước xác thực (email/số điện thoại), tách biệt hoàn toàn với thời điểm tạo hồ sơ.
+Dữ liệu bảo mật (trên NguoiDung) và dữ liệu công khai (trên HoSoThanhVien) không trộn lẫn trong cùng một lớp — khớp với nguyên tắc tách biệt thông tin đã nêu ở mục 4.3.
+5.5. Kiểm chứng bằng biểu đồ đối tượng tại thời điểm hoàn tất giao dịch và đánh giá.
+Hình 5.4 :Biểu đồ đối tượng mô phỏng trạng thái dữ liệu tại thời điểm hoàn tất giao dịch và đánh giá
+Phân tích trạng thái dữ liệu
+Thời điểm này mô phỏng khi hai bên đã bàn giao tài sản ngoài thực tế và xác nhận hoàn tất trên hệ thống.
+trans1 chuyển sang trạng thái HoanTat.
+Cả người sở hữu và người tiếp nhận đều đã xác nhận.
+Số lượng giữ chỗ được giải phóng khỏi trạng thái giữ chỗ.
+Số lượng khả dụng được cập nhật theo số lượng còn lại.
+Vì bài đăng vẫn còn một tài sản khả dụng nên post1 tiếp tục ở trạng thái KhaDung.
+Sau khi giao dịch hoàn tất, hệ thống cho phép tạo review1 và review2.
+Hồ sơ uy tín của hai bên được cập nhật dựa trên đánh giá nhận được.
+Kết quả kiểm chứng
+Mô hình đáp ứng các ràng buộc sau:
+Chỉ giao dịch hoàn tất mới được đánh giá.
+Mỗi giao dịch có tối đa hai đánh giá.
+Đánh giá phải xác định được người đánh giá và người được đánh giá.
+Hồ sơ uy tín được cập nhật dựa trên đánh giá sau giao dịch.
+Nếu giao dịch bị hủy, đối tượng DanhGia không được khởi tạo.
+5.6. Kiểm chứng bằng biểu đồ đối tượng tại thời điểm báo cáo và xử lý vi phạm
+Hình 5.5. Biểu đồ đối tượng mô phỏng trạng thái dữ liệu tại thời điểm báo cáo và xử lý vi phạm
+Phân tích trạng thái dữ liệu
+Thời điểm này mô phỏng quy trình người dùng gửi báo cáo vi phạm và quản trị viên xử lý báo cáo.
+reporter gửi report1.
+Báo cáo có thể gắn với người dùng bị báo cáo reportedUser hoặc bài đăng bị báo cáo post2.
+Quản trị viên admin xác minh báo cáo.
+Nếu báo cáo hợp lệ, quản trị viên tạo action1.
+Trong ví dụ này, biện pháp xử lý là ẩn bài đăng vi phạm.
+Kết quả kiểm chứng
+Mô hình đáp ứng các ràng buộc sau:
+Một báo cáo phải có người gửi.
+Một báo cáo phải xác định được đối tượng bị báo cáo là người dùng hoặc bài đăng.
+Một báo cáo có thể phát sinh biện pháp xử lý.
+Biện pháp xử lý phải có quản trị viên thực hiện.
+Việc xử lý báo cáo được lưu lại để phục vụ truy vết.
+5.7. Đánh giá kết quả kiểm chứng mô hình
+Thông qua việc ánh xạ các kịch bản sử dụng (Scenarios) vào cấu trúc dữ liệu tĩnh bằng các Biểu đồ đối tượng, nhóm phân tích kết luận Mô hình khái niệm đã đạt được các tiêu chuẩn chất lượng sau:
+Tính đầy đủ (Completeness): Hệ thống 12 lớp khái niệm đã cung cấp đủ trường thông tin (Attributes) và không gian lưu trữ để tiếp nhận toàn bộ các luồng dữ liệu sinh ra từ 7 Business Use Case lõi của dự án.
+Tính đúng đắn (Correctness): Sự dịch chuyển bản số (Multiplicity) và sự hình thành các Link giữa các đối tượng (Objects) qua các mốc thời gian hoàn toàn khớp với thực tế vận hành của mô hình kinh tế chia sẻ.
+Tính nhất quán và toàn vẹn (Consistency & Integrity): Các ràng buộc nghiệp vụ khó nhất (chống trùng lặp giao dịch, chống đánh giá ảo, trừ tự động số lượng tài sản) đã được chuyển hóa thành công thành các Constraints ở mức cấu trúc tĩnh. Dữ liệu rác (orphan data) không thể phát sinh nhờ các liên kết Aggregation và Composition.
+VI. MA TRẬN TRUY VẾT (TRACEABILITY MATRIX)
+Theo chuẩn Kỹ nghệ Yêu cầu ISO/IEC/IEEE 29148, việc thiết lập Ma trận truy vết (Traceability Matrix) là công cụ bắt buộc nhằm đảm bảo tính toàn vẹn và khả năng theo dõi hai chiều (bi-directional traceability) của hệ thống. Quá trình truy vết trong mô hình hóa tĩnh được thực hiện qua bốn cấp độ: từ mức quy trình nghiệp vụ (Business Use Case) xuống thực thể nghiệp vụ (Business Entity), và từ yêu cầu hệ thống (System Use Case, Functional Requirement, Business Rule) sang các Lớp khái niệm (Conceptual Classes) trong không gian giải pháp 
+6.1 Ma trận truy vết Business Use Case – Business Entity
+6.2 Ma trận truy vết System Use Case – Conceptual Class
+6.3 Ma trận truy vết Functional Requirement – Conceptual Class
+6.4 Ma trận truy vết Business Rule – Conceptual Class
+STT | Thuật ngữ / Từ viết tắt | Diễn giải
+1 | Static Model | Mô hình biểu diễn cấu trúc tĩnh của hệ thống, bao gồm các thực thể, lớp, thuộc tính và các quan hệ giữa chúng.
+2 | Business Entity | Thực thể nghiệp vụ được xác định từ các quy trình và yêu cầu nghiệp vụ, đại diện cho các đối tượng cần được quản lý trong hệ thống.
+3 | Conceptual Class | Lớp khái niệm được xây dựng từ các thực thể nghiệp vụ để mô tả cấu trúc dữ liệu ở giai đoạn phân tích.
+4 | System Context | Mô hình thể hiện ranh giới giữa hệ thống và các tác nhân hoặc hệ thống bên ngoài có tương tác với hệ thống.
+5 | Association | Quan hệ kết hợp giữa hai hoặc nhiều lớp trong mô hình khái niệm.
+6 | Aggregation | Quan hệ kết tập giữa đối tượng tổng thể và các thành phần có thể tồn tại độc lập.
+7 | Composition | Quan hệ hợp thành giữa đối tượng tổng thể và các thành phần phụ thuộc hoàn toàn vào vòng đời của đối tượng tổng thể.
+8 | Multiplicity | Bội số của quan hệ, xác định số lượng đối tượng tham gia trong một mối quan hệ.
+9 | Constraint | Ràng buộc được áp dụng cho mô hình nhằm bảo đảm tính hợp lệ và toàn vẹn của dữ liệu.
+10 | BRD | Business Requirements Document – Tài liệu đặc tả yêu cầu nghiệp vụ.
+11 | SyRS | System Requirements Specification – Tài liệu đặc tả yêu cầu hệ thống.
+12 | BUC | Business Use Case – Trường hợp sử dụng ở mức nghiệp vụ.
+13 | UC | System Use Case – Trường hợp sử dụng ở mức hệ thống.
+14 | BRL | Business Rule – Quy tắc nghiệp vụ quy định các điều kiện và ràng buộc cần tuân thủ trong quá trình thực hiện nghiệp vụ.
+Mã BUC | Tên Business Use Case | Thực thể nghiệp vụ liên quan | Ý nghĩa / Luồng dữ liệu sinh ra
+BUC01 | Chia sẻ thông tin tài sản | Người dùng, Hồ sơ thành viên, Bài đăng tài sản, Danh mục tài sản, Hình ảnh tài sản | Lưu thông tin người đăng, thông tin tài sản, hình ảnh, danh mục và trạng thái bài đăng.
+BUC02 | Tiếp cận tài sản | Người dùng, Bài đăng tài sản, Danh mục tài sản, Hình ảnh tài sản | Phục vụ tìm kiếm, lọc, xem chi tiết và đánh giá mức độ phù hợp của tài sản.
+BUC03 | Thương lượng giao dịch | Đề xuất giao dịch, Tin nhắn thương lượng, Bài đăng tài sản, Người dùng | Ghi nhận đề xuất, nội dung trao đổi, điều kiện thương lượng và lịch sử trao đổi giữa hai bên.
+BUC04 | Thực hiện giao dịch | Giao dịch, Bài đăng tài sản, Người dùng | Ghi nhận thỏa thuận, trạng thái giao dịch, số lượng giữ chỗ, xác nhận hoàn tất hoặc hủy giao dịch.
+BUC05 | Xây dựng hồ sơ thành viên | Người dùng, Hồ sơ thành viên | Quản lý thông tin định danh, thông tin liên hệ và hồ sơ cá nhân của thành viên.
+BUC06 | Đánh giá giao dịch | Đánh giá, Giao dịch, Hồ sơ uy tín, Người dùng | Lưu điểm đánh giá, nhận xét và cập nhật hồ sơ uy tín của thành viên sau giao dịch.
+BUC07 | Đảm bảo an toàn cộng đồng | Báo cáo vi phạm, Biện pháp xử lý, Người dùng, Bài đăng tài sản | Lưu báo cáo vi phạm, đối tượng bị báo cáo, kết quả xác minh và biện pháp xử lý của quản trị viên.
+STT | Thực thể nghiệp vụ | Nguồn gốc xác thực
+1 | Người dùng | BUC05: Xây dựng hồ sơ thành viên
+BRD - Business Requirements Document 
+UC5.1: Đăng ký tài khoản 
+UC5.2: Đăng nhập hệ thống
+UC5.3: Quản lý hồ sơ cá nhân
+SyRS - System requirements specification
+2 | Hồ sơ thành viên | Đầu vào BUC05: BRD - Business Requirements Document 
+UC5.3: Quản lý hồ sơ cá nhân 
+SyRS - System requirements specification
+3 | Hồ sơ uy tín | Đầu ra BUC06: Đánh giá giao dịch 
+BRD - Business Requirements Document 
+UC6.2: Xem hồ sơ uy tín thành viên 
+SyRS - System requirements specification
+4 | Danh mục tài sản | BUC01: Chia sẻ thông tin tài sản
+BRD - Business Requirements Document 
+BUC02: Tiếp cận tài sản
+UC1.1: Đăng tải tài sản
+UC2.1: Tìm kiếm và lọc tài sản
+SyRS - System requirements specification
+5 | Bài đăng tài sản | Đầu ra BUC01: Chia sẻ thông tin tài sản
+BRD - Business Requirements Document 
+UC1.1: Đăng tải tài sản
+UC1.2: Chỉnh sửa thông tin tài sản
+UC1.3: Xoá tin đăng
+UC1.4: Xem danh sách tài sản đã chia sẻ
+SyRS - System requirements specification
+6 | Hình ảnh tài sản | Đầu vào BUC01: Chia sẻ thông tin tài sản
+BRD - Business Requirements Document 
+UC1.1: Đăng tải tài sản
+UC1.2: Chỉnh sửa thông tin tài sản
+SyRS - System requirements specification
+7 | Đề xuất giao dịch | BUC03: Thương lượng giao dịch
+BRD - Business Requirements Document 
+UC2.3: Gửi đề xuất trao đổi
+UC3.1: Xem danh sách đề xuất giao dịch
+UC3.2: Chấp nhận hoặc từ chối đề xuất
+SyRS - System requirements specification
+8 | Tin nhắn thương lượng | BUC03:Thương lượng giao dịch
+BRD - Business Requirements Document 
+UC3.3: Trao đổi thông tin giao dịch
+SyRS - System requirements specification
+9 | Giao dịch | BUC04:Thực hiện giao dịch
+BRD - Business Requirements Document  
+UC3.4: Chốt thoả thuận giao dịch
+UC4.1: Xác nhận hoàn tất giao dịch
+UC4.2: Huỷ giao dịch
+UC4.3: Theo dõi trạng thái giao dịch
+SyRS - System requirements specification
+10 | Đánh giá | BUC06: Đánh giá giao dịch
+BRD - Business Requirements Document  
+UC6.1: Đánh giá đối tác giao dịch
+UC6.2: Xem hồ sơ uy tín thành viên
+SyRS - System requirements specification
+11 | Báo cáo vi phạm | BUC07: Đảm bảo an toàn cộng đồng
+BRD - Business Requirements Document 
+UC7.1: Báo cáo vi phạm
+UC7.2: Xem danh sách báo cáo
+UC7.3: Xem chi tiết báo cáo
+SyRS - System requirements specification
+12 | Biện pháp xử lý | Đầu ra BUC07: Đảm bảo an toàn cộng đồng
+BRD - Business Requirements Document 
+UC7.4: Xử lý báo cáo vi phạm
+SyRS - System requirements specification
+STT | Lớp khái niệm | Stereotype | Phân loại | Ý nghĩa | Nguồn gốc xác thực
+1 | NguoiDung | <<entity>> | Tangible | Đại diện cho tài khoản người dùng trong hệ thống | UC5.1- UC5.3SyRS - System requirements specification
+2 | HoSoThanhVien | <<entity>> | Intangible | Lưu thông tin hồ sơ cá nhân/ công khai của người dùng | UC5.3 SyRS - System requirements specification
+3 | HoSoUyTin | <<entity>> | Intangible | Lưu điểm uy tín và thông tin tổng hợp từ đánh giá | UC6.2 SyRS - System requirements specification
+4 | DanhMucTaiSan | <<entity>> | Intangible | Phân loại tài sản trong hệ thống | UC1.1, UC2.1 SyRS - System requirements specification
+5 | BaiDangTaiSan | <<entity>> | Intangible | Lưu thông tin bài đăng tài sản | UC1.1-UC1.4 SyRS - System requirements specification
+6 | HinhAnhTaiSan | <<entity>> | Intangible | Lưu hình ảnh minh hoạ của bài đăng | UC1.1, UC2.1 SyRS - System requirements specification
+7 | DeXuatGiaoDich | <<entity>> | Intangible | Lưu đề xuất giao dịch do người tiếp nhận gửi | UC2.3, UC3.1, UC3.2 SyRS - System requirements specification
+8 | TinNhanThuongLuong | <<entity>> | Intangible | Lưu lịch sử trao đổi trong quá trình thương lượng. | UC3.3 SyRS - System requirements specification
+9 | GiaoDich | <<entity>> | Intangible | Lưu thông tin giao dịch sau khi chốt thoả thuận | UC3.4, UC4.1–UC4.3 SyRS - System requirements specification
+10 | DanhGia | <<entity>> | Intangible | Lưu đánh giá sau giao dịch | UC6.1 SyRS - System requirements specification
+11 | BaoCaoViPham | <<entity>> | Intangible | Lưu báo cáo vi phạm do người dùng gửi | UC7.1–UC7.3 SyRS - System requirements specification
+12 | BienPhapXuLy | <<entity>> | Intangible | Lưu biện pháp xử lý của quản trị viên đối với báo cáo vi phạm | UC7.4 SyRS - System requirements specification
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+email | String | Bước 3  của UC 5.1SyRS - System requirements specification | Email đăng nhập.
+soDienThoai | String | Bước 3  của UC 5.1SyRS - System requirements specification | Số điện thoại liên hệ.
+matKhauHash | String | Bước 3  của UC 5.1SyRS - System requirements specification | Mật khẩu đã được băm.
+trangThai | Enum | Bước 4 UC 7.4
+SyRS - System requirements specification | Trạng thái tài khoản.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+hoTen | String | Bước 3 của UC 5.3SyRS - System requirements specification | Họ tên hiển thị.
+anhDaiDien | String | Bước 3 của UC 5.3SyRS - System requirements specification | Đường dẫn ảnh đại diện.
+diaChi | String | Bước 3 của UC 5.3SyRS - System requirements specification | Khu vực sinh sống hoặc địa chỉ liên hệ.
+moTaCaNhan | String | Bước 3 của UC 5.3SyRS - System requirements specification | Thông tin giới thiệu cá nhân.
+ngayCapNhat | DateTime | Bước 3 của UC 5.3SyRS - System requirements specification | Thời điểm cập nhật hồ sơ gần nhất.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+diemTrungBinh | Float | Bước 3 Của UC6.2
+SyRS - System requirements specification | Điểm uy tín trung bình.
+tongSoDanhGia | Integer | Bước 3 Của UC6.2
+SyRS - System requirements specification | Tổng số đánh giá đã nhận.
+soGiaoDichHoanTat | Integer | Bước 3 Của UC6.2
+SyRS - System requirements specification | Số giao dịch đã hoàn tất.
+ngayCapNhat | DateTime | Bước 3 Của UC6.2
+SyRS - System requirements specification | Thời điểm cập nhật điểm uy tín.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+tenDanhMuc | String | Bước 3 của UC1.1SyRS - System requirements specification | Tên danh mục tài sản.
+moTa | String | Bước 3 của UC1.1SyRS - System requirements specification | Mô tả danh mục.
+trangThai | Enum | Bước 3 của UC1.1SyRS - System requirements specification | Trạng thái sử dụng của danh mục.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+tenTaiSan | String | Bước 3 của UC1.1
+SyRS - System requirements specification | Tên tài sản.
+moTaHienTrang | String | Bước 3 của UC1.1SyRS - System requirements specification | Mô tả tình trạng tài sản.
+soLuongTong | Integer | Bước 3 của UC1.1SyRS - System requirements specification | Tổng số lượng tài sản được đăng.
+soLuongKhaDung | Integer | Bước 2 của UC 2.2SyRS - System requirements specification | Số lượng còn có thể tiếp nhận đề xuất.
+soLuongGiuCho | Integer | Bước 2 của UC3.4 SyRS - System requirements specification | Số lượng đang được giữ chỗ sau khi chốt thỏa thuận.
+diaDiem | String | Bước 3 của UC1.1SyRS - System requirements specification | Địa điểm giao nhận dự kiến.
+hinhThucChiaSe | Enum | Bước 4 của UC1.1SyRS - System requirements specification | Cho tặng hoặc trao đổi.
+hinhThucTraoDoi | Enum | Bước 5 của UC1.1SyRS - System requirements specification | Trao đổi bằng tiền hoặc tài sản, nếu có.
+trangThai | Enum | Bước 3 của UC 1.4SyRS - System requirements specification | Trạng thái bài đăng.
+ngayTao | DateTime | Bước 8 của UC 1.1SyRS - System requirements specification | Thời điểm tạo bài đăng.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+duongDanAnh | String | Bước 3 UC 1.1SyRS - System requirements specification | Đường dẫn hình ảnh.
+thuTuHienThi | Integer | Bước 3 UC 1.1SyRS - System requirements specification | Thứ tự hiển thị hình ảnh.
+ngayTaiLen | DateTime | Bước 3 UC 1.1SyRS - System requirements specification | Thời điểm tải ảnh lên.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+soLuongYeuCau | Integer | Bước 3 UC 2.3 SyRS - System requirements specification | Số lượng tài sản mong muốn.
+loiNhan | String | Bước 4 UC 2.3 SyRS - System requirements specification | Nội dung đề xuất.
+taiSanDoiUng | String | Bước 4 UC 2.3 SyRS - System requirements specification | Tài sản đối ứng nếu trao đổi bằng tài sản.
+tienDoiUng | Float | Bước 3 UC 2.3 SyRS - System requirements specification | Số tiền đề xuất nếu trao đổi bằng tiền.
+trangThai | Enum | Bước 7 UC 2.3 SyRS - System requirements specification | Trạng thái đề xuất.
+ngayGui | DateTime | Bước 7 UC 2.3 SyRS - System requirements specification | Thời điểm gửi đề xuất.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+noiDung | String | Bước 6 UC 3.3SyRS - System requirements specification | Nội dung trao đổi.
+thoiGianGui | DateTime | Bước 3 UC3.3
+SyRS - System requirements specification | Thời điểm gửi tin nhắn.
+trangThai | Enum | Bước 3 UC3.3
+SyRS - System requirements specification | Trạng thái tin nhắn.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+soLuongGiaoDich | Integer | Bước 2 UC3.4
+SyRS - System requirements specification | Số lượng tài sản trong giao dịch.
+thoiGianBanGiao | DateTime | Bước 2 UC3.4
+SyRS - System requirements specification | Thời gian bàn giao đã thống nhất.
+diaDiemBanGiao | String | Bước 2 UC3.4
+SyRS - System requirements specification | Địa điểm bàn giao đã thống nhất.
+xacNhanNguoiSoHuu | Boolean | Bước 4 UC3.4
+SyRS - System requirements specification | Trạng thái xác nhận của người sở hữu.
+xacNhanNguoiTiepNhan | Boolean | Bước 6 UC3.4
+SyRS - System requirements specification | Trạng thái xác nhận của người tiếp nhận.
+lyDoHuy | String | Bước 3a UC3.4
+SyRS - System requirements specification | Lý do hủy giao dịch nếu có.
+trangThai | Enum | Bước 7e UC3.4
+SyRS - System requirements specification | Trạng thái giao dịch.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+diemSao | Integer | Bước 4 UC 6.1
+SyRS - System requirements specification | Điểm đánh giá từ 1 đến 5.
+nhanXet | String | Bước 4 UC 6.1
+SyRS - System requirements specification | Nội dung nhận xét.
+thoiGianDanhGia | DateTime | Bước 4 UC 6.1
+SyRS - System requirements specification | Thời điểm đánh giá.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+LoaiBaoCao | Enum | Bước 4 UC 7.1
+SyRS - System requirements specification | Loại báo cáo vi phạm.
+lyDoViPham | Enum | Bước 4 UC 7.1
+SyRS - System requirements specification | Lý do báo cáo.
+moTaChiTiet | String | Bước 4 UC 7.1
+SyRS - System requirements specification | Nội dung mô tả vi phạm.
+minhChung | String | Bước 4 UC 7.1
+SyRS - System requirements specification | Minh chứng kèm theo nếu có.
+trangThaiXuLy | Enum | Bước 3 UC 7.2
+SyRS - System requirements specification | Trạng thái xử lý báo cáo.
+ngayBaoCao | DateTime | Bước 4 UC 7.1
+SyRS - System requirements specification | Thời điểm gửi báo cáo.
+Thuộc tính | Kiểu dữ liệu | Nguồn gốc xác thực | Mô tả
+loaiBienPhap | Enum | Bước 4 UC7.4
+SyRS - System requirements specification | Loại biện pháp: từ chối, cảnh báo, ẩn bài đăng, khóa tài khoản.
+noiDungXuLy | String | Bước 4 UC7.4
+SyRS - System requirements specification | Nội dung xử lý chi tiết.
+thoiGianXuLy | DateTime | Bước 4 UC7.4
+SyRS - System requirements specification | Thời điểm xử lý.
+Lớp | Thuộc tính chính | Ràng buộc nghiệp vụ
+NguoiDung | email, 
+soDienThoai, 
+matKhauHash,
+trangThai | Email/số điện thoại là duy nhất; mật khẩu lưu dạng hash.
+HoSoThanhVien | hoTen, 
+anhDaiDien, 
+diaChi, 
+moTaCaNhan | Mỗi người dùng có một hồ sơ thành viên.
+HoSoUyTin | diemTrungBinh, tongSoDanhGia, soGiaoDichHoanTat | Điểm uy tín được cập nhật từ đánh giá sau giao dịch.
+DanhMucTaiSan | tenDanhMuc, 
+moTa, 
+trangThai | Mỗi bài đăng thuộc một danh mục.
+BaiDangTaiSan | tenTaiSan, 
+soLuongTong, 
+soLuongKhaDung, soLuongGiuCho, 
+trangThai | Số lượng tổng ≥ 1; số lượng khả dụng không âm.
+HinhAnhTaiSan | duongDanAnh, 
+thuTuHienThi | Mỗi bài đăng có ít nhất một hình ảnh.
+DeXuatGiaoDich | soLuongYeuCau, 
+loiNhan, trangThai | Số lượng yêu cầu không vượt quá số lượng khả dụng.
+TinNhanThuongLuong | noiDung, 
+thoiGianGui | Tin nhắn gắn với một đề xuất giao dịch.
+GiaoDich | soLuongGiaoDich, thoiGianBanGiao, diaDiemBanGiao, 
+trangThai | Được tạo từ đề xuất đã chốt; giữ chỗ số lượng cho đến khi hoàn tất/hủy.
+DanhGia | diemSao, 
+nhanXet, 
+thoiGianDanhGia | Chỉ tạo khi giao dịch hoàn tất; điểm từ 1 đến 5.
+BaoCaoViPham | lyDoViPham, 
+moTaChiTiet, 
+minhChung, 
+trangThaiXuLy | Báo cáo phải gắn với người dùng hoặc bài đăng bị báo cáo.
+BienPhapXuLy | loaiBienPhap, 
+noiDungXuLy, 
+thoiGianXuLy | Mỗi biện pháp xử lý gắn với một báo cáo và quản trị viên thực hiện.
+Nhóm Use Case | Lớp khái niệm liên quan | Kết quả kiểm chứng
+UC1. Chia sẻ thông tin tài sản | NguoiDung,
+HoSoThanhVien, DanhMucTaiSan, BaiDangTaiSan, HinhAnhTaiSan | Bao phủ đầy đủ dữ liệu đăng tải tài sản, danh mục, hình ảnh, số lượng, địa điểm và trạng thái bài đăng.
+UC2. Tiếp cận tài sản | NguoiDung, 
+BaiDangTaiSan, DanhMucTaiSan, HinhAnhTaiSan | Bao phủ dữ liệu tìm kiếm, lọc và xem chi tiết tài sản.
+UC3. Thương lượng giao dịch | DeXuatGiaoDich, TinNhanThuongLuong, NguoiDung, 
+BaiDangTaiSan | Bao phủ dữ liệu gửi đề xuất, lịch sử trao đổi, thương lượng và chốt thỏa thuận.
+UC4. Thực hiện giao dịch | GiaoDich, 
+BaiDangTaiSan, 
+NguoiDung | Bao phủ dữ liệu giao dịch, giữ chỗ số lượng, xác nhận hoàn tất, hủy và theo dõi trạng thái.
+UC5. Quản lý tài khoản và hồ sơ thành viên | NguoiDung, 
+HoSoThanhVien | Bao phủ dữ liệu tài khoản, thông tin đăng nhập và hồ sơ cá nhân.
+UC6. Đánh giá giao dịch | DanhGia, 
+GiaoDich, 
+HoSoUyTin, 
+NguoiDung | Bao phủ dữ liệu đánh giá, điểm uy tín và hồ sơ uy tín thành viên.
+UC7. Đảm bảo an toàn cộng đồng | BaoCaoViPham, BienPhapXuLy, 
+NguoiDung, 
+BaiDangTaiSan | Bao phủ dữ liệu báo cáo, đối tượng bị báo cáo và biện pháp xử lý của quản trị viên.
+Mã BUC | Business Use Case | Business Entity liên quan | Mô tả truy vết
+BUC01 | Chia sẻ thông tin tài sản | Người dùng, Hồ sơ thành viên, Bài đăng tài sản, Danh mục tài sản, Hình ảnh tài sản | Khởi tạo và công bố bài đăng tài sản.
+BUC02 | Tiếp cận tài sản | Người dùng, Bài đăng tài sản, Danh mục tài sản | Tìm kiếm, lọc và xem chi tiết tài sản.
+BUC03 | Thương lượng giao dịch | Đề xuất giao dịch, Tin nhắn thương lượng, Giao dịch | Gửi đề xuất, thương lượng và chốt thỏa thuận.
+BUC04 | Thực hiện giao dịch | Giao dịch, Bài đăng tài sản | Quản lý giữ chỗ số lượng, hoàn tất hoặc hủy giao dịch.
+BUC05 | Xây dựng hồ sơ thành viên | Người dùng, Hồ sơ thành viên, Hồ sơ uy tín | Quản lý tài khoản và hồ sơ cá nhân.
+BUC06 | Đánh giá giao dịch | Đánh giá, Hồ sơ uy tín | Ghi nhận đánh giá và cập nhật uy tín.
+BUC07 | Đảm bảo an toàn cộng đồng | Báo cáo vi phạm, Biện pháp xử lý | Tiếp nhận và xử lý báo cáo vi phạm.
+Module | System Use Case | Conceptual Class
+Chia sẻ tài sản | UC1.1 → UC1.4 | NguoiDung, BaiDangTaiSan, DanhMucTaiSan, HinhAnhTaiSan
+Tiếp cận tài sản | UC2.1 → UC2.3 | BaiDangTaiSan, DanhMucTaiSan, DeXuatGiaoDich
+Thương lượng giao dịch | UC3.1 → UC3.4 | DeXuatGiaoDich, TinNhanThuongLuong, GiaoDich
+Thực hiện giao dịch | UC4.1 → UC4.3 | GiaoDich, BaiDangTaiSan
+Quản lý thành viên | UC5.1 → UC5.3 | NguoiDung, HoSoThanhVien
+Đánh giá | UC6.1 → UC6.2 | DanhGia, HoSoUyTin
+Báo cáo vi phạm | UC7.1 → UC7.4 | BaoCaoViPham, BienPhapXuLy
+Nhóm chức năng | Functional Requirement | Conceptual Class
+Quản lý tài sản | Đăng, sửa, xóa, xem danh sách | BaiDangTaiSan, HinhAnhTaiSan, DanhMucTaiSan
+Tìm kiếm | Tìm kiếm, lọc, xem chi tiết | BaiDangTaiSan
+Thương lượng | Gửi đề xuất, trao đổi, chốt | DeXuatGiaoDich, TinNhanThuongLuong, GiaoDich
+Giao dịch | Hoàn tất, hủy, theo dõi | GiaoDich
+Quản lý thành viên | Đăng ký, đăng nhập, hồ sơ | NguoiDung, HoSoThanhVien
+Đánh giá | Đánh giá, hồ sơ uy tín | DanhGia, HoSoUyTin
+Báo cáo | Báo cáo, xử lý | BaoCaoViPham, BienPhapXuLy
+Nhóm Business Rule | Conceptual Class | Cơ chế đảm bảo
+Quản lý tài khoản | NguoiDung | Email và số điện thoại duy nhất
+Hồ sơ thành viên | HoSoThanhVien | Một User có một hồ sơ
+Hồ sơ uy tín | HoSoUyTin | Điểm được cập nhật từ đánh giá
+Quản lý bài đăng | BaiDangTaiSan | Số lượng ≥1; giữ chỗ số lượng
+Hình ảnh | HinhAnhTaiSan | Ít nhất một ảnh
+Đề xuất | DeXuatGiaoDich | Một đề xuất thuộc một bài đăng
+Thương lượng | TinNhanThuongLuong | Tin nhắn gắn với đề xuất
+Giao dịch | GiaoDich | Một đề xuất sinh tối đa một giao dịch
+Đánh giá | DanhGia | Chỉ đánh giá khi giao dịch hoàn tất
+Báo cáo | BaoCaoViPham | Có đối tượng bị báo cáo
+Xử lý vi phạm | BienPhapXuLy | Gắn với báo cáo và Admin

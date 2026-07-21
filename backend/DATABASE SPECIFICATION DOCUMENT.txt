@@ -1,0 +1,907 @@
+DATABASE SPECIFICATION DOCUMENT (DSD)
+I. GIỚI THIỆU
+1.1. Mục đích tài liệu
+Database Specification Document đặc tả chi tiết cấu trúc vật lý của cơ sở dữ liệu được triển khai trên PostgreSQL . Tài liệu xác định:
+Danh sách bảng và cột dữ liệu.
+Kiểu dữ liệu PostgreSQL .
+Khóa chính, khóa ngoại và khóa duy nhất.
+Giá trị mặc định và khả năng để trống.
+Miền giá trị và ràng buộc kiểm tra.
+Chỉ mục phục vụ tìm kiếm.
+Transaction phục vụ các nghiệp vụ quan trọng.
+Chính sách xóa, bảo mật, sao lưu và phục hồi.
+Khả năng truy vết từ yêu cầu đến bảng dữ liệu.
+Cấu trúc cơ sở dữ liệu được suy diễn từ BRD, SyRS, Static Model và Dynamic Model. Static Model xác định 12 lớp <<entity>>, thuộc tính, quan hệ và bội số; Dynamic Model xác định trạng thái, quy tắc chuyển trạng thái và cách cập nhật dữ liệu trong từng nghiệp vụ.
+1.2. Phạm vi
+DSD bao phủ dữ liệu của các nhóm chức năng:
+SyRS xác định hệ thống không bao gồm thanh toán trực tuyến, vận chuyển, theo dõi vị trí thời gian thực và tích hợp hệ thống bên ngoài; vì vậy DSD không thiết kế các bảng cho những chức năng này.
+1.3. Tài liệu tham khảo
+II. MÔI TRƯỜNG VÀ QUY ƯỚC TRIỂN KHAI
+2.1. Cấu hình cơ sở dữ liệu
+PostgreSQL hỗ trợ kiểu dữ liệu BOOLEAN nguyên bản, kiểu UUID, dữ liệu JSON/JSONB và các kiểu ngày giờ có múi giờ. Trong phạm vi đồ án, khóa chính được lưu bằng kiểu UUID và được sinh tự động bằng hàm gen_random_uuid() thuộc extension pgcrypto.
+2.2. Khởi tạo database
+CREATE DATABASE asset_sharing 
+WITH ENCODING = 'UTF8'; 
+2.3. Quy tắc đặt tên
+III. DANH SÁCH BẢNG DỮ LIỆU
+Mười hai bảng dữ liệu được chuyển đổi trực tiếp từ 12 lớp <<entity>> đã xác định trong Static Model.
+IV. ĐẶC TẢ CHI TIẾT CÁC BẢNG
+4.1. Bảng nguoi_dung
+CREATE TABLE nguoi_dung (
+    nguoi_dung_id UUID NOT NULL DEFAULT gen_random_uuid(),
+    email VARCHAR(254),
+    so_dien_thoai VARCHAR(20),
+    mat_khau_hash VARCHAR(255) NOT NULL,
+    vai_tro VARCHAR(30) NOT NULL
+        DEFAULT 'THANH_VIEN',
+    trang_thai VARCHAR(30) NOT NULL
+        DEFAULT 'CHO_XAC_THUC',
+    ngay_tao TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    ngay_cap_nhat TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_nguoi_dung
+        PRIMARY KEY (nguoi_dung_id),
+    CONSTRAINT uq_nguoi_dung_email
+        UNIQUE(email),
+    CONSTRAINT uq_nguoi_dung_so_dien_thoai
+        UNIQUE(so_dien_thoai),
+    CONSTRAINT ck_nguoi_dung_dang_nhap
+        CHECK(
+            email IS NOT NULL
+            OR so_dien_thoai IS NOT NULL
+        ),
+    CONSTRAINT ck_nguoi_dung_vai_tro
+        CHECK(
+            vai_tro IN(
+                'THANH_VIEN',
+                'QUAN_TRI_VIEN'
+            )
+        ),
+    CONSTRAINT ck_nguoi_dung_trang_thai
+        CHECK(
+            trang_thai IN(
+                'CHO_XAC_THUC',
+                'HOAT_DONG',
+                'BI_KHOA',
+                'NGUNG_HOAT_DONG'
+            )
+        )
+);
+4.2. Bảng ho_so_thanh_vien
+CREATE TABLE ho_so_thanh_vien (
+    ho_so_id UUID
+        DEFAULT gen_random_uuid(),
+    nguoi_dung_id UUID NOT NULL,
+    ho_ten VARCHAR(150) NOT NULL,
+    anh_dai_dien VARCHAR(500),
+    dia_chi VARCHAR(255),
+    mo_ta_ca_nhan TEXT,
+    ngay_cap_nhat TIMESTAMPTZ
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_ho_so_thanh_vien
+        PRIMARY KEY(ho_so_id),
+    CONSTRAINT uq_ho_so_nguoi_dung
+        UNIQUE(nguoi_dung_id),
+    CONSTRAINT fk_ho_so_nguoi_dung
+        FOREIGN KEY(nguoi_dung_id)
+        REFERENCES nguoi_dung(nguoi_dung_id)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT
+);
+4.3. Bảng ho_so_uy_tin
+CREATE TABLE ho_so_uy_tin (
+    ho_so_uy_tin_id UUID
+        DEFAULT gen_random_uuid(),
+    nguoi_dung_id UUID NOT NULL,
+    diem_trung_binh NUMERIC(3,2)
+        DEFAULT 0.00,
+    tong_so_danh_gia INTEGER
+        DEFAULT 0,
+    so_giao_dich_hoan_tat INTEGER
+        DEFAULT 0,
+    ngay_cap_nhat TIMESTAMPTZ
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_ho_so_uy_tin
+        PRIMARY KEY(ho_so_uy_tin_id),
+    CONSTRAINT uq_ho_so_uy_tin
+        UNIQUE(nguoi_dung_id),
+    CONSTRAINT fk_ho_so_uy_tin
+        FOREIGN KEY(nguoi_dung_id)
+        REFERENCES nguoi_dung(nguoi_dung_id),
+    CONSTRAINT ck_diem_uy_tin
+        CHECK(
+            diem_trung_binh BETWEEN 0 AND 5
+        ),
+    CONSTRAINT ck_so_lieu_uy_tin
+        CHECK(
+            tong_so_danh_gia>=0
+            AND so_giao_dich_hoan_tat>=0
+        )
+);
+4.4. Bảng danh_muc_tai_san
+CREATE TABLE danh_muc_tai_san(
+    danh_muc_id UUID
+        DEFAULT gen_random_uuid(),
+    ten_danh_muc VARCHAR(100)
+        NOT NULL,
+    mo_ta TEXT,
+    trang_thai VARCHAR(30)
+        DEFAULT 'HOAT_DONG',
+    ngay_tao TIMESTAMPTZ
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_danh_muc
+        PRIMARY KEY(danh_muc_id),
+    CONSTRAINT uq_ten_danh_muc
+        UNIQUE(ten_danh_muc),
+    CONSTRAINT ck_trang_thai_danh_muc
+        CHECK(
+            trang_thai IN(
+                'HOAT_DONG',
+                'NGUNG_SU_DUNG'
+            )
+        )
+);
+4.5. Bảng bai_dang_tai_san
+CREATE TABLE bai_dang_tai_san(
+    bai_dang_id UUID
+        DEFAULT gen_random_uuid(),
+    chu_so_huu_id UUID NOT NULL,
+    danh_muc_id UUID NOT NULL,
+    ten_tai_san VARCHAR(200)
+        NOT NULL,
+    mo_ta_hien_trang TEXT
+        NOT NULL,
+    so_luong_tong INTEGER
+        NOT NULL,
+    so_luong_kha_dung INTEGER
+        NOT NULL,
+    so_luong_giu_cho INTEGER
+        DEFAULT 0,
+    so_luong_da_phan_phoi INTEGER
+        DEFAULT 0,
+    dia_diem VARCHAR(255)
+        NOT NULL,
+    hinh_thuc_chia_se VARCHAR(30)
+        NOT NULL,
+    hinh_thuc_trao_doi VARCHAR(30),
+    trang_thai VARCHAR(30)
+        DEFAULT 'KHA_DUNG',
+    ngay_tao TIMESTAMPTZ
+        DEFAULT CURRENT_TIMESTAMP,
+    ngay_cap_nhat TIMESTAMPTZ
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_bai_dang
+        PRIMARY KEY(bai_dang_id),
+    CONSTRAINT fk_bai_dang_nguoi_dung
+        FOREIGN KEY(chu_so_huu_id)
+        REFERENCES nguoi_dung(nguoi_dung_id),
+    CONSTRAINT fk_bai_dang_danh_muc
+        FOREIGN KEY(danh_muc_id)
+        REFERENCES danh_muc_tai_san(danh_muc_id),
+    CONSTRAINT ck_so_luong
+        CHECK(
+            so_luong_tong>=1
+            AND so_luong_kha_dung>=0
+            AND so_luong_giu_cho>=0
+            AND so_luong_da_phan_phoi>=0
+            AND
+            so_luong_kha_dung
+            +so_luong_giu_cho
+            +so_luong_da_phan_phoi
+            =so_luong_tong
+        ),
+    CONSTRAINT ck_hinh_thuc_chia_se
+        CHECK(
+            hinh_thuc_chia_se
+            IN(
+                'CHO_TANG',
+                'TRAO_DOI'
+            )
+        ),
+    CONSTRAINT ck_hinh_thuc_trao_doi
+        CHECK(
+            (
+                hinh_thuc_chia_se='CHO_TANG'
+                AND hinh_thuc_trao_doi IS NULL
+            )
+            OR
+            (
+                hinh_thuc_chia_se='TRAO_DOI'
+                AND hinh_thuc_trao_doi
+                IN(
+                    'TAI_SAN',
+                    'TIEN'
+                )
+            )
+        ),
+    CONSTRAINT ck_trang_thai_bai_dang
+        CHECK(
+            trang_thai
+            IN(
+                'KHA_DUNG',
+                'TAM_HET_KHA_DUNG',
+                'DA_KET_THUC'
+            )
+        )
+);
+4.6. Bảng hinh_anh_tai_san
+CREATE TABLE hinh_anh_tai_san (
+    hinh_anh_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    bai_dang_id UUID NOT NULL,
+    duong_dan_anh VARCHAR(500) NOT NULL,
+    thu_tu_hien_thi INTEGER NOT NULL
+        DEFAULT 1,
+    ngay_tai_len TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_hinh_anh_tai_san
+        PRIMARY KEY (hinh_anh_id),
+    CONSTRAINT uq_hinh_anh_thu_tu
+        UNIQUE (
+            bai_dang_id,
+            thu_tu_hien_thi
+        ),
+    CONSTRAINT ck_hinh_anh_duong_dan
+        CHECK (
+            CHAR_LENGTH(TRIM(duong_dan_anh)) > 0
+        ),
+    CONSTRAINT ck_hinh_anh_thu_tu
+        CHECK (
+            thu_tu_hien_thi >= 1
+        ),
+    CONSTRAINT fk_hinh_anh_bai_dang
+        FOREIGN KEY (bai_dang_id)
+        REFERENCES bai_dang_tai_san (bai_dang_id)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE
+);
+4.7. Bảng de_xuat_giao_dich
+CREATE TABLE de_xuat_giao_dich (
+    de_xuat_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    bai_dang_id UUID NOT NULL,
+    nguoi_gui_id UUID NOT NULL,
+    so_luong_yeu_cau INTEGER NOT NULL,
+    loi_nhan TEXT,
+    tai_san_doi_ung TEXT,
+    tien_doi_ung NUMERIC(18,2),
+    trang_thai VARCHAR(30) NOT NULL
+        DEFAULT 'CHO_XU_LY',
+    ly_do_tu_choi TEXT,
+    ngay_gui TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    ngay_cap_nhat TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_de_xuat_giao_dich
+        PRIMARY KEY (de_xuat_id),
+    CONSTRAINT ck_de_xuat_so_luong
+        CHECK (
+            so_luong_yeu_cau > 0
+        ),
+    CONSTRAINT ck_de_xuat_tien_doi_ung
+        CHECK (
+            tien_doi_ung IS NULL
+            OR tien_doi_ung >= 0
+        ),
+    CONSTRAINT ck_de_xuat_loi_nhan
+        CHECK (
+            loi_nhan IS NULL
+            OR CHAR_LENGTH(TRIM(loi_nhan)) > 0
+        ),
+    CONSTRAINT ck_de_xuat_tai_san_doi_ung
+        CHECK (
+            tai_san_doi_ung IS NULL
+            OR CHAR_LENGTH(TRIM(tai_san_doi_ung)) > 0
+        ),
+    CONSTRAINT ck_de_xuat_trang_thai
+        CHECK (
+            trang_thai IN (
+                'CHO_XU_LY',
+                'DANG_THUONG_LUONG',
+                'DA_CHAP_NHAN',
+                'TU_CHOI',
+                'DA_HUY',
+                'HET_HIEU_LUC'
+            )
+        ),
+    CONSTRAINT ck_de_xuat_ly_do_tu_choi
+        CHECK (
+            trang_thai <> 'TU_CHOI'
+            OR (
+                ly_do_tu_choi IS NOT NULL
+                AND CHAR_LENGTH(TRIM(ly_do_tu_choi)) > 0
+            )
+        ),
+    CONSTRAINT fk_de_xuat_bai_dang
+        FOREIGN KEY (bai_dang_id)
+        REFERENCES bai_dang_tai_san (bai_dang_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_de_xuat_nguoi_gui
+        FOREIGN KEY (nguoi_gui_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
+4.8. Bảng tin_nhan_thuong_luong
+CREATE TABLE tin_nhan_thuong_luong (
+    tin_nhan_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    de_xuat_id UUID NOT NULL,
+    nguoi_gui_id UUID NOT NULL,
+    noi_dung TEXT NOT NULL,
+    trang_thai VARCHAR(30) NOT NULL
+        DEFAULT 'DA_GUI',
+    thoi_gian_gui TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_tin_nhan_thuong_luong
+        PRIMARY KEY (tin_nhan_id),
+    CONSTRAINT ck_tin_nhan_noi_dung
+        CHECK (
+            CHAR_LENGTH(TRIM(noi_dung)) > 0
+        ),
+    CONSTRAINT ck_tin_nhan_trang_thai
+        CHECK (
+            trang_thai IN (
+                'DA_GUI',
+                'DA_DOC',
+                'BI_AN'
+            )
+        ),
+    CONSTRAINT fk_tin_nhan_de_xuat
+        FOREIGN KEY (de_xuat_id)
+        REFERENCES de_xuat_giao_dich (de_xuat_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_tin_nhan_nguoi_gui
+        FOREIGN KEY (nguoi_gui_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
+4.9. Bảng giao_dich
+CREATE TABLE giao_dich (
+    giao_dich_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    de_xuat_id UUID NOT NULL,
+    nguoi_so_huu_id UUID NOT NULL,
+    nguoi_tiep_nhan_id UUID NOT NULL,
+    so_luong_giao_dich INTEGER NOT NULL,
+    thoi_gian_ban_giao TIMESTAMPTZ NOT NULL,
+    dia_diem_ban_giao VARCHAR(255) NOT NULL,
+    xac_nhan_nguoi_so_huu BOOLEAN NOT NULL
+        DEFAULT FALSE,
+    xac_nhan_nguoi_tiep_nhan BOOLEAN NOT NULL
+        DEFAULT FALSE,
+    ly_do_huy TEXT,
+    trang_thai VARCHAR(40) NOT NULL
+        DEFAULT 'CHO_BAN_GIAO',
+    ngay_tao TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    ngay_cap_nhat TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_giao_dich
+        PRIMARY KEY (giao_dich_id),
+    CONSTRAINT uq_giao_dich_de_xuat
+        UNIQUE (de_xuat_id),
+    CONSTRAINT ck_giao_dich_so_luong
+        CHECK (
+            so_luong_giao_dich > 0
+        ),
+    CONSTRAINT ck_giao_dich_hai_ben
+        CHECK (
+            nguoi_so_huu_id <> nguoi_tiep_nhan_id
+        ),
+    CONSTRAINT ck_giao_dich_dia_diem
+        CHECK (
+            CHAR_LENGTH(TRIM(dia_diem_ban_giao)) > 0
+        ),
+    CONSTRAINT ck_giao_dich_trang_thai
+        CHECK (
+            trang_thai IN (
+                'CHO_BAN_GIAO',
+                'CHO_BEN_CON_LAI_XAC_NHAN',
+                'HOAN_TAT',
+                'DA_HUY'
+            )
+        ),
+    CONSTRAINT ck_giao_dich_hoan_tat
+        CHECK (
+            trang_thai <> 'HOAN_TAT'
+            OR (
+                xac_nhan_nguoi_so_huu = TRUE
+                AND xac_nhan_nguoi_tiep_nhan = TRUE
+            )
+        ),
+    CONSTRAINT ck_giao_dich_huy
+        CHECK (
+            trang_thai <> 'DA_HUY'
+            OR (
+                ly_do_huy IS NOT NULL
+                AND CHAR_LENGTH(TRIM(ly_do_huy)) > 0
+            )
+        ),
+    CONSTRAINT fk_giao_dich_de_xuat
+        FOREIGN KEY (de_xuat_id)
+        REFERENCES de_xuat_giao_dich (de_xuat_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_giao_dich_nguoi_so_huu
+        FOREIGN KEY (nguoi_so_huu_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_giao_dich_nguoi_tiep_nhan
+        FOREIGN KEY (nguoi_tiep_nhan_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
+4.10. Bảng danh_gia
+CREATE TABLE danh_gia (
+    danh_gia_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    giao_dich_id UUID NOT NULL,
+    nguoi_danh_gia_id UUID NOT NULL,
+    nguoi_duoc_danh_gia_id UUID NOT NULL,
+    diem_sao SMALLINT NOT NULL,
+    nhan_xet TEXT,
+    thoi_gian_danh_gia TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_danh_gia
+        PRIMARY KEY (danh_gia_id),
+    CONSTRAINT uq_danh_gia_giao_dich_nguoi_danh_gia
+        UNIQUE (
+            giao_dich_id,
+            nguoi_danh_gia_id
+        ),
+    CONSTRAINT ck_danh_gia_diem_sao
+        CHECK (
+            diem_sao BETWEEN 1 AND 5
+        ),
+    CONSTRAINT ck_danh_gia_hai_ben
+        CHECK (
+            nguoi_danh_gia_id <> nguoi_duoc_danh_gia_id
+        ),
+    CONSTRAINT ck_danh_gia_nhan_xet
+        CHECK (
+            nhan_xet IS NULL
+            OR CHAR_LENGTH(TRIM(nhan_xet)) > 0
+        ),
+    CONSTRAINT fk_danh_gia_giao_dich
+        FOREIGN KEY (giao_dich_id)
+        REFERENCES giao_dich (giao_dich_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_danh_gia_nguoi_danh_gia
+        FOREIGN KEY (nguoi_danh_gia_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_danh_gia_nguoi_duoc_danh_gia
+        FOREIGN KEY (nguoi_duoc_danh_gia_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
+4.11. Bảng bao_cao_vi_pham
+CREATE TABLE bao_cao_vi_pham (
+    bao_cao_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    nguoi_bao_cao_id UUID NOT NULL,
+    nguoi_dung_bi_bao_cao_id UUID,
+    bai_dang_bi_bao_cao_id UUID,
+    loai_bao_cao VARCHAR(30) NOT NULL,
+    ly_do_vi_pham VARCHAR(50) NOT NULL,
+    mo_ta_chi_tiet TEXT NOT NULL,
+    minh_chung VARCHAR(500),
+    trang_thai_xu_ly VARCHAR(40) NOT NULL
+        DEFAULT 'CHO_KIEM_DUYET',
+    ngay_bao_cao TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    ngay_cap_nhat TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_bao_cao_vi_pham
+        PRIMARY KEY (bao_cao_id),
+    CONSTRAINT ck_bao_cao_loai
+        CHECK (
+            loai_bao_cao IN (
+                'NGUOI_DUNG',
+                'BAI_DANG'
+            )
+        ),
+    CONSTRAINT ck_bao_cao_ly_do
+        CHECK (
+            CHAR_LENGTH(TRIM(ly_do_vi_pham)) > 0
+        ),
+    CONSTRAINT ck_bao_cao_noi_dung
+        CHECK (
+            CHAR_LENGTH(TRIM(mo_ta_chi_tiet)) > 0
+        ),
+    CONSTRAINT ck_bao_cao_minh_chung
+        CHECK (
+            minh_chung IS NULL
+            OR CHAR_LENGTH(TRIM(minh_chung)) > 0
+        ),
+    CONSTRAINT ck_bao_cao_doi_tuong
+        CHECK (
+            (
+                loai_bao_cao = 'NGUOI_DUNG'
+                AND nguoi_dung_bi_bao_cao_id IS NOT NULL
+                AND bai_dang_bi_bao_cao_id IS NULL
+            )
+            OR
+            (
+                loai_bao_cao = 'BAI_DANG'
+                AND nguoi_dung_bi_bao_cao_id IS NULL
+                AND bai_dang_bi_bao_cao_id IS NOT NULL
+            )
+        ),
+    CONSTRAINT ck_bao_cao_trang_thai
+        CHECK (
+            trang_thai_xu_ly IN (
+                'CHO_KIEM_DUYET',
+                'DANG_XU_LY',
+                'CHO_BO_SUNG_MINH_CHUNG',
+                'DA_XU_LY',
+                'TU_CHOI',
+                'KHONG_DU_CAN_CU'
+            )
+        ),
+    CONSTRAINT fk_bao_cao_nguoi_gui
+        FOREIGN KEY (nguoi_bao_cao_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_bao_cao_nguoi_bi_bao_cao
+        FOREIGN KEY (nguoi_dung_bi_bao_cao_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_bao_cao_bai_dang
+        FOREIGN KEY (bai_dang_bi_bao_cao_id)
+        REFERENCES bai_dang_tai_san (bai_dang_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
+4.12. Bảng bien_phap_xu_ly
+CREATE TABLE bien_phap_xu_ly (
+    bien_phap_id UUID NOT NULL
+        DEFAULT gen_random_uuid(),
+    bao_cao_id UUID NOT NULL,
+    quan_tri_vien_id UUID NOT NULL,
+    loai_bien_phap VARCHAR(40) NOT NULL,
+    noi_dung_xu_ly TEXT NOT NULL,
+    thoi_gian_xu_ly TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_bien_phap_xu_ly
+        PRIMARY KEY (bien_phap_id),
+    CONSTRAINT ck_bien_phap_loai
+        CHECK (
+            loai_bien_phap IN (
+                'CANH_BAO',
+                'AN_BAI_DANG',
+                'XOA_BAI_DANG',
+                'KHOA_TAI_KHOAN',
+                'KHONG_AP_DUNG_CHE_TAI'
+            )
+        ),
+    CONSTRAINT ck_bien_phap_noi_dung
+        CHECK (
+            CHAR_LENGTH(TRIM(noi_dung_xu_ly)) > 0
+        ),
+    CONSTRAINT fk_bien_phap_bao_cao
+        FOREIGN KEY (bao_cao_id)
+        REFERENCES bao_cao_vi_pham (bao_cao_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_bien_phap_quan_tri_vien
+        FOREIGN KEY (quan_tri_vien_id)
+        REFERENCES nguoi_dung (nguoi_dung_id)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
+V. DANH SÁCH KHÓA VÀ RÀNG BUỘC CHÍNH
+VI. ĐẶC TẢ CHỈ MỤC
+6.1. Danh sách chỉ mục
+VII. ĐẶC TẢ VIEW
+7.1. View bài đăng khả dụng
+CREATE OR REPLACE VIEW vw_bai_dang_kha_dung AS
+SELECT
+    bd.bai_dang_id,
+    bd.ten_tai_san,
+    bd.mo_ta_hien_trang,
+    bd.so_luong_tong,
+    bd.so_luong_kha_dung,
+    bd.dia_diem,
+    bd.hinh_thuc_chia_se,
+    bd.hinh_thuc_trao_doi,
+    bd.danh_muc_id,
+    dm.ten_danh_muc,
+    bd.chu_so_huu_id,
+    bd.ngay_tao
+FROM bai_dang_tai_san bd
+JOIN danh_muc_tai_san dm
+    ON dm.danh_muc_id = bd.danh_muc_id
+WHERE bd.trang_thai = 'KHA_DUNG'
+  AND bd.so_luong_kha_dung > 0;
+7.2. View hồ sơ uy tín
+CREATE OR REPLACE VIEW vw_ho_so_uy_tin AS
+SELECT
+    nd.nguoi_dung_id,
+    hs.ho_ten,
+    hs.anh_dai_dien,
+    hs.dia_chi,
+    hs.mo_ta_ca_nhan,
+    uy.diem_trung_binh,
+    uy.tong_so_danh_gia,
+    uy.so_giao_dich_hoan_tat,
+    nd.trang_thai AS trang_thai_tai_khoan
+FROM nguoi_dung nd
+JOIN ho_so_thanh_vien hs
+    ON hs.nguoi_dung_id = nd.nguoi_dung_id
+JOIN ho_so_uy_tin uy
+    ON uy.nguoi_dung_id = nd.nguoi_dung_id;
+7.3. View báo cáo cần xử lý
+CREATE OR REPLACE VIEW vw_bao_cao_can_xu_ly AS
+SELECT
+    bc.bao_cao_id,
+    bc.nguoi_bao_cao_id,
+    bc.nguoi_dung_bi_bao_cao_id,
+    bc.bai_dang_bi_bao_cao_id,
+    bc.loai_bao_cao,
+    bc.ly_do_vi_pham,
+    bc.mo_ta_chi_tiet,
+    bc.minh_chung,
+    bc.trang_thai_xu_ly,
+    bc.ngay_bao_cao,
+    bc.ngay_cap_nhat
+FROM bao_cao_vi_pham bc
+WHERE bc.trang_thai_xu_ly IN (
+    'CHO_KIEM_DUYET',
+    'DANG_XU_LY',
+    'CHO_BO_SUNG_MINH_CHUNG'
+);
+7.4. View giao dịch đang thực hiện
+CREATE OR REPLACE VIEW vw_giao_dich_dang_thuc_hien AS
+SELECT
+    gd.giao_dich_id,
+    gd.de_xuat_id,
+    gd.nguoi_so_huu_id,
+    gd.nguoi_tiep_nhan_id,
+    gd.so_luong_giao_dich,
+    gd.thoi_gian_ban_giao,
+    gd.dia_diem_ban_giao,
+    gd.xac_nhan_nguoi_so_huu,
+    gd.xac_nhan_nguoi_tiep_nhan,
+    gd.trang_thai,
+    gd.ngay_tao,
+    gd.ngay_cap_nhat
+FROM giao_dich gd
+WHERE gd.trang_thai IN (
+    'CHO_BAN_GIAO',
+    'CHO_BEN_CON_LAI_XAC_NHAN'
+);
+VIII. ĐẶC TẢ TRANSACTION NGHIỆP VỤ
+8.1. Đăng ký tài khoản
+8.2. Đăng tải tài sản.
+8.3. Chốt thỏa thuận
+BEGIN;
+SELECT
+    bai_dang_id,
+    chu_so_huu_id,
+    so_luong_kha_dung,
+    so_luong_giu_cho,
+    trang_thai
+FROM bai_dang_tai_san
+WHERE bai_dang_id = :bai_dang_id
+FOR UPDATE;
+Các bước xử lý
+8.4. Hoàn tất giao dịch
+8.5. Hủy giao dịch
+8.6. Đánh giá
+Bảo đảm mỗi bên chỉ được đánh giá một lần đối với một giao dịch đã hoàn tất.
+IX. CHÍNH SÁCH XÓA DỮ LIỆU
+X. BẢO MẬT VÀ PHÂN QUYỀN
+Nguyên tắc bảo mật:
+Mật khẩu chỉ được lưu dưới dạng mat_khau_hash.
+Không lưu mật khẩu ở dạng văn bản thuần.
+Không trả mật khẩu băm trong API.
+Không cho phép ứng dụng kết nối PostgreSQL bằng tài khoản postgres hoặc tài khoản có quyền SUPERUSER.
+Ứng dụng phải sử dụng một PostgreSQL role riêng với tập quyền tối thiểu.
+Kiểm tra quyền sở hữu trước khi sửa hoặc xóa bài đăng.
+Chỉ quản trị viên được thực hiện nghiệp vụ tạo bien_phap_xu_ly.
+Không ghi mật khẩu, access token, refresh token hoặc dữ liệu nhạy cảm vào log.
+Mã hóa kết nối giữa ứng dụng và PostgreSQL bằng SSL/TLS.
+Giới hạn quyền truy cập trực tiếp vào bảng nguoi_dung, bao_cao_vi_pham và bien_phap_xu_ly.
+Sử dụng prepared statement hoặc ORM parameter binding để phòng chống SQL Injection.
+Không ghép trực tiếp giá trị đầu vào của người dùng vào câu lệnh SQL.
+Thu hồi các quyền không cần thiết trên schema public.
+Phân tách role ứng dụng và role quản trị cơ sở dữ liệu.
+Nhóm chức năng | Dữ liệu được quản lý
+Tài khoản | Tài khoản, thông tin xác thực, vai trò, trạng thái
+Hồ sơ | Hồ sơ thành viên và hồ sơ uy tín
+Tài sản | Danh mục, bài đăng và hình ảnh
+Đề xuất | Đề xuất nhận hoặc trao đổi tài sản
+Thương lượng | Lịch sử tin nhắn giữa hai bên
+Giao dịch | Thỏa thuận, bàn giao, xác nhận, hoàn tất và hủy
+Đánh giá | Điểm sao, nhận xét và thông tin uy tín
+An toàn cộng đồng | Báo cáo vi phạm và biện pháp xử lý
+STT | Tài liệu | Mục đích sử dụng
+1 | Business Requirements Document | Xác định BUC và Business Rule
+2 | SyRS | Xác định dữ liệu đầu vào, đầu ra và yêu cầu chức năng
+3 | Static Model | Xác định thực thể, thuộc tính, quan hệ và bội số
+4 | Dynamic Model | Xác định trạng thái và quy tắc cập nhật
+5 | Database Design Document | Thiết kế logic và ERD
+Thành phần | Đặc tả
+DBMS | PostgreSQL 16
+Tên database | asset_sharing
+Schema mặc định | public
+Encoding | UTF8
+Collation | Theo locale được cấu hình trên PostgreSQL Server
+Múi giờ lưu trữ | UTC
+Kiểu khóa chính | UUID
+Hàm sinh khóa | gen_random_uuid()
+Extension hỗ trợ | pgcrypto
+Dữ liệu tiền | NUMERIC(18,2)
+Dữ liệu Boolean | BOOLEAN
+Ngày tạo, cập nhật | TIMESTAMPTZ
+Thời gian nghiệp vụ | TIMESTAMPTZ
+Thành phần | Quy tắc | Ví dụ
+Bảng | Chữ thường, snake_case | bai_dang_tai_san
+Cột | Chữ thường, snake_case | so_luong_kha_dung
+Khóa chính | pk_<ten_bang> | pk_nguoi_dung
+Khóa ngoại | fk_<bang_con>_<vai_tro> | fk_bai_dang_chu_so_huu
+Khóa duy nhất | uq_<bang>_<cot> | uq_nguoi_dung_email
+Check constraint | ck_<bang>_<quy_tac> | ck_danh_gia_diem_sao
+Chỉ mục | idx_<bang>_<cot> | idx_bai_dang_trang_thai
+View | vw_<noi_dung> | vw_bai_dang_kha_dung
+Trigger | trg_<bang>_<su_kien> | trg_nguoi_dung_cap_nhat
+Function | fn_<chuc_nang> | fn_cap_nhat_thoi_gian
+STT | Tên bảng | Chức năng | Nguồn xác thực
+1 | nguoi_dung | Tài khoản, mật khẩu băm, vai trò, trạng thái | UC5.1, UC5.2, UC7.4
+2 | ho_so_thanh_vien | Hồ sơ cá nhân và thông tin công khai | UC5.3
+3 | ho_so_uy_tin | Điểm uy tín và số liệu tổng hợp | UC6.1, UC6.2
+4 | danh_muc_tai_san | Danh mục phân loại tài sản | UC1.1, UC2.1
+5 | bai_dang_tai_san | Nội dung bài đăng, số lượng và trạng thái | UC1.1–UC1.4
+6 | hinh_anh_tai_san | Hình ảnh thuộc bài đăng | UC1.1, UC1.2
+7 | de_xuat_giao_dich | Đề xuất tiếp nhận hoặc trao đổi | UC2.3, UC3.1, UC3.2
+8 | tin_nhan_thuong_luong | Lịch sử trao đổi | UC3.3
+9 | giao_dich | Thỏa thuận và quá trình bàn giao | UC3.4, UC4.1–UC4.3
+10 | danh_gia | Điểm sao và nhận xét sau giao dịch | UC6.1
+11 | bao_cao_vi_pham | Báo cáo người dùng hoặc bài đăng | UC7.1–UC7.3
+12 | bien_phap_xu_ly | Kết quả xử lý báo cáo | UC7.4
+Quy tắc | Cách triển khai PostgreSQL | Minh chứng
+Email không trùng | UNIQUE(email) | UC5.1
+Số điện thoại không trùng | UNIQUE(so_dien_thoai) | UC5.1
+Phải có email hoặc số điện thoại | CHECK(email IS NOT NULL OR so_dien_thoai IS NOT NULL) | UC5.1
+Một người dùng có một hồ sơ thành viên | UNIQUE(nguoi_dung_id) trong ho_so_thanh_vien | Static Model
+Một người dùng có một hồ sơ uy tín | UNIQUE(nguoi_dung_id) trong ho_so_uy_tin | Static Model
+Một đề xuất tối đa một giao dịch | UNIQUE(de_xuat_id) | BRL-016, Dynamic Model
+Mỗi bên đánh giá một lần | UNIQUE(giao_dich_id, nguoi_danh_gia_id) | UC6.1
+Điểm đánh giá từ 1 đến 5 | CHECK(diem_sao BETWEEN 1 AND 5) | UC6.1
+Người đánh giá khác người được đánh giá | CHECK(nguoi_danh_gia_id <> nguoi_duoc_danh_gia_id) | UC6.1
+Bài đăng thuộc một chủ sở hữu | FK chu_so_huu_id | UC1.1
+Bài đăng thuộc một danh mục | FK danh_muc_id | UC1.1
+Số lượng bài đăng luôn nhất quán | CHECK(kha_dung + giu_cho + da_phan_phoi = tong) | Dynamic Model
+Hình ảnh thuộc một bài đăng | FK bai_dang_id | UC1.1
+Thứ tự ảnh không trùng trong bài đăng | UNIQUE(bai_dang_id, thu_tu_hien_thi) | UC1.1
+Số lượng đề xuất phải dương | CHECK(so_luong_yeu_cau > 0) | UC2.3
+Giao dịch phải có hai bên khác nhau | CHECK(nguoi_so_huu_id <> nguoi_tiep_nhan_id) | UC3.2
+Giao dịch hoàn tất cần đủ hai xác nhận | CHECK theo hai cột Boolean | UC4.1
+Giao dịch bị hủy phải có lý do | CHECK theo trạng thái DA_HUY | UC4.2
+Báo cáo có đúng một đối tượng | CHECK theo quan hệ XOR | UC7.1
+Biện pháp xử lý thuộc một báo cáo | FK bao_cao_id | UC7.4
+Biện pháp xử lý do người dùng thực hiện | FK quan_tri_vien_id | UC7.4
+Mã | Chỉ mục | Mục đích | Nguồn
+IDX-01 | nguoi_dung(email) | Đăng nhập và kiểm tra trùng email | UC5.1, UC5.2
+IDX-02 | nguoi_dung(so_dien_thoai) | Đăng nhập và kiểm tra trùng số điện thoại | UC5.1, UC5.2
+IDX-03 | bai_dang_tai_san(chu_so_huu_id) | Xem tài sản đã chia sẻ của thành viên | UC1.4
+IDX-04 | bai_dang_tai_san(danh_muc_id, trang_thai) | Tìm kiếm và lọc theo danh mục, trạng thái | UC2.1
+IDX-05 | bai_dang_tai_san(dia_diem) | Lọc theo địa điểm | UC2.1
+IDX-06 | de_xuat_giao_dich(bai_dang_id, trang_thai) | Xem đề xuất theo bài đăng | UC3.1
+IDX-07 | de_xuat_giao_dich(nguoi_gui_id, trang_thai) | Xem đề xuất đã gửi | UC2.3
+IDX-08 | tin_nhan_thuong_luong(de_xuat_id, thoi_gian_gui) | Xem lịch sử thương lượng theo thời gian | UC3.3
+IDX-09 | giao_dich(nguoi_so_huu_id, trang_thai) | Theo dõi giao dịch với vai trò chủ sở hữu | UC4.3
+IDX-10 | giao_dich(nguoi_tiep_nhan_id, trang_thai) | Theo dõi giao dịch với vai trò người tiếp nhận | UC4.3
+IDX-11 | danh_gia(nguoi_duoc_danh_gia_id) | Truy xuất đánh giá và hồ sơ uy tín | UC6.2
+IDX-12 | bao_cao_vi_pham(trang_thai_xu_ly, ngay_bao_cao) | Quản lý danh sách báo cáo | UC7.2
+IDX-13 | bien_phap_xu_ly(bao_cao_id) | Xem biện pháp xử lý theo báo cáo | UC7.4
+Bước | Thao tác
+1 | Bắt đầu transaction
+2 | Kiểm tra email chưa tồn tại
+3 | Kiểm tra số điện thoại chưa tồn tại
+4 | Tạo bản ghi nguoi_dung
+5 | Tạo bản ghi ho_so_thanh_vien
+6 | Tạo bản ghi ho_so_uy_tin với điểm và số liệu ban đầu bằng 0
+7 | Thực hiện COMMIT khi toàn bộ thao tác thành công
+8 | Thực hiện ROLLBACK nếu có lỗi
+Bước | Thao tác
+1 | Bắt đầu transaction
+2 | Kiểm tra tài khoản tồn tại và đang hoạt động
+3 | Kiểm tra danh mục tồn tại và đang hoạt động
+4 | Kiểm tra số lượng tài sản lớn hơn hoặc bằng 1
+5 | Tạo bài đăng tài sản
+6 | Gán số lượng khả dụng bằng số lượng tổng
+7 | Gán số lượng giữ chỗ và đã phân phối bằng 0
+8 | Tạo ít nhất một bản ghi hình ảnh
+9 | Đặt trạng thái bài đăng là KHA_DUNG
+10 | Thực hiện COMMIT nếu thành công
+11 | Thực hiện ROLLBACK nếu có lỗi
+Bước | Thao tác
+1 | Bắt đầu transaction
+2 | Truy xuất và khóa bản ghi bài đăng bằng SELECT ... FOR UPDATE
+3 | Kiểm tra đề xuất tồn tại và còn hiệu lực
+4 | Kiểm tra người thực hiện là chủ sở hữu bài đăng
+5 | Kiểm tra bài đăng chưa kết thúc
+6 | Kiểm tra số lượng khả dụng đủ đáp ứng đề xuất
+7 | Kiểm tra đề xuất chưa tạo giao dịch trước đó
+8 | Giảm số lượng khả dụng
+9 | Tăng số lượng giữ chỗ
+10 | Tạo bản ghi giao_dich
+11 | Chuyển đề xuất sang DA_CHAP_NHAN
+12 | Nếu số lượng khả dụng bằng 0, chuyển bài đăng sang TAM_HET_KHA_DUNG
+13 | Thực hiện COMMIT nếu thành công
+14 | Thực hiện ROLLBACK nếu có lỗi
+Bước | Thao tác
+1 | Bắt đầu transaction
+2 | Khóa bản ghi giao dịch bằng SELECT ... FOR UPDATE
+3 | Kiểm tra giao dịch tồn tại
+4 | Kiểm tra giao dịch chưa hoàn tất và chưa bị hủy
+5 | Kiểm tra người xác nhận là một bên của giao dịch
+6 | Ghi nhận xác nhận của bên đang thao tác
+7 | Kiểm tra đã có đủ hai xác nhận hay chưa
+8 | Nếu chưa đủ, chuyển trạng thái sang CHO_BEN_CON_LAI_XAC_NHAN
+9 | Nếu đủ, chuyển giao dịch sang HOAN_TAT
+10 | Khóa bản ghi bài đăng liên quan
+11 | Giảm số lượng giữ chỗ
+12 | Tăng số lượng đã phân phối
+13 | Cập nhật trạng thái bài đăng
+14 | Tăng số giao dịch hoàn tất trong hồ sơ uy tín của hai bên
+15 | Thực hiện COMMIT hoặc ROLLBACK
+Bước | Thao tác
+1 | Bắt đầu transaction
+2 | Khóa bản ghi giao dịch
+3 | Kiểm tra giao dịch tồn tại
+4 | Kiểm tra giao dịch chưa hoàn tất và chưa bị hủy
+5 | Kiểm tra người thực hiện có quyền hủy
+6 | Kiểm tra lý do hủy không để trống
+7 | Chuyển trạng thái giao dịch sang DA_HUY
+8 | Lưu lý do hủy
+9 | Khóa bản ghi bài đăng liên quan
+10 | Giảm số lượng giữ chỗ
+11 | Tăng lại số lượng khả dụng
+12 | Chuyển bài đăng về KHA_DUNG nếu còn số lượng
+13 | Thực hiện COMMIT hoặc ROLLBACK
+Bước | Thao tác
+1 | Bắt đầu transaction
+2 | Kiểm tra giao dịch tồn tại
+3 | Kiểm tra trạng thái giao dịch là HOAN_TAT
+4 | Kiểm tra người đánh giá là một bên của giao dịch
+5 | Xác định người được đánh giá là bên còn lại
+6 | Kiểm tra điểm sao nằm trong khoảng từ 1 đến 5
+7 | Kiểm tra người dùng chưa đánh giá giao dịch này
+8 | Tạo bản ghi danh_gia
+9 | Tính lại điểm trung bình của người được đánh giá
+10 | Cập nhật tổng số đánh giá trong ho_so_uy_tin
+11 | Thực hiện COMMIT hoặc ROLLBACK
+Đối tượng | Chính sách
+Người dùng | Không xóa nếu đã phát sinh nghiệp vụ; chuyển trạng thái
+Hồ sơ thành viên | Không xóa độc lập với tài khoản
+Hồ sơ uy tín | Không xóa độc lập với tài khoản
+Danh mục | Không xóa khi đang có bài đăng tham chiếu
+Bài đăng | Chỉ xóa vật lý khi không có đề xuất đang xử lý và giao dịch
+Hình ảnh | Xóa cùng bài đăng khi bài đăng đủ điều kiện xóa
+Đề xuất | Không xóa nếu đã có thương lượng hoặc giao dịch
+Tin nhắn | Không xóa vật lý nhằm bảo toàn lịch sử
+Giao dịch | Không xóa vật lý
+Đánh giá | Không xóa vật lý thông thường
+Báo cáo | Không xóa khi đã được tiếp nhận
+Biện pháp xử lý | Không xóa để bảo đảm truy vết
+Vai trò | Quyền dữ liệu
+Khách | Chỉ đọc thông tin công khai được hệ thống cho phép
+Thành viên | Quản lý hồ sơ và dữ liệu nghiệp vụ thuộc quyền
+Quản trị viên | Xem và xử lý báo cáo, áp dụng biện pháp xử lý
+Tài khoản ứng dụng | Thực hiện thao tác dữ liệu thông qua tầng dịch vụ
+DBA | Quản trị cấu trúc, sao lưu và phục hồi
