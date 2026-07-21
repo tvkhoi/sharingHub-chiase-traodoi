@@ -1,15 +1,19 @@
 #!/bin/sh
 set -e
 
-DB_HOST="${DB_HOST:-db}"
-DB_PORT="${DB_PORT:-5432}"
+if [ "$NODE_ENV" = "production" ]; then
+  echo "✅ Skipping PostgreSQL wait check in production (Render)..."
+else
+  DB_HOST="${DB_HOST:-db}"
+  DB_PORT="${DB_PORT:-5432}"
 
-echo "⏳ Waiting for PostgreSQL to be ready at ${DB_HOST}:${DB_PORT}..."
-until nc -z "${DB_HOST}" "${DB_PORT}"; do
-  echo "   PostgreSQL is unavailable - sleeping 1s..."
-  sleep 1
-done
-echo "✅ PostgreSQL is ready!"
+  echo "⏳ Waiting for PostgreSQL to be ready at ${DB_HOST}:${DB_PORT}..."
+  until nc -z "${DB_HOST}" "${DB_PORT}"; do
+    echo "   PostgreSQL is unavailable - sleeping 1s..."
+    sleep 1
+  done
+  echo "✅ PostgreSQL is ready!"
+fi
 
 # 1. Kiểm tra node_modules trong Named Volume của Docker Container
 if [ ! -d "node_modules/@nestjs/core" ]; then
