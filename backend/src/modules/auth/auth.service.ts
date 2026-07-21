@@ -50,6 +50,7 @@ export class AuthService {
         data: {
           nguoi_dung_id: user.nguoi_dung_id,
           ho_ten: dto.ho_ten,
+          dia_chi: dto.dia_chi || null,
         },
       });
 

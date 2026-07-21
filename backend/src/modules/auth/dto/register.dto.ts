@@ -34,4 +34,12 @@ export class RegisterDto {
   @IsString()
   @IsNotEmpty({ message: 'Họ tên không được để trống' })
   ho_ten: string;
+
+  @ApiPropertyOptional({
+    description: 'Địa chỉ khu vực',
+    example: 'Quận 5, TP.HCM',
+  })
+  @IsString()
+  @IsOptional()
+  dia_chi?: string;
 }
