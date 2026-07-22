@@ -32,9 +32,40 @@ export class EmailService {
   }
 
   async sendOtpEmail(toEmail: string, otp: string): Promise<boolean> {
+    const brevoApiKey = process.env.BREVO_API_KEY;
     const resendApiKey = process.env.RESEND_API_KEY;
 
-    // 1. Ưu tiên gửi qua Resend HTTP API (Cổng 443 - Không bao giờ bị Render chặn)
+    // 1. Ưu tiên cao nhất: Brevo HTTP API (Cổng 443 - Cho phép gửi tới BẤT BÌ EMAIL NÀO, 300 mail/ngày miễn phí)
+    if (brevoApiKey) {
+      try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': brevoApiKey.trim(),
+          },
+          body: JSON.stringify({
+            sender: { name: 'ShareHub Verification', email: process.env.SMTP_USER || 'no-reply@sharehub.com' },
+            to: [{ email: toEmail }],
+            subject: `[ShareHub] Mã OTP Xác Thực Email Của Bạn: ${otp}`,
+            htmlContent: this.getOtpTemplate(otp),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.logger.log(`[Brevo HTTP] OTP Email successfully sent to ${toEmail} | MessageId: ${data.messageId}`);
+          return true;
+        } else {
+          const errData = await response.text();
+          this.logger.error(`[Brevo HTTP] Failed: ${errData}`);
+        }
+      } catch (err) {
+        this.logger.error(`[Brevo HTTP] Exception: ${err.message}`);
+      }
+    }
+
+    // 2. Resend HTTP API (Lưu ý: Free Tier chỉ gửi được về email chính chủ tvkhoi123456@gmail.com)
     if (resendApiKey) {
       try {
         const response = await fetch('https://api.resend.com/emails', {
