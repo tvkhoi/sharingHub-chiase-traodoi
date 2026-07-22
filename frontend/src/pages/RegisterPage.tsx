@@ -20,7 +20,6 @@ export const RegisterPage: React.FC = () => {
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [sendingOtp, setSendingOtp] = useState<boolean>(false);
   const [registering, setRegistering] = useState<boolean>(false);
-  const [simulatedOtp, setSimulatedOtp] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState<number>(0);
 
   // Realtime Inline Validation State
@@ -143,9 +142,6 @@ export const RegisterPage: React.FC = () => {
       const res = await authService.sendOtp(email.trim());
       toast.success(res.message || 'Mã OTP đã được gửi thành công!');
       setOtpSent(true);
-      if (res.otpSimulated) {
-        setSimulatedOtp(res.otpSimulated);
-      }
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng kiểm tra lại Email!';
       toast.error(msg);
@@ -360,13 +356,6 @@ export const RegisterPage: React.FC = () => {
                 )}
               </button>
             </div>
-
-            {simulatedOtp && (
-              <p className="text-xs text-brand-primary font-semibold mt-2 flex items-center gap-1.5 bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/20">
-                <span>💡 Mã OTP gửi về Email thực tế:</span>
-                <span className="font-mono text-sm font-extrabold tracking-widest">{simulatedOtp}</span>
-              </p>
-            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
