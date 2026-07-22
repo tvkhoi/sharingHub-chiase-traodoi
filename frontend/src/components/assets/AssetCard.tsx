@@ -2,15 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Asset } from '../../types';
 import { MapPin, Box, ArrowLeftRight, Gift, User, Star } from 'lucide-react';
+import { getImageUrl, DEFAULT_ASSET_IMAGE } from '../../utils/image';
 
 interface AssetCardProps {
   asset: Asset;
 }
 
 export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
-  const imageUrl = asset.hinh_anh && asset.hinh_anh.length > 0
-    ? asset.hinh_anh[0].duong_dan_anh
-    : 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80';
+  const imageUrl = getImageUrl(asset.hinh_anh?.[0]?.duong_dan_anh);
 
   const isGift = asset.hinh_thuc_chia_se === 'CHO_TANG';
 
@@ -21,9 +20,9 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
         <img
           src={imageUrl}
           alt={asset.ten_tai_san}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 text-transparent"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80';
+            (e.target as HTMLImageElement).src = DEFAULT_ASSET_IMAGE;
           }}
         />
 

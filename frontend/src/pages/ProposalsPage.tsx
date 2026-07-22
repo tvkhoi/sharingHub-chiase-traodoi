@@ -5,8 +5,8 @@ import type { Proposal, NegotiationMessage } from '../types';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { MessageSquare, Send, CheckCircle2, XCircle, Clock } from 'lucide-react';
-
 import { createPortal } from 'react-dom';
+import { getImageUrl, DEFAULT_ASSET_IMAGE } from '../utils/image';
 
 export const ProposalsPage: React.FC = () => {
   const { user } = useAuth();
@@ -162,9 +162,12 @@ export const ProposalsPage: React.FC = () => {
               <div className="flex items-start gap-4">
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-900 flex-shrink-0">
                   <img
-                    src={prop.bai_dang?.hinh_anh?.[0]?.duong_dan_anh || 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80'}
-                    alt="Asset"
-                    className="w-full h-full object-cover"
+                    src={getImageUrl(prop.bai_dang?.hinh_anh?.[0]?.duong_dan_anh)}
+                    alt={prop.bai_dang?.ten_tai_san || 'Asset'}
+                    className="w-full h-full object-cover text-transparent"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = DEFAULT_ASSET_IMAGE;
+                    }}
                   />
                 </div>
 

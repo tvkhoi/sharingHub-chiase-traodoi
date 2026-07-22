@@ -6,6 +6,7 @@ import type { Asset, AssetCategory } from '../types';
 import toast from 'react-hot-toast';
 import { PlusCircle, Layers, Trash2, Edit, UploadCloud, X, Save } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { getImageUrl, DEFAULT_ASSET_IMAGE } from '../utils/image';
 
 export const MyAssetsPage: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -188,11 +189,11 @@ export const MyAssetsPage: React.FC = () => {
               <div>
                 <div className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-900 mb-3 relative">
                   <img
-                    src={asset.hinh_anh?.[0]?.duong_dan_anh || 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80'}
+                    src={getImageUrl(asset.hinh_anh?.[0]?.duong_dan_anh)}
                     alt={asset.ten_tai_san}
                     className="w-full h-full object-cover text-transparent"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80';
+                      (e.target as HTMLImageElement).src = DEFAULT_ASSET_IMAGE;
                     }}
                   />
                   <div className="absolute top-2 left-2">
