@@ -18,9 +18,9 @@ export class EmailService {
         host: smtpHost,
         port: smtpPort,
         secure: smtpPort === 465,
-        connectionTimeout: 4000,
-        greetingTimeout: 4000,
-        socketTimeout: 4000,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
         auth: {
           user: smtpUser,
           pass: smtpPass,
@@ -76,7 +76,7 @@ export class EmailService {
     try {
       const sendPromise = this.transporter.sendMail(mailOptions);
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('SMTP send mail timeout (3.5s)')), 3500)
+        setTimeout(() => reject(new Error('SMTP send mail timeout (10s)')), 10000)
       );
 
       const info = (await Promise.race([sendPromise, timeoutPromise])) as any;
