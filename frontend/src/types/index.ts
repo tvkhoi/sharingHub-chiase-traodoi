@@ -110,6 +110,7 @@ export interface Transaction {
   trang_thai: TransactionStatus;
   xac_nhan_nguoi_so_huu: boolean;
   xac_nhan_nguoi_tiep_nhan: boolean;
+  ly_do_huy?: string;
   ngay_tao: string;
   ngay_cap_nhat?: string;
   de_xuat?: Proposal;
