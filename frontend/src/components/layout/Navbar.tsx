@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <header className="glass-panel sticky top-0 z-50 transition-all">
+    <header className="glass-nav sticky top-0 z-50 transition-all">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-3 text-decoration-none">

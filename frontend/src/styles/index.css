@@ -105,6 +105,23 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-sm);
 }
 
+/* Opaque Navbar to prevent content text bleed-through on scroll */
+.glass-nav {
+  background-color: var(--bg-secondary);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.light-theme .glass-nav {
+  background-color: #ffffff !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
 .glass-card {
   background: var(--bg-card);
   backdrop-filter: blur(12px);
