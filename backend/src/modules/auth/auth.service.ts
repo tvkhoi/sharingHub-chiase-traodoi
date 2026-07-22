@@ -43,20 +43,21 @@ export class AuthService {
 
     this.otpStore.set(cleanEmail, { otp, expiresAt });
 
-    // Send real email via Nodemailer
+    // Thử gửi email xác thực qua EmailService
     const emailSent = await this.emailService.sendOtpEmail(cleanEmail, otp);
 
     if (!emailSent) {
-      // Nếu SMTP bị chặn cổng trên Render, vẫn giữ OTP 5 phút để test mượt mà
-      this.logger.warn(`[SMTP Blocked Fallback] OTP generated for ${cleanEmail}: ${otp}`);
+      // Trường hợp máy chủ không thể gửi mail (ví dụ bị chặn cổng SMTP trên Cloud),
+      // hiển thị mã thử nghiệm trực tiếp để tránh gián đoạn luồng trải nghiệm người dùng
+      this.logger.warn(`Email sending failed. Fallback dev OTP generated for ${cleanEmail}: ${otp}`);
       return {
-        message: `Mã OTP đã được tạo (Mã test: ${otp}). Môi trường Server chặn cổng SMTP nên mã được hiển thị trực tiếp!`,
+        message: `Mã xác thực OTP đã tạo thành công. Mã test của bạn là: ${otp}`,
         otpDev: otp,
       };
     }
 
     return {
-      message: `Mã OTP xác thực 6 số đã được gửi đến ${cleanEmail}. Vui lòng kiểm tra hộp thư (kể cả thư mục Spam)!`,
+      message: `Mã OTP xác thực 6 số đã được gửi đến ${cleanEmail}. Vui lòng kiểm tra hộp thư (bao gồm thư mục Thư rác/Spam).`,
     };
   }
 

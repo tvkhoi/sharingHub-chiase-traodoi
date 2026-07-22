@@ -132,18 +132,18 @@ export const RegisterPage: React.FC = () => {
     const errEmail = validateField('email', email);
 
     if (errEmail) {
-      toast.error('Vui lòng nhập địa chỉ Email hợp lệ trước khi gửi mã OTP');
+      toast.error('Vui lòng nhập địa chỉ Email hợp lệ trước khi lấy mã OTP');
       return;
     }
 
     setSendingOtp(true);
-    startResendTimer(); // Trigger 60s countdown immediately so UX is instant
+    startResendTimer();
     try {
       const res = await authService.sendOtp(email.trim());
-      toast.success(res.message || 'Mã OTP đã được gửi thành công!');
+      toast.success(res.message || 'Mã xác thực OTP đã được gửi!');
       setOtpSent(true);
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng kiểm tra lại Email!';
+      const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng thử lại sau!';
       toast.error(msg);
     } finally {
       setSendingOtp(false);
