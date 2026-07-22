@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { proposalsService } from '../services/proposals.service';
 import { negotiationService } from '../services/negotiation.service';
+import { socketService } from '../services/socket.service';
 import type { Proposal, NegotiationMessage } from '../types';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -23,6 +24,35 @@ export const ProposalsPage: React.FC = () => {
   useEffect(() => {
     fetchProposals();
   }, [activeTab]);
+
+  // Real-time Chat Listener & Sync Effect
+  useEffect(() => {
+    if (!selectedProposal) return;
+
+    // 1. Socket.io Realtime Listener
+    socketService.joinRoom(selectedProposal.de_xuat_id);
+    socketService.onNewMessage((newMsg) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m.tin_nhan_id === newMsg.tin_nhan_id)) return prev;
+        return [...prev, newMsg];
+      });
+    });
+
+    // 2. Continuous Background Sync (3-second polling fallback)
+    const interval = setInterval(async () => {
+      try {
+        const msgs = await negotiationService.getMessages(selectedProposal.de_xuat_id);
+        setMessages(msgs);
+      } catch {
+        // Silent catch
+      }
+    }, 3000);
+
+    return () => {
+      socketService.leaveRoom();
+      clearInterval(interval);
+    };
+  }, [selectedProposal]);
 
   const fetchProposals = async () => {
     setLoading(true);
