@@ -92,6 +92,46 @@ export const CreateAssetPage: React.FC = () => {
     }
   };
 
+  const [detectingLocation, setDetectingLocation] = useState<boolean>(false);
+
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Trình duyệt của bạn không hỗ trợ tự động lấy vị trí GPS.');
+      return;
+    }
+
+    setDetectingLocation(true);
+    toast.loading('Đang tự động xác định vị trí hiện tại của bạn...', { id: 'geo' });
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=vi`);
+          const data = await res.json();
+
+          if (data && data.display_name) {
+            setDiaDiem(data.display_name);
+            toast.success('Đã lấy vị trí địa điểm hiện tại thành công!', { id: 'geo' });
+          } else {
+            setDiaDiem(`Tọa độ GPS: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+            toast.success('Đã lấy tọa độ vị trí thành công!', { id: 'geo' });
+          }
+        } catch {
+          setDiaDiem(`Tọa độ GPS: ${position.coords.latitude.toFixed(5)}, ${position.coords.longitude.toFixed(5)}`);
+          toast.success('Đã lấy tọa độ vị trí thành công!', { id: 'geo' });
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      () => {
+        setDetectingLocation(false);
+        toast.error('Không thể lấy vị trí. Vui lòng cho phép quyền truy cập vị trí trên trình duyệt!', { id: 'geo' });
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  };
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 animate-fade-in">
       <button onClick={() => navigate(-1)} className="btn btn-outline text-xs mb-6">
@@ -232,7 +272,31 @@ export const CreateAssetPage: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Địa điểm giao nhận trực tiếp *</label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+              <label className="form-label mb-0">Địa điểm giao nhận trực tiếp *</label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleGetCurrentLocation}
+                  disabled={detectingLocation}
+                  className="text-xs font-semibold text-brand-emerald hover:underline flex items-center gap-1 bg-emerald-500/10 py-1 px-2.5 rounded-lg border border-emerald-500/20"
+                  title="Tự động phát hiện và điền vị tríGPS của bạn"
+                >
+                  🎯 {detectingLocation ? 'Đang xác định...' : 'Tự động lấy vị trí hiện tại'}
+                </button>
+                {diaDiem && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(diaDiem)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold text-brand-primary hover:underline flex items-center gap-1 bg-indigo-500/10 py-1 px-2.5 rounded-lg border border-indigo-500/20"
+                    title="Mở Google Maps chỉ đường"
+                  >
+                    📍 Xem Google Maps
+                  </a>
+                )}
+              </div>
+            </div>
             <input
               type="text"
               placeholder="Ví dụ: 123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM"

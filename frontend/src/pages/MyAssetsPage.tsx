@@ -333,7 +333,56 @@ export const MyAssetsPage: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Địa điểm giao nhận trực tiếp *</label>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+                  <label className="form-label mb-0">Địa điểm giao nhận trực tiếp *</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!navigator.geolocation) {
+                          toast.error('Trình duyệt không hỗ trợ tự động lấy vị trí.');
+                          return;
+                        }
+                        toast.loading('Đang tự động xác định vị trí hiện tại...', { id: 'geo_edit' });
+                        navigator.geolocation.getCurrentPosition(
+                          async (pos) => {
+                            try {
+                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&accept-language=vi`);
+                              const data = await res.json();
+                              if (data && data.display_name) {
+                                setDiaDiem(data.display_name);
+                                toast.success('Đã tự động điền vị trí hiện tại!', { id: 'geo_edit' });
+                              } else {
+                                setDiaDiem(`Tọa độ GPS: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`);
+                                toast.success('Đã lấy tọa độ vị trí thành công!', { id: 'geo_edit' });
+                              }
+                            } catch {
+                              setDiaDiem(`Tọa độ GPS: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`);
+                              toast.success('Đã lấy tọa độ vị trí thành công!', { id: 'geo_edit' });
+                            }
+                          },
+                          () => toast.error('Vui lòng cho phép quyền vị trí trên trình duyệt!', { id: 'geo_edit' }),
+                          { timeout: 10000, enableHighAccuracy: true }
+                        );
+                      }}
+                      className="text-xs font-semibold text-brand-emerald hover:underline flex items-center gap-1 bg-emerald-500/10 py-1 px-2.5 rounded-lg border border-emerald-500/20"
+                      title="Tự động phát hiện vị trí hiện tại"
+                    >
+                      🎯 Tự động lấy vị trí hiện tại
+                    </button>
+                    {diaDiem && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(diaDiem)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-semibold text-brand-primary hover:underline flex items-center gap-1 bg-indigo-500/10 py-1 px-2.5 rounded-lg border border-indigo-500/20"
+                        title="Mở Google Maps chỉ đường"
+                      >
+                        📍 Xem Google Maps
+                      </a>
+                    )}
+                  </div>
+                </div>
                 <input
                   type="text"
                   value={diaDiem}

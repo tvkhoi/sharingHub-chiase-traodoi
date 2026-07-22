@@ -181,7 +181,18 @@ export const AssetDetailPage: React.FC = () => {
                 <span className="text-secondary flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-brand-rose" /> Địa điểm:
                 </span>
-                <span className="font-semibold text-primary">{asset.dia_diem}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-primary">{asset.dia_diem}</span>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(asset.dia_diem)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-brand-primary font-bold hover:underline flex items-center gap-1 bg-indigo-500/10 py-1 px-2.5 rounded-lg border border-indigo-500/20"
+                    title="Xem vị trí chỉ đường trên Google Maps"
+                  >
+                    📍 Maps
+                  </a>
+                </div>
               </div>
 
               <div className="flex items-center justify-between text-sm">
