@@ -11,6 +11,25 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Chẩn đoán gửi email (debug)' })
+  @Get('email-debug')
+  async emailDebug() {
+    const resendKey = process.env.RESEND_API_KEY;
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+
+    return {
+      has_resend_key: !!resendKey,
+      resend_key_preview: resendKey ? `${resendKey.substring(0, 5)}...` : 'NONE (Chưa cài RESEND_API_KEY)',
+      has_smtp_user: !!smtpUser,
+      smtp_user: smtpUser || 'NONE',
+      has_smtp_pass: !!smtpPass,
+      note: resendKey
+        ? 'Đã phát hiện RESEND_API_KEY -> Hệ thống sẽ gửi qua Resend HTTPS (Cổng 443).'
+        : 'Chưa có RESEND_API_KEY -> Đang dùng Gmail SMTP (Dễ bị Render chặn cổng 587/465).',
+    };
+  }
+
   @ApiOperation({ summary: 'Test SMTP connection live (debug)' })
   @Get('test-smtp-live')
   async testSmtpLive() {
