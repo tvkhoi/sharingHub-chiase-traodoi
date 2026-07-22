@@ -25,18 +25,25 @@ export const TransactionsPage: React.FC = () => {
   const [submittingCancel, setSubmittingCancel] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchTransactions();
+    fetchTransactions(false);
+
+    // Continuous 3-second background polling to automatically sync transaction status (Cancel / Confirm / Complete)
+    const interval = setInterval(() => {
+      fetchTransactions(true);
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchTransactions = async () => {
-    setLoading(true);
+  const fetchTransactions = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const data = await transactionsService.getTransactions();
       setTransactions(data);
     } catch (err) {
       console.error('Lỗi lấy danh sách giao dịch:', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
