@@ -23,6 +23,16 @@ export interface AuthResponse {
 }
 
 export const authService = {
+  async sendOtp(email: string): Promise<{ message: string; otpSimulated?: string }> {
+    const res = await api.post('/auth/send-otp', { email });
+    return res.data;
+  },
+
+  async verifyOtp(email: string, otp: string): Promise<{ message: string; verified: boolean }> {
+    const res = await api.post('/auth/verify-otp', { email, otp });
+    return res.data;
+  },
+
   async register(data: RegisterDto): Promise<AuthResponse> {
     const res = await api.post<AuthResponse>('/auth/register', data);
     return res.data;

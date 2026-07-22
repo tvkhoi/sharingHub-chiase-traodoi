@@ -3,14 +3,70 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  private otpStore = new Map<string, { otp: string; expiresAt: number }>();
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
+
+  async sendOtp(email: string) {
+    if (!email || !email.trim()) {
+      throw new BadRequestException('Vui lòng cung cấp địa chỉ email');
+    }
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Check existing email
+    const existingUser = await this.prisma.nguoiDung.findUnique({
+      where: { email: cleanEmail },
+    });
+    if (existingUser) {
+      throw new BadRequestException('Email này đã được sử dụng. Vui lòng sử dụng thông tin khác.');
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
+
+    this.otpStore.set(cleanEmail, { otp, expiresAt });
+
+    // Send real email via Nodemailer
+    await this.emailService.sendOtpEmail(cleanEmail, otp);
+
+    return {
+      message: 'Mã OTP xác thực 6 số đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư!',
+      otpSimulated: otp,
+    };
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    if (!email || !otp) {
+      throw new BadRequestException('Vui lòng cung cấp đầy đủ Email và mã OTP');
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const record = this.otpStore.get(cleanEmail);
+
+    if (!record) {
+      throw new BadRequestException('Chưa gửi mã OTP hoặc mã OTP không hợp lệ');
+    }
+
+    if (Date.now() > record.expiresAt) {
+      this.otpStore.delete(cleanEmail);
+      throw new BadRequestException('Mã OTP đã hết hạn. Vui lòng lấy lại mã mới');
+    }
+
+    if (record.otp !== otp.trim()) {
+      throw new BadRequestException('Mã OTP nhập vào không chính xác');
+    }
+
+    return { message: 'Xác thực Email thành công!', verified: true };
+  }
 
   async register(dto: RegisterDto) {
     // 0. Validate password confirmation if provided (5e.1)

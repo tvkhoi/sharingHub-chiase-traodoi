@@ -12,6 +12,24 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({
+    summary: 'Gửi mã OTP xác thực Email thực tế qua SMTP/EmailService',
+    description: 'Tạo mã OTP 6 số ngẫu nhiên có hiệu lực 5 phút và gửi email thực tế đến hộp thư người dùng.',
+  })
+  @Post('send-otp')
+  async sendOtp(@Body('email') email: string) {
+    return this.authService.sendOtp(email);
+  }
+
+  @ApiOperation({
+    summary: 'Kiểm tra mã OTP xác thực Email',
+    description: 'Đối soát mã OTP 6 số người dùng nhập với mã đã gửi.',
+  })
+  @Post('verify-otp')
+  async verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
+    return this.authService.verifyOtp(email, otp);
+  }
+
+  @ApiOperation({
     summary: 'Đăng ký tài khoản người dùng mới (UC5.1)',
     description: 'Khởi tạo tài khoản thành viên mới trong hệ thống. Tự động khởi tạo hồ sơ người dùng và hồ sơ uy tín ban đầu.',
   })
