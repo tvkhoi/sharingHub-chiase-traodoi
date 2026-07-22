@@ -1,16 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { assetsService } from '../services/assets.service';
-import type { Asset } from '../types';
+import { uploadService } from '../services/upload.service';
+import type { Asset, AssetCategory } from '../types';
 import toast from 'react-hot-toast';
-import { PlusCircle, Layers, Trash2 } from 'lucide-react';
+import { PlusCircle, Layers, Trash2, Edit, UploadCloud, X, Save } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 export const MyAssetsPage: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Edit Modal State
+  const [editAsset, setEditAsset] = useState<Asset | null>(null);
+  const [tenTaiSan, setTenTaiSan] = useState<string>('');
+  const [danhMucId, setDanhMucId] = useState<string>('');
+  const [moTaHienTrang, setMoTaHienTrang] = useState<string>('');
+  const [soLuongTong, setSoLuongTong] = useState<number>(1);
+  const [hinhThucChiaSe, setHinhThucChiaSe] = useState<'CHO_TANG' | 'TRAO_DOI'>('CHO_TANG');
+  const [hinhThucTraoDoi, setHinhThucTraoDoi] = useState<'TAI_SAN' | 'TIEN'>('TAI_SAN');
+  const [diaDiem, setDiaDiem] = useState<string>('');
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [newPreviewUrls, setNewPreviewUrls] = useState<string[]>([]);
+  const [submittingEdit, setSubmittingEdit] = useState<boolean>(false);
 
   useEffect(() => {
     fetchMyAssets();
+    fetchCategories();
   }, []);
 
   const fetchMyAssets = async () => {
@@ -22,6 +40,103 @@ export const MyAssetsPage: React.FC = () => {
       console.error('Lỗi lấy danh sách bài đăng cá nhân:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const cats = await assetsService.getCategories();
+      setCategories(cats);
+    } catch (err) {
+      console.error('Lỗi lấy danh mục:', err);
+    }
+  };
+
+  const openEditModal = (asset: Asset) => {
+    setEditAsset(asset);
+    setTenTaiSan(asset.ten_tai_san);
+    setDanhMucId(asset.danh_muc_id);
+    setMoTaHienTrang(asset.mo_ta_hien_trang);
+    setSoLuongTong(asset.so_luong_tong);
+    setHinhThucChiaSe(asset.hinh_thuc_chia_se as 'CHO_TANG' | 'TRAO_DOI');
+    setHinhThucTraoDoi((asset.hinh_thuc_trao_doi as 'TAI_SAN' | 'TIEN') || 'TAI_SAN');
+    setDiaDiem(asset.dia_diem);
+    setExistingImages(asset.hinh_anh?.map((img) => img.duong_dan_anh) || []);
+    setSelectedFiles([]);
+    setNewPreviewUrls([]);
+  };
+
+  const closeEditModal = () => {
+    setEditAsset(null);
+    setSelectedFiles([]);
+    setNewPreviewUrls([]);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setSelectedFiles((prev) => [...prev, ...newFiles]);
+
+      const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+      setNewPreviewUrls((prev) => [...prev, ...newPreviews]);
+    }
+  };
+
+  const handleRemoveExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveNewImage = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setNewPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editAsset) return;
+
+    if (!tenTaiSan.trim() || !moTaHienTrang.trim() || !diaDiem.trim() || !danhMucId) {
+      toast.error('Vui lòng điền đầy đủ thông tin bắt buộc (*)');
+      return;
+    }
+
+    setSubmittingEdit(true);
+    try {
+      let finalImages = [...existingImages];
+
+      if (selectedFiles.length > 0) {
+        toast.loading('Đang tải ảnh mới lên hệ thống...', { id: 'upload_edit' });
+        const uploadRes = await uploadService.uploadMultiple(selectedFiles);
+        toast.success('Đã tải ảnh thành công!', { id: 'upload_edit' });
+        finalImages = [...finalImages, ...uploadRes.urls];
+      }
+
+      if (finalImages.length === 0) {
+        toast.error('Bài đăng phải có ít nhất 1 hình ảnh');
+        setSubmittingEdit(false);
+        return;
+      }
+
+      await assetsService.updateAsset(editAsset.bai_dang_id, {
+        danh_muc_id: danhMucId,
+        ten_tai_san: tenTaiSan,
+        mo_ta_hien_trang: moTaHienTrang,
+        so_luong_tong: Number(soLuongTong),
+        hinh_thuc_chia_se: hinhThucChiaSe,
+        hinh_thuc_trao_doi: hinhThucChiaSe === 'TRAO_DOI' ? hinhThucTraoDoi : undefined,
+        dia_diem: diaDiem,
+        hinh_anh: finalImages,
+      });
+
+      toast.success('Cập nhật bài đăng tài sản thành công!');
+      closeEditModal();
+      fetchMyAssets();
+    } catch (err: any) {
+      toast.dismiss('upload_edit');
+      const msg = err.response?.data?.message || 'Cập nhật thất bại. Vui lòng kiểm tra lại!';
+      toast.error(msg);
+    } finally {
+      setSubmittingEdit(false);
     }
   };
 
@@ -103,6 +218,13 @@ export const MyAssetsPage: React.FC = () => {
                     Xem
                   </Link>
                   <button
+                    onClick={() => openEditModal(asset)}
+                    className="p-2 btn btn-primary rounded-lg text-xs"
+                    title="Chỉnh sửa bài đăng"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => handleDelete(asset.bai_dang_id)}
                     className="p-2 btn btn-danger rounded-lg text-xs"
                     title="Xóa bài đăng"
@@ -114,6 +236,193 @@ export const MyAssetsPage: React.FC = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Modal: Edit Asset */}
+      {editAsset && createPortal(
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 rounded-3xl border border-color shadow-2xl animate-fade-in">
+            <div className="flex items-center justify-between mb-4 border-b border-color pb-3">
+              <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+                <Edit className="w-5 h-5 text-brand-primary" /> Chỉnh Sửa Bài Đăng Tài Sản
+              </h2>
+              <button onClick={closeEditModal} className="p-1 text-muted hover:text-primary">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="form-group">
+                  <label className="form-label">Tên tài sản *</label>
+                  <input
+                    type="text"
+                    value={tenTaiSan}
+                    onChange={(e) => setTenTaiSan(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Danh mục tài sản *</label>
+                  <select
+                    value={danhMucId}
+                    onChange={(e) => setDanhMucId(e.target.value)}
+                    className="form-select"
+                    required
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.danh_muc_id} value={cat.danh_muc_id}>
+                        {cat.ten_danh_muc}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Mô tả hiện trạng tài sản *</label>
+                <textarea
+                  rows={3}
+                  value={moTaHienTrang}
+                  onChange={(e) => setMoTaHienTrang(e.target.value)}
+                  className="form-textarea"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="form-group">
+                  <label className="form-label">Hình thức chia sẻ *</label>
+                  <select
+                    value={hinhThucChiaSe}
+                    onChange={(e) => setHinhThucChiaSe(e.target.value as 'CHO_TANG' | 'TRAO_DOI')}
+                    className="form-select"
+                  >
+                    <option value="CHO_TANG">Cho tặng miễn phí</option>
+                    <option value="TRAO_DOI">Trao đổi lấy đồ/tiền</option>
+                  </select>
+                </div>
+
+                {hinhThucChiaSe === 'TRAO_DOI' && (
+                  <div className="form-group">
+                    <label className="form-label">Hình thức nhận lại</label>
+                    <select
+                      value={hinhThucTraoDoi}
+                      onChange={(e) => setHinhThucTraoDoi(e.target.value as 'TAI_SAN' | 'TIEN')}
+                      className="form-select"
+                    >
+                      <option value="TAI_SAN">Trao đổi tài sản khác</option>
+                      <option value="TIEN">Bù bù thêm tiền</option>
+                    </select>
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label className="form-label">Số lượng tổng *</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={soLuongTong}
+                    onChange={(e) => setSoLuongTong(parseInt(e.target.value) || 1)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Địa điểm giao nhận trực tiếp *</label>
+                <input
+                  type="text"
+                  value={diaDiem}
+                  onChange={(e) => setDiaDiem(e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              {/* Images Management */}
+              <div className="form-group">
+                <label className="form-label">Hình ảnh hiện tại & Bổ sung ảnh mới</label>
+                {existingImages.length > 0 && (
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-3">
+                    {existingImages.map((imgUrl, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-color group">
+                        <img src={imgUrl} alt="Existing" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveExistingImage(idx)}
+                          className="absolute top-1 right-1 p-1 bg-black/70 rounded-full text-white hover:bg-rose-600 transition-colors"
+                          title="Xóa ảnh này"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="border-2 border-dashed border-color hover:border-indigo-400 rounded-xl p-4 text-center bg-card-hover transition-colors">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    id="edit-file-upload"
+                    className="hidden"
+                  />
+                  <label htmlFor="edit-file-upload" className="cursor-pointer flex flex-col items-center justify-center">
+                    <UploadCloud className="w-8 h-8 text-brand-primary mb-1" />
+                    <span className="text-xs font-semibold text-primary">Bấm để tải thêm ảnh mới</span>
+                  </label>
+                </div>
+
+                {newPreviewUrls.length > 0 && (
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-3">
+                    {newPreviewUrls.map((url, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-indigo-500/50 group">
+                        <img src={url} alt="New Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNewImage(idx)}
+                          className="absolute top-1 right-1 p-1 bg-black/70 rounded-full text-white hover:bg-rose-600 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t border-color">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="btn btn-outline flex-1"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingEdit}
+                  className="btn btn-emerald flex-1"
+                >
+                  {submittingEdit ? (
+                    'Đang lưu...'
+                  ) : (
+                    <span className="flex items-center justify-center gap-1.5">
+                      <Save className="w-4 h-4" /> Lưu Thay Đổi
+                    </span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
