@@ -13,26 +13,26 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    // 0. Validate password confirmation if provided
+    // 0. Validate password confirmation if provided (5e.1)
     if (dto.xac_nhan_mat_khau && dto.mat_khau !== dto.xac_nhan_mat_khau) {
-      throw new BadRequestException('Mật khẩu nhập lại không khớp với mật khẩu đã nhập');
+      throw new BadRequestException('Mật khẩu và xác nhận mật khẩu không trùng khớp. Vui lòng nhập lại.');
     }
 
-    // 1. Check duplicate email
+    // 1. Check duplicate email (5e)
     const existingEmail = await this.prisma.nguoiDung.findUnique({
       where: { email: dto.email },
     });
     if (existingEmail) {
-      throw new BadRequestException('Email này đã được sử dụng');
+      throw new BadRequestException('Email này đã được sử dụng. Vui lòng sử dụng thông tin khác.');
     }
 
-    // 2. Check duplicate phone if provided
+    // 2. Check duplicate phone if provided (5e)
     if (dto.so_dien_thoai) {
       const existingPhone = await this.prisma.nguoiDung.findUnique({
         where: { so_dien_thoai: dto.so_dien_thoai },
       });
       if (existingPhone) {
-        throw new BadRequestException('Số điện thoại này đã được sử dụng');
+        throw new BadRequestException('Số điện thoại này đã được sử dụng. Vui lòng sử dụng thông tin khác.');
       }
     }
 

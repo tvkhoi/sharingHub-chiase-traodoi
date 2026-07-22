@@ -50,7 +50,7 @@ export const RegisterPage: React.FC = () => {
       toast.success('Đăng ký tài khoản thành công!');
       navigate('/');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Đăng ký thất bại. Email hoặc SĐT đã tồn tại!';
+      const msg = err.response?.data?.message || 'Hệ thống không thể tạo tài khoản do lỗi xử lý. Vui lòng thử lại sau!';
       toast.error(msg);
     } finally {
       setLoading(false);
