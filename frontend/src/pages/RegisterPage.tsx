@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth.service';
 import toast from 'react-hot-toast';
-import { Mail, Lock, User as UserIcon, Phone, MapPin, Layers, Eye, EyeOff, KeyRound, AlertCircle, CheckCircle2, Send } from 'lucide-react';
+import { UserPlus, Mail, Lock, User as UserIcon, Phone, MapPin, Layers, Eye, EyeOff, KeyRound, AlertCircle, CheckCircle2, Send } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -15,6 +14,14 @@ export const RegisterPage: React.FC = () => {
   const [hoTen, setHoTen] = useState<string>('');
   const [soDienThoai, setSoDienThoai] = useState<string>('');
   const [diaChi, setDiaChi] = useState<string>('');
+
+  // Inline OTP State
+  const [otpInput, setOtpInput] = useState<string>('');
+  const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [sendingOtp, setSendingOtp] = useState<boolean>(false);
+  const [registering, setRegistering] = useState<boolean>(false);
+  const [simulatedOtp, setSimulatedOtp] = useState<string | null>(null);
+  const [resendTimer, setResendTimer] = useState<number>(0);
 
   // Realtime Inline Validation State
   type FieldName = 'hoTen' | 'email' | 'soDienThoai' | 'matKhau' | 'xacNhanMatKhau';
@@ -32,14 +39,6 @@ export const RegisterPage: React.FC = () => {
     matKhau: '',
     xacNhanMatKhau: '',
   });
-
-  // OTP Verification State
-  const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
-  const [otpInput, setOtpInput] = useState<string>('');
-  const [sendingOtp, setSendingOtp] = useState<boolean>(false);
-  const [verifyingOtp, setVerifyingOtp] = useState<boolean>(false);
-  const [simulatedOtp, setSimulatedOtp] = useState<string | null>(null);
-  const [resendTimer, setResendTimer] = useState<number>(0);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -94,7 +93,6 @@ export const RegisterPage: React.FC = () => {
       } else if (value.length < 6) {
         err = 'Mật khẩu phải từ 6 ký tự trở lên';
       }
-      // Recheck confirm password if already touched
       if (touched.xacNhanMatKhau && xacNhanMatKhau) {
         setErrors((prev) => ({
           ...prev,
@@ -130,7 +128,33 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleSendOtpAndOpenModal = async (e: React.FormEvent) => {
+  const handleSendOtpClick = async () => {
+    setTouched((prev) => ({ ...prev, email: true }));
+    const errEmail = validateField('email', email);
+
+    if (errEmail) {
+      toast.error('Vui lòng nhập địa chỉ Email hợp lệ trước khi gửi mã OTP');
+      return;
+    }
+
+    setSendingOtp(true);
+    try {
+      const res = await authService.sendOtp(email.trim());
+      toast.success(res.message);
+      setOtpSent(true);
+      if (res.otpSimulated) {
+        setSimulatedOtp(res.otpSimulated);
+      }
+      startResendTimer();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng kiểm tra lại Email!';
+      toast.error(msg);
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({
       hoTen: true,
@@ -147,37 +171,17 @@ export const RegisterPage: React.FC = () => {
     const errConfirm = validateField('xacNhanMatKhau', xacNhanMatKhau);
 
     if (errHoTen || errEmail || errPhone || errPass || errConfirm) {
-      toast.error('Vui lòng kiểm tra và sửa các thông tin bị lỗi trước khi nhận mã OTP');
+      toast.error('Vui lòng kiểm tra và sửa các thông tin bị lỗi trong form');
       return;
     }
 
-    setSendingOtp(true);
-    try {
-      const res = await authService.sendOtp(email.trim());
-      toast.success(res.message);
-      if (res.otpSimulated) {
-        setSimulatedOtp(res.otpSimulated);
-      }
-      setShowOtpModal(true);
-      startResendTimer();
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng kiểm tra lại Email!';
-      toast.error(msg);
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
-  const handleVerifyOtpAndRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
     if (!otpInput || otpInput.trim().length !== 6) {
-      toast.error('Vui lòng nhập đầy đủ mã OTP 6 số!');
+      toast.error('Vui lòng nhập đầy đủ mã OTP 6 số từ Email!');
       return;
     }
 
-    setVerifyingOtp(true);
+    setRegistering(true);
     try {
-      // Complete Account Registration with mandatory OTP check on Backend
       const res = await authService.register({
         email: email.trim(),
         mat_khau: matKhau,
@@ -190,13 +194,12 @@ export const RegisterPage: React.FC = () => {
 
       login(res.access_token, res.user);
       toast.success('Xác thực Email & Đăng ký tài khoản thành công!');
-      setShowOtpModal(false);
       navigate('/');
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Mã OTP không hợp lệ hoặc đã hết hạn!';
       toast.error(msg);
     } finally {
-      setVerifyingOtp(false);
+      setRegistering(false);
     }
   };
 
@@ -211,7 +214,7 @@ export const RegisterPage: React.FC = () => {
           <p className="text-sm text-secondary mt-1">Tham gia cộng đồng chia sẻ & trao đổi tài sản ShareHub</p>
         </div>
 
-        <form onSubmit={handleSendOtpAndOpenModal} className="space-y-4" noValidate>
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {/* Họ và tên */}
           <div className="form-group">
             <div className="flex items-center justify-between">
@@ -311,6 +314,59 @@ export const RegisterPage: React.FC = () => {
                 </p>
               )}
             </div>
+          </div>
+
+          {/* Trường nhập Mã OTP với nút Gửi Mã bên cạnh */}
+          <div className="form-group">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="form-label mb-0">Mã xác thực OTP Email *</label>
+              {otpSent && (
+                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã gửi mã về Email
+                </span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <KeyRound className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
+                <input
+                  type="text"
+                  maxLength={6}
+                  placeholder="Nhập 6 số OTP..."
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))}
+                  className="form-input pl-11 font-mono text-base font-bold tracking-widest uppercase"
+                  required
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSendOtpClick}
+                disabled={sendingOtp || resendTimer > 0}
+                className="btn btn-outline whitespace-nowrap px-4 text-xs font-bold border-indigo-500/40 text-indigo-400 hover:bg-indigo-500/10 shrink-0"
+              >
+                {sendingOtp ? (
+                  <span className="flex items-center gap-1">
+                    <span className="w-3.5 h-3.5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                    Đang gửi...
+                  </span>
+                ) : resendTimer > 0 ? (
+                  `Gửi lại (${resendTimer}s)`
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <Send className="w-3.5 h-3.5" />
+                    Gửi Mã OTP
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {simulatedOtp && (
+              <p className="text-xs text-brand-primary font-semibold mt-2 flex items-center gap-1.5 bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/20">
+                <span>💡 Mã OTP gửi về Email thực tế:</span>
+                <span className="font-mono text-sm font-extrabold tracking-widest">{simulatedOtp}</span>
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -413,18 +469,18 @@ export const RegisterPage: React.FC = () => {
 
           <button
             type="submit"
-            disabled={sendingOtp}
+            disabled={registering}
             className="btn btn-emerald w-full py-3 text-base font-semibold mt-2"
           >
-            {sendingOtp ? (
+            {registering ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Đang gửi mã OTP đến Email...
+                Đang kích hoạt & tạo tài khoản...
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                <Send className="w-5 h-5" />
-                Gửi Mã OTP & Xác Thực Email
+                <UserPlus className="w-5 h-5" />
+                Hoàn Tất Đăng Ký
               </span>
             )}
           </button>
@@ -436,78 +492,6 @@ export const RegisterPage: React.FC = () => {
             Đăng nhập
           </Link>
         </div>
-
-        {/* Modal Overlay: OTP Email Verification */}
-        {showOtpModal && createPortal(
-          <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="glass-panel max-w-md w-full p-6 sm:p-8 rounded-3xl border border-color shadow-2xl animate-fade-in relative">
-              <div className="text-center mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 text-brand-primary flex items-center justify-center mx-auto mb-3 border border-indigo-500/30 shadow-lg shadow-indigo-500/10">
-                  <Mail className="w-7 h-7" />
-                </div>
-                <h2 className="text-xl font-bold text-primary">Xác Thực Email Chính Chủ</h2>
-                <p className="text-xs text-secondary mt-1">
-                  Mã OTP 6 số đã được gửi tới email <span className="font-semibold text-brand-primary">{email}</span>
-                </p>
-              </div>
-
-              {simulatedOtp && (
-                <div className="mb-5 p-3.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-center">
-                  <span className="text-xs text-secondary block font-medium">Mã OTP gửi về Email thực tế:</span>
-                  <span className="text-2xl font-mono font-extrabold text-brand-primary tracking-widest">{simulatedOtp}</span>
-                </div>
-              )}
-
-              <form onSubmit={handleVerifyOtpAndRegister} className="space-y-4">
-                <div className="form-group">
-                  <label className="form-label text-center block">Nhập mã OTP 6 số từ Email *</label>
-                  <input
-                    type="text"
-                    maxLength={6}
-                    placeholder="------"
-                    value={otpInput}
-                    onChange={(e) => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="form-input text-center font-mono text-2xl font-bold tracking-[0.5em] py-3 uppercase"
-                    autoFocus
-                    required
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowOtpModal(false)}
-                    className="btn btn-outline flex-1"
-                  >
-                    Hủy bỏ
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={verifyingOtp}
-                    className="btn btn-emerald flex-1"
-                  >
-                    {verifyingOtp ? 'Đang kích hoạt...' : 'Xác Nhận & Đăng Ký'}
-                  </button>
-                </div>
-
-                <div className="text-center pt-2">
-                  {resendTimer > 0 ? (
-                    <span className="text-xs text-muted">Gửi lại mã OTP mới sau {resendTimer}s</span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleSendOtpAndOpenModal}
-                      className="text-xs font-semibold text-brand-primary hover:underline"
-                    >
-                      Gửi lại mã OTP mới
-                    </button>
-                  )}
-                </div>
-              </form>
-            </div>
-          </div>,
-          document.body
-        )}
       </div>
     </div>
   );
