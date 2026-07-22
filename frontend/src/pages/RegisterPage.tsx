@@ -138,14 +138,14 @@ export const RegisterPage: React.FC = () => {
     }
 
     setSendingOtp(true);
+    startResendTimer(); // Trigger 60s countdown immediately so UX is instant
     try {
       const res = await authService.sendOtp(email.trim());
-      toast.success(res.message);
+      toast.success(res.message || 'Mã OTP đã được gửi thành công!');
       setOtpSent(true);
       if (res.otpSimulated) {
         setSimulatedOtp(res.otpSimulated);
       }
-      startResendTimer();
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng kiểm tra lại Email!';
       toast.error(msg);

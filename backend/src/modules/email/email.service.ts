@@ -18,6 +18,9 @@ export class EmailService {
         host: smtpHost,
         port: smtpPort,
         secure: smtpPort === 465,
+        connectionTimeout: 4000,
+        greetingTimeout: 4000,
+        socketTimeout: 4000,
         auth: {
           user: smtpUser,
           pass: smtpPass,
@@ -35,7 +38,7 @@ export class EmailService {
 
   async sendOtpEmail(toEmail: string, otp: string): Promise<boolean> {
     const mailOptions = {
-      from: `"ShareHub Verification" <${process.env.SMTP_FROM || 'no-reply@sharehub.com'}>`,
+      from: `"ShareHub Verification" <${process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@sharehub.com'}>`,
       to: toEmail,
       subject: `[ShareHub] Mã OTP Xác Thực Email Của Bạn: ${otp}`,
       html: `
@@ -71,11 +74,16 @@ export class EmailService {
     };
 
     try {
-      const info = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`OTP Email successfully sent to ${toEmail} | OTP: ${otp} | MessageId: ${info.messageId || 'DEV'}`);
+      const sendPromise = this.transporter.sendMail(mailOptions);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('SMTP send mail timeout (3.5s)')), 3500)
+      );
+
+      const info = (await Promise.race([sendPromise, timeoutPromise])) as any;
+      this.logger.log(`OTP Email successfully sent to ${toEmail} | OTP: ${otp} | MessageId: ${info?.messageId || 'DEV'}`);
       return true;
     } catch (err) {
-      this.logger.error(`Failed to send OTP Email to ${toEmail}: ${err.message}`);
+      this.logger.error(`Failed/Timeout sending OTP Email to ${toEmail}: ${err.message}`);
       return false;
     }
   }
