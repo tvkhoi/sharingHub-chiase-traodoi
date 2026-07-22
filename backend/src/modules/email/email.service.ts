@@ -36,42 +36,46 @@ export class EmailService {
    * Gửi Email mã OTP 6 số xác thực tài khoản qua Nodemailer SMTP
    */
   async sendOtpEmail(toEmail: string, otp: string): Promise<boolean> {
+    const brevoApiKey = process.env.BREVO_API_KEY;
+
+    // 1. Ưu tiên cao nhất: Brevo HTTP API (Cổng 443 - Không bao giờ bị Render chặn, gửi được tới BẤT KỲ email nào)
+    if (brevoApiKey && brevoApiKey.trim()) {
+      try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': brevoApiKey.trim(),
+          },
+          body: JSON.stringify({
+            sender: { name: 'ShareHub Verification', email: process.env.SMTP_USER || 'no-reply@sharehub.com' },
+            to: [{ email: toEmail }],
+            subject: `[ShareHub] Mã OTP Xác Thực Email Của Bạn: ${otp}`,
+            htmlContent: this.getOtpTemplate(otp),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.logger.log(`[Brevo HTTP] OTP Email sent to ${toEmail} | MessageId: ${data.messageId}`);
+          return true;
+        } else {
+          const errData = await response.text();
+          this.logger.error(`[Brevo HTTP Error] ${errData}`);
+        }
+      } catch (err) {
+        this.logger.error(`[Brevo HTTP Exception] ${err.message}`);
+      }
+    }
+
+    // 2. Fallback sang Gmail SMTP (cho Local)
     const fromUser = process.env.SMTP_USER || 'no-reply@sharehub.com';
 
     const mailOptions = {
       from: `"ShareHub Verification" <${fromUser}>`,
       to: toEmail,
       subject: `[ShareHub] Mã OTP Xác Thực Email Của Bạn: ${otp}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 16px; background-color: #ffffff;">
-          <div style="text-align: center; margin-bottom: 24px;">
-            <h1 style="color: #4f46e5; margin: 0; font-size: 28px; font-weight: 800;">ShareHub</h1>
-            <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Nền Tảng Chia Sẻ & Trao Đổi Tài Sản</p>
-          </div>
-
-          <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
-            <h2 style="color: #111827; font-size: 18px; margin-top: 0;">Xác Thực Địa Chỉ Email Của Bạn</h2>
-            <p style="color: #374151; font-size: 14px; line-height: 1.6;">
-              Xin chào! Cảm ơn bạn đã sử dụng dịch vụ tại <strong>ShareHub</strong>. Để hoàn tất quy trình xác thực email chính chủ, vui lòng nhập mã OTP xác thực dưới đây:
-            </p>
-            
-            <div style="text-align: center; margin: 28px 0;">
-              <span style="font-family: monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #4f46e5; background: #eef2ff; padding: 12px 28px; border-radius: 12px; border: 2px dashed #6366f1;">
-                ${otp}
-              </span>
-            </div>
-
-            <p style="color: #6b7280; font-size: 13px; text-align: center; margin: 0;">
-              ⚠️ Mã OTP này có hiệu lực trong <strong>5 phút</strong>. Vui lòng không chia sẻ mã này cho bất kỳ ai.
-            </p>
-          </div>
-
-          <div style="text-align: center; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; margin-top: 24px; padding-top: 16px;">
-            <p style="margin: 0;">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
-            <p style="margin: 4px 0 0 0;">© 2026 ShareHub. All rights reserved.</p>
-          </div>
-        </div>
-      `,
+      html: this.getOtpTemplate(otp),
     };
 
     try {
@@ -82,6 +86,39 @@ export class EmailService {
       this.logger.error(`[SMTP Error] Failed sending OTP Email to ${toEmail}: ${err.message}`);
       return false;
     }
+  }
+
+  private getOtpTemplate(otp: string): string {
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 16px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 style="color: #4f46e5; margin: 0; font-size: 28px; font-weight: 800;">ShareHub</h1>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Nền Tảng Chia Sẻ & Trao Đổi Tài Sản</p>
+        </div>
+
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+          <h2 style="color: #111827; font-size: 18px; margin-top: 0;">Xác Thực Địa Chỉ Email Của Bạn</h2>
+          <p style="color: #374151; font-size: 14px; line-height: 1.6;">
+            Xin chào! Cảm ơn bạn đã sử dụng dịch vụ tại <strong>ShareHub</strong>. Để hoàn tất quy trình xác thực email chính chủ, vui lòng nhập mã OTP xác thực dưới đây:
+          </p>
+          
+          <div style="text-align: center; margin: 28px 0;">
+            <span style="font-family: monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #4f46e5; background: #eef2ff; padding: 12px 28px; border-radius: 12px; border: 2px dashed #6366f1;">
+              ${otp}
+            </span>
+          </div>
+
+          <p style="color: #6b7280; font-size: 13px; text-align: center; margin: 0;">
+            ⚠️ Mã OTP này có hiệu lực trong <strong>5 phút</strong>. Vui lòng không chia sẻ mã này cho bất kỳ ai.
+          </p>
+        </div>
+
+        <div style="text-align: center; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; margin-top: 24px; padding-top: 16px;">
+          <p style="margin: 0;">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+          <p style="margin: 4px 0 0 0;">© 2026 ShareHub. All rights reserved.</p>
+        </div>
+      </div>
+    `;
   }
 }
 
