@@ -22,7 +22,14 @@ export const ProposalsPage: React.FC = () => {
   const [loadingMessages, setLoadingMessages] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchProposals();
+    fetchProposals(false);
+
+    // Continuous 3-second background polling to automatically sync proposal status (Cancel / Accept / Reject)
+    const interval = setInterval(() => {
+      fetchProposals(true);
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, [activeTab]);
 
   // Real-time Chat Listener & Sync Effect
@@ -54,8 +61,8 @@ export const ProposalsPage: React.FC = () => {
     };
   }, [selectedProposal]);
 
-  const fetchProposals = async () => {
-    setLoading(true);
+  const fetchProposals = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       if (activeTab === 'received') {
         const res = await proposalsService.getReceivedProposals();
@@ -67,7 +74,7 @@ export const ProposalsPage: React.FC = () => {
     } catch (err) {
       console.error('Lỗi lấy danh sách đề xuất:', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -131,6 +138,8 @@ export const ProposalsPage: React.FC = () => {
         return <span className="badge badge-emerald flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Đã chấp nhận</span>;
       case 'TU_CHOI':
         return <span className="badge badge-rose flex items-center gap-1"><XCircle className="w-3.5 h-3.5" /> Đã từ chối</span>;
+      case 'DA_HUY':
+        return <span className="badge badge-rose flex items-center gap-1"><XCircle className="w-3.5 h-3.5" /> Đã hủy giao dịch</span>;
       case 'DANG_THUONG_LUONG':
         return <span className="badge badge-indigo flex items-center gap-1"><MessageSquare className="w-3.5 h-3.5" /> Đang thương lượng</span>;
       default:
@@ -227,6 +236,12 @@ export const ProposalsPage: React.FC = () => {
                       "{prop.loi_nhan}"
                     </p>
                   )}
+
+                  {prop.ly_do_tu_choi && (prop.trang_thai === 'TU_CHOI' || prop.trang_thai === 'DA_HUY') && (
+                    <p className="text-xs text-brand-rose italic mt-1 font-semibold">
+                      Lý do hủy/từ chối: "{prop.ly_do_tu_choi}"
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -240,7 +255,7 @@ export const ProposalsPage: React.FC = () => {
                   Thương lượng trực tiếp
                 </button>
 
-                {activeTab === 'received' && prop.trang_thai !== 'DA_CHAP_NHAN' && prop.trang_thai !== 'TU_CHOI' && (
+                {activeTab === 'received' && prop.trang_thai !== 'DA_CHAP_NHAN' && prop.trang_thai !== 'TU_CHOI' && prop.trang_thai !== 'DA_HUY' && (
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => handleAcceptProposal(prop.de_xuat_id)}
