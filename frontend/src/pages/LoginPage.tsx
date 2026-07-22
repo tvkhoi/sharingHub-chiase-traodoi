@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth.service';
 import toast from 'react-hot-toast';
-import { LogIn, Mail, Lock, Layers } from 'lucide-react';
+import { LogIn, Mail, Lock, Layers, Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const [taiKhoan, setTaiKhoan] = useState<string>('');
   const [matKhau, setMatKhau] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -65,13 +66,21 @@ export const LoginPage: React.FC = () => {
             <div className="relative">
               <Lock className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Nhập mật khẩu..."
                 value={matKhau}
                 onChange={(e) => setMatKhau(e.target.value)}
-                className="form-input pl-11"
+                className="form-input pl-11 pr-11"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3 text-muted hover:text-primary transition-colors"
+                title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
           </div>
 

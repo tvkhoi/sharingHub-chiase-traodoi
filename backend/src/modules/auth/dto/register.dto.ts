@@ -27,6 +27,14 @@ export class RegisterDto {
   @MinLength(6, { message: 'Mật khẩu tối thiểu 6 ký tự' })
   mat_khau: string;
 
+  @ApiPropertyOptional({
+    description: 'Xác nhận lại mật khẩu',
+    example: '123456',
+  })
+  @IsString()
+  @IsOptional()
+  xac_nhan_mat_khau?: string;
+
   @ApiProperty({
     description: 'Họ và tên người dùng',
     example: 'Nguyễn Văn A',

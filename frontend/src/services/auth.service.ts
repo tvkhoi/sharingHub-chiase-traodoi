@@ -4,6 +4,7 @@ import type { User } from '../types';
 export interface RegisterDto {
   email: string;
   mat_khau: string;
+  xac_nhan_mat_khau?: string;
   ho_ten: string;
   so_dien_thoai?: string;
   dia_chi?: string;

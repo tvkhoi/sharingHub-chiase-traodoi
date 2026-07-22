@@ -68,8 +68,9 @@ export class TransactionsController {
   async cancel(
     @Param('id') id: string,
     @CurrentUser('nguoi_dung_id') userId: string,
-    @Body('ly_do') lyDo: string,
+    @Body() body: { ly_do?: string; ly_do_huy?: string },
   ) {
+    const lyDo = body?.ly_do || body?.ly_do_huy;
     return this.transactionsService.cancelTransaction(id, userId, lyDo);
   }
 }

@@ -3,11 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth.service';
 import toast from 'react-hot-toast';
-import { UserPlus, Mail, Lock, User as UserIcon, Phone, MapPin, Layers } from 'lucide-react';
+import { UserPlus, Mail, Lock, User as UserIcon, Phone, MapPin, Layers, Eye, EyeOff, KeyRound } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [matKhau, setMatKhau] = useState<string>('');
+  const [xacNhanMatKhau, setXacNhanMatKhau] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [hoTen, setHoTen] = useState<string>('');
   const [soDienThoai, setSoDienThoai] = useState<string>('');
   const [diaChi, setDiaChi] = useState<string>('');
@@ -17,8 +20,18 @@ export const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !matKhau || !hoTen || !soDienThoai) {
+    if (!email || !matKhau || !xacNhanMatKhau || !hoTen || !soDienThoai) {
       toast.error('Vui lòng điền các trường thông tin bắt buộc (*)');
+      return;
+    }
+
+    if (matKhau.length < 6) {
+      toast.error('Mật khẩu phải có tối thiểu 6 ký tự');
+      return;
+    }
+
+    if (matKhau !== xacNhanMatKhau) {
+      toast.error('Mật khẩu xác nhận không khớp với mật khẩu đã nhập!');
       return;
     }
 
@@ -27,6 +40,7 @@ export const RegisterPage: React.FC = () => {
       const res = await authService.register({
         email,
         mat_khau: matKhau,
+        xac_nhan_mat_khau: xacNhanMatKhau,
         ho_ten: hoTen,
         so_dien_thoai: soDienThoai,
         dia_chi: diaChi || undefined,
@@ -102,18 +116,51 @@ export const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Mật khẩu *</label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
-              <input
-                type="password"
-                placeholder="Mật khẩu tối thiểu 6 ký tự..."
-                value={matKhau}
-                onChange={(e) => setMatKhau(e.target.value)}
-                className="form-input pl-11"
-                required
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="form-group">
+              <label className="form-label">Mật khẩu *</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Tối thiểu 6 ký tự..."
+                  value={matKhau}
+                  onChange={(e) => setMatKhau(e.target.value)}
+                  className="form-input pl-11 pr-11"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3 text-muted hover:text-primary transition-colors"
+                  title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Xác nhận mật khẩu *</label>
+              <div className="relative">
+                <KeyRound className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Nhập lại mật khẩu..."
+                  value={xacNhanMatKhau}
+                  onChange={(e) => setXacNhanMatKhau(e.target.value)}
+                  className="form-input pl-11 pr-11"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-3 text-muted hover:text-primary transition-colors"
+                  title={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
           </div>
 

@@ -45,6 +45,7 @@ async function runTests() {
       body: JSON.stringify({
         email: testUserEmail,
         mat_khau: 'Password123',
+        xac_nhan_mat_khau: 'Password123',
         ho_ten: 'Tester Pro',
         so_dien_thoai: `09${Math.floor(10000000 + Math.random() * 90000000)}`,
       }),

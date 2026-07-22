@@ -13,6 +13,11 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
+    // 0. Validate password confirmation if provided
+    if (dto.xac_nhan_mat_khau && dto.mat_khau !== dto.xac_nhan_mat_khau) {
+      throw new BadRequestException('Mật khẩu nhập lại không khớp với mật khẩu đã nhập');
+    }
+
     // 1. Check duplicate email
     const existingEmail = await this.prisma.nguoiDung.findUnique({
       where: { email: dto.email },

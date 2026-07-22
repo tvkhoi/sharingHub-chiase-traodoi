@@ -5,7 +5,7 @@ import type { Transaction } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { RatingStars } from '../components/reviews/RatingStars';
 import toast from 'react-hot-toast';
-import { Repeat, CheckCircle2, Clock, Truck, Star } from 'lucide-react';
+import { Repeat, CheckCircle2, Clock, Truck, Star, XCircle, AlertCircle } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 export const TransactionsPage: React.FC = () => {
@@ -18,6 +18,11 @@ export const TransactionsPage: React.FC = () => {
   const [diemSao, setDiemSao] = useState<number>(5);
   const [nhanXet, setNhanXet] = useState<string>('');
   const [submittingReview, setSubmittingReview] = useState<boolean>(false);
+
+  // Cancel transaction modal state
+  const [cancelTx, setCancelTx] = useState<Transaction | null>(null);
+  const [cancelReason, setCancelReason] = useState<string>('');
+  const [submittingCancel, setSubmittingCancel] = useState<boolean>(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -43,6 +48,29 @@ export const TransactionsPage: React.FC = () => {
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Xác nhận thất bại!';
       toast.error(msg);
+    }
+  };
+
+  const handleCancelSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cancelTx) return;
+    if (!cancelReason.trim()) {
+      toast.error('Vui lòng nhập lý do hủy giao dịch');
+      return;
+    }
+
+    setSubmittingCancel(true);
+    try {
+      await transactionsService.cancelTransaction(cancelTx.giao_dich_id, cancelReason.trim());
+      toast.success('Đã hủy giao dịch thành công và hoàn trả số lượng tài sản khả dụng.');
+      setCancelTx(null);
+      setCancelReason('');
+      fetchTransactions();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Hủy giao dịch thất bại!';
+      toast.error(msg);
+    } finally {
+      setSubmittingCancel(false);
     }
   };
 
@@ -95,9 +123,10 @@ export const TransactionsPage: React.FC = () => {
           {transactions.map((tx) => {
             const isOwner = user?.nguoi_dung_id === tx.nguoi_so_huu_id;
             const isCompleted = tx.trang_thai === 'HOAN_TAT';
+            const isCancelled = tx.trang_thai === 'DA_HUY';
 
             return (
-              <div key={tx.giao_dich_id} className="glass-card p-6 rounded-3xl border border-color shadow-lg">
+              <div key={tx.giao_dich_id} className={`glass-card p-6 rounded-3xl border shadow-lg ${isCancelled ? 'border-rose-500/30 bg-rose-500/5' : 'border-color'}`}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-color">
                   <div>
                     <span className="text-xs font-mono text-brand-primary">Mã GD: #{tx.giao_dich_id.substring(0, 8)}</span>
@@ -109,21 +138,25 @@ export const TransactionsPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     {isCompleted ? (
                       <span className="badge badge-emerald py-1 px-3 text-xs"><CheckCircle2 className="w-4 h-4" /> HOÀN TẤT</span>
+                    ) : isCancelled ? (
+                      <span className="badge badge-rose py-1 px-3 text-xs"><XCircle className="w-4 h-4" /> ĐÃ HỦY GIAO DỊCH</span>
                     ) : tx.trang_thai === 'DANG_GIAO' ? (
                       <span className="badge badge-indigo py-1 px-3 text-xs"><Truck className="w-4 h-4" /> ĐANG VẬN CHUYỂN / GIAO NHẬN</span>
                     ) : (
-                      <span className="badge badge-amber py-1 px-3 text-xs"><Clock className="w-4 h-4" /> CHỜ CHỦ SỞ HỮU BÀN GIAO</span>
+                      <span className="badge badge-amber py-1 px-3 text-xs"><Clock className="w-4 h-4" /> CHỜ XÁC NHẬN BÀN GIAO</span>
                     )}
                   </div>
                 </div>
 
                 {/* Progress Steps */}
                 <div className="py-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className={`p-4 rounded-2xl border ${tx.xac_nhan_nguoi_so_huu ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-card-hover border-color'}`}>
+                  <div className={`p-4 rounded-2xl border ${tx.xac_nhan_nguoi_so_huu ? 'bg-emerald-500/10 border-emerald-500/30' : isCancelled ? 'bg-rose-500/10 border-rose-500/20' : 'bg-card-hover border-color'}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-secondary">Bước 1: Chủ sở hữu bàn giao</span>
                       {tx.xac_nhan_nguoi_so_huu ? (
                         <span className="text-xs font-bold text-brand-emerald flex items-center gap-1 w-fit"><CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" /> Đã bàn giao</span>
+                      ) : isCancelled ? (
+                        <span className="text-xs text-brand-rose w-fit">Đã hủy</span>
                       ) : (
                         <span className="text-xs text-brand-amber w-fit">Chưa xác nhận</span>
                       )}
@@ -133,11 +166,13 @@ export const TransactionsPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className={`p-4 rounded-2xl border ${tx.xac_nhan_nguoi_tiep_nhan ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-card-hover border-color'}`}>
+                  <div className={`p-4 rounded-2xl border ${tx.xac_nhan_nguoi_tiep_nhan ? 'bg-emerald-500/10 border-emerald-500/30' : isCancelled ? 'bg-rose-500/10 border-rose-500/20' : 'bg-card-hover border-color'}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-secondary">Bước 2: Người nhận tiếp nhận</span>
                       {tx.xac_nhan_nguoi_tiep_nhan ? (
                         <span className="text-xs font-bold text-brand-emerald flex items-center gap-1 w-fit"><CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" /> Đã tiếp nhận</span>
+                      ) : isCancelled ? (
+                        <span className="text-xs text-brand-rose w-fit">Đã hủy</span>
                       ) : (
                         <span className="text-xs text-brand-amber w-fit">Chưa xác nhận</span>
                       )}
@@ -148,20 +183,38 @@ export const TransactionsPage: React.FC = () => {
                   </div>
                 </div>
 
+                {isCancelled && tx.ly_do_huy && (
+                  <div className="mb-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-brand-rose">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold">Lý do hủy giao dịch:</span> {tx.ly_do_huy}
+                    </div>
+                  </div>
+                )}
+
                 {/* Footer Controls */}
                 <div className="pt-4 border-t border-color flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <span className="text-xs text-muted">
                     Thời điểm tạo: {new Date(tx.ngay_tao).toLocaleString('vi-VN')}
                   </span>
 
-                  <div className="flex gap-3 w-full sm:w-auto">
-                    {!isCompleted && (
-                      <button
-                        onClick={() => handleConfirm(tx.giao_dich_id)}
-                        className="btn btn-emerald text-sm w-full sm:w-auto justify-center"
-                      >
-                        {isOwner ? 'Xác nhận Đã Bàn Giao' : 'Xác nhận Đã Nhận Đồ'}
-                      </button>
+                  <div className="flex flex-wrap sm:flex-nowrap gap-3 w-full sm:w-auto">
+                    {!isCompleted && !isCancelled && (
+                      <>
+                        <button
+                          onClick={() => handleConfirm(tx.giao_dich_id)}
+                          className="btn btn-emerald text-sm w-full sm:w-auto justify-center"
+                        >
+                          {isOwner ? 'Xác nhận Đã Bàn Giao' : 'Xác nhận Đã Nhận Đồ'}
+                        </button>
+                        <button
+                          onClick={() => setCancelTx(tx)}
+                          className="btn btn-rose text-sm w-full sm:w-auto justify-center"
+                        >
+                          <XCircle className="w-4 h-4 shrink-0" />
+                          Hủy Giao Dịch
+                        </button>
+                      </>
                     )}
 
                     {isCompleted && (
@@ -179,6 +232,55 @@ export const TransactionsPage: React.FC = () => {
             );
           })}
         </div>
+      )}
+
+      {/* Modal: Cancel Transaction */}
+      {cancelTx && createPortal(
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass-panel max-w-lg w-full p-6 rounded-3xl border border-color shadow-2xl animate-fade-in">
+            <h2 className="text-xl font-bold text-primary mb-2 text-rose-500 flex items-center gap-2">
+              <XCircle className="w-6 h-6" /> Xác Nhận Hủy Giao Dịch
+            </h2>
+            <p className="text-xs text-secondary mb-4">
+              Giao dịch: <span className="font-semibold text-primary">{cancelTx.de_xuat?.bai_dang?.ten_tai_san}</span>
+            </p>
+
+            <form onSubmit={handleCancelSubmit} className="space-y-4">
+              <div className="form-group">
+                <label className="form-label">Lý do hủy giao dịch *</label>
+                <textarea
+                  rows={3}
+                  placeholder="Nhập lý do thay đổi ý định không tiếp tục giao dịch (ví dụ: Thay đổi lịch trình, tài sản gặp sự cố, thỏa thuận khác...)"
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  className="form-textarea"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCancelTx(null);
+                    setCancelReason('');
+                  }}
+                  className="btn btn-outline flex-1"
+                >
+                  Bỏ qua
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingCancel}
+                  className="btn btn-rose flex-1"
+                >
+                  {submittingCancel ? 'Đang hủy...' : 'Xác Nhận Hủy Giao Dịch'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal: Write Review */}
