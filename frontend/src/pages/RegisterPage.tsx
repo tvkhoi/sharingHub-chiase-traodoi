@@ -177,10 +177,7 @@ export const RegisterPage: React.FC = () => {
 
     setVerifyingOtp(true);
     try {
-      // 1. Verify OTP via EmailService
-      await authService.verifyOtp(email.trim(), otpInput.trim());
-
-      // 2. Complete Account Registration
+      // Complete Account Registration with mandatory OTP check on Backend
       const res = await authService.register({
         email: email.trim(),
         mat_khau: matKhau,
@@ -188,6 +185,7 @@ export const RegisterPage: React.FC = () => {
         ho_ten: hoTen.trim(),
         so_dien_thoai: soDienThoai.trim(),
         dia_chi: diaChi.trim() || undefined,
+        otp: otpInput.trim(),
       });
 
       login(res.access_token, res.user);

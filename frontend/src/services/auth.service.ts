@@ -10,6 +10,7 @@ export interface RegisterDto {
   dia_chi?: string;
   mo_ta_ca_nhan?: string;
   anh_dai_dien?: string;
+  otp: string;
 }
 
 export interface LoginDto {

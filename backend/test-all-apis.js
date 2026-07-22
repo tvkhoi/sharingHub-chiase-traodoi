@@ -38,7 +38,20 @@ async function runTests() {
   });
 
   const testUserEmail = `testuser_${Date.now()}@gmail.com`;
-  await test('POST /auth/register (New User)', async () => {
+  let testUserOtp = '';
+
+  await test('POST /auth/send-otp (Send Verification OTP to Email)', async () => {
+    const res = await fetch(`${BASE_URL}/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: testUserEmail }),
+    });
+    const data = await res.json();
+    if (res.status !== 201 && res.status !== 200) throw new Error(JSON.stringify(data));
+    testUserOtp = data.otpSimulated || '123456';
+  });
+
+  await test('POST /auth/register (New User with Mandatory Email OTP)', async () => {
     const res = await fetch(`${BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -48,6 +61,7 @@ async function runTests() {
         xac_nhan_mat_khau: 'Password123',
         ho_ten: 'Tester Pro',
         so_dien_thoai: `09${Math.floor(10000000 + Math.random() * 90000000)}`,
+        otp: testUserOtp,
       }),
     });
     const data = await res.json();

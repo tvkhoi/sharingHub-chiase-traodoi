@@ -69,7 +69,31 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
-    // 0. Validate password confirmation if provided (5e.1)
+    // 0. Mandatory OTP Code Verification for Email
+    if (!dto.otp || !dto.otp.trim()) {
+      throw new BadRequestException('Mã OTP xác thực Email là bắt buộc. Vui lòng lấy mã OTP từ Email!');
+    }
+
+    const cleanEmail = dto.email.trim().toLowerCase();
+    const record = this.otpStore.get(cleanEmail);
+
+    if (!record) {
+      throw new BadRequestException('Email chưa nhận mã OTP hoặc mã không tồn tại. Vui lòng ấn Gửi mã OTP!');
+    }
+
+    if (Date.now() > record.expiresAt) {
+      this.otpStore.delete(cleanEmail);
+      throw new BadRequestException('Mã OTP xác thực Email đã hết hạn. Vui lòng lấy mã OTP mới!');
+    }
+
+    if (record.otp !== dto.otp.trim()) {
+      throw new BadRequestException('Mã OTP xác thực Email không chính xác. Vui lòng kiểm tra lại!');
+    }
+
+    // OTP Code is verified! Remove OTP from store so it cannot be reused
+    this.otpStore.delete(cleanEmail);
+
+    // 1. Validate password confirmation if provided (5e.1)
     if (dto.xac_nhan_mat_khau && dto.mat_khau !== dto.xac_nhan_mat_khau) {
       throw new BadRequestException('Mật khẩu và xác nhận mật khẩu không trùng khớp. Vui lòng nhập lại.');
     }
