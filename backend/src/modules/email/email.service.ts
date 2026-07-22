@@ -10,7 +10,8 @@ export class EmailService {
     const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
     const smtpPort = parseInt(process.env.SMTP_PORT || '587');
     const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
+    // Auto strip spaces in Gmail App Password (e.g., "fbjh zmjt hnfn pjjs" -> "fbjhzmjthnfnpjjs")
+    const smtpPass = (process.env.SMTP_PASS || '').replace(/\s+/g, '');
 
     if (smtpUser && smtpPass) {
       this.transporter = nodemailer.createTransport({
@@ -22,7 +23,7 @@ export class EmailService {
           pass: smtpPass,
         },
       });
-      this.logger.log(`Initialized Production SMTP Mailer (${smtpHost}:${smtpPort})`);
+      this.logger.log(`Initialized Production Gmail SMTP Mailer (${smtpUser})`);
     } else {
       // Fallback transport for development / testing mode
       this.transporter = nodemailer.createTransport({
