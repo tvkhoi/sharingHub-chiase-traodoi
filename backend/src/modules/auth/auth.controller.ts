@@ -11,6 +11,24 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Chẩn đoán cấu hình SMTP (debug only)' })
+  @Get('smtp-status')
+  async smtpStatus() {
+    const user = process.env.SMTP_USER || 'NOT_SET';
+    const pass = (process.env.SMTP_PASS || '').replace(/\s+/g, '');
+    const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+    const port = process.env.SMTP_PORT || '587';
+    return {
+      smtp_host: host,
+      smtp_port: port,
+      smtp_user: user,
+      smtp_user_has_at: user.includes('@'),
+      smtp_pass_length: pass.length,
+      smtp_pass_preview: pass ? pass.substring(0, 4) + '...' + pass.substring(pass.length - 4) : 'EMPTY',
+      smtp_configured: !!(user && pass && user.includes('@') && pass.length === 16),
+    };
+  }
+
   @ApiOperation({
     summary: 'Gửi mã OTP xác thực Email thực tế qua SMTP/EmailService',
     description: 'Tạo mã OTP 6 số ngẫu nhiên có hiệu lực 5 phút và gửi email thực tế đến hộp thư người dùng.',
