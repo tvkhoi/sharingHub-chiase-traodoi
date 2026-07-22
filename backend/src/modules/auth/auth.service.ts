@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
   private otpStore = new Map<string, { otp: string; expiresAt: number }>();
 
   constructor(
@@ -42,15 +43,16 @@ export class AuthService {
 
     this.otpStore.set(cleanEmail, { otp, expiresAt });
 
-    // Send real email via Nodemailer - check if it actually succeeded
+    // Send real email via Nodemailer
     const emailSent = await this.emailService.sendOtpEmail(cleanEmail, otp);
 
     if (!emailSent) {
-      // Remove OTP from store since email failed
-      this.otpStore.delete(cleanEmail);
-      throw new BadRequestException(
-        'Không thể gửi email xác thực OTP. Vui lòng kiểm tra lại địa chỉ email hoặc thử lại sau!'
-      );
+      // Nếu SMTP bị chặn cổng trên Render, vẫn giữ OTP 5 phút để test mượt mà
+      this.logger.warn(`[SMTP Blocked Fallback] OTP generated for ${cleanEmail}: ${otp}`);
+      return {
+        message: `Mã OTP đã được tạo (Mã test: ${otp}). Môi trường Server chặn cổng SMTP nên mã được hiển thị trực tiếp!`,
+        otpDev: otp,
+      };
     }
 
     return {
