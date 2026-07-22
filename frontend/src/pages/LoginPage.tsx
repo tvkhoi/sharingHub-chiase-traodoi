@@ -25,7 +25,7 @@ export const LoginPage: React.FC = () => {
       if (!val) {
         err = 'Vui lòng nhập Email hoặc Số điện thoại';
       } else if (val.includes('@')) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(val)) {
           err = 'Email không đúng định dạng hợp lệ (Ví dụ: name@example.com)';
         }

@@ -22,6 +22,12 @@ export class AuthService {
     }
     const cleanEmail = email.trim().toLowerCase();
 
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(cleanEmail)) {
+      throw new BadRequestException('Email không đúng định dạng hợp lệ (Ví dụ: name@example.com)');
+    }
+
     // Check existing email
     const existingUser = await this.prisma.nguoiDung.findUnique({
       where: { email: cleanEmail },
