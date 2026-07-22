@@ -11,6 +11,31 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Test SMTP connection live (debug)' })
+  @Get('test-smtp-live')
+  async testSmtpLive() {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const nodemailer = require('nodemailer');
+    const user = process.env.SMTP_USER;
+    const pass = (process.env.SMTP_PASS || '').replace(/\s+/g, '');
+    const port = parseInt(process.env.SMTP_PORT || '587');
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port,
+        secure: port === 465,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
+        auth: { user, pass },
+      });
+      await transporter.verify();
+      return { success: true, message: `SMTP verify OK! user=${user} port=${port}` };
+    } catch (err) {
+      return { success: false, error: err.message, code: err.code, response: err.response || null };
+    }
+  }
+
   @ApiOperation({
     summary: 'Gửi mã OTP xác thực Email thực tế qua SMTP/EmailService',
     description: 'Tạo mã OTP 6 số ngẫu nhiên có hiệu lực 5 phút và gửi email thực tế đến hộp thư người dùng.',
