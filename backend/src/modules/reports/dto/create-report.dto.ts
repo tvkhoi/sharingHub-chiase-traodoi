@@ -27,10 +27,26 @@ export class CreateReportDto {
   ly_do_bao_cao: string;
 
   @ApiPropertyOptional({
+    description: 'Mô tả chi tiết bằng chứng vi phạm',
+    example: 'Sách in lậu, mô tả gian lận...',
+  })
+  @IsString()
+  @IsOptional()
+  mo_ta_chi_tiet?: string;
+
+  @ApiPropertyOptional({
     description: 'Đường dẫn ảnh/link minh chứng vi phạm (nếu có)',
     example: 'https://example.com/evidence-image.jpg',
   })
   @IsString()
   @IsOptional()
   bang_chung_hinh_anh?: string;
+
+  @ApiPropertyOptional({
+    description: 'Đường dẫn ảnh/link minh chứng vi phạm (alias minh_chung)',
+    example: 'https://example.com/evidence-image.jpg',
+  })
+  @IsString()
+  @IsOptional()
+  minh_chung?: string;
 }

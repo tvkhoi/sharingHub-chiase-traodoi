@@ -35,8 +35,8 @@ export class ReportsService {
         nguoi_dung_bi_bao_cao_id: dto.nguoi_dung_bi_bao_cao_id || null,
         loai_bao_cao: loaiBaoCao,
         ly_do_vi_pham: dto.ly_do_bao_cao,
-        mo_ta_chi_tiet: dto.ly_do_bao_cao,
-        minh_chung: dto.bang_chung_hinh_anh || null,
+        mo_ta_chi_tiet: dto.mo_ta_chi_tiet || dto.ly_do_bao_cao,
+        minh_chung: dto.minh_chung || dto.bang_chung_hinh_anh || null,
         trang_thai_xu_ly: 'CHO_KIEM_DUYET',
       },
       include: {
