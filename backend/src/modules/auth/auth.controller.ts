@@ -11,56 +11,8 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Chẩn đoán gửi email (debug)' })
-  @Get('email-debug')
-  async emailDebug() {
-    const resendKey = process.env.RESEND_API_KEY;
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
-
-    return {
-      has_resend_key: !!resendKey,
-      resend_key_preview: resendKey ? `${resendKey.substring(0, 5)}...` : 'NONE (Chưa cài RESEND_API_KEY)',
-      has_smtp_user: !!smtpUser,
-      smtp_user: smtpUser || 'NONE',
-      has_smtp_pass: !!smtpPass,
-      note: resendKey
-        ? 'Đã phát hiện RESEND_API_KEY -> Hệ thống sẽ gửi qua Resend HTTPS (Cổng 443).'
-        : 'Chưa có RESEND_API_KEY -> Đang dùng Gmail SMTP (Dễ bị Render chặn cổng 587/465).',
-    };
-  }
-
-  @ApiOperation({ summary: 'Test SMTP connection live (debug)' })
-  @Get('test-smtp-live')
-  async testSmtpLive() {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const nodemailer = require('nodemailer');
-    const user = process.env.SMTP_USER;
-    const pass = (process.env.SMTP_PASS || '').replace(/\s+/g, '');
-
-    const testPort = async (port: number) => {
-      try {
-        const t = nodemailer.createTransport({
-          host: 'smtp.gmail.com', port,
-          secure: port === 465,
-          connectionTimeout: 8000,
-          greetingTimeout: 8000,
-          socketTimeout: 8000,
-          auth: { user, pass },
-        });
-        await t.verify();
-        return { port, success: true };
-      } catch (err) {
-        return { port, success: false, error: err.message, code: err.code };
-      }
-    };
-
-    const [r587, r465] = await Promise.all([testPort(587), testPort(465)]);
-    return { port_587: r587, port_465: r465 };
-  }
-
   @ApiOperation({
-    summary: 'Gửi mã OTP xác thực Email thực tế qua SMTP/EmailService',
+    summary: 'Gửi mã OTP xác thực Email thực tế qua Nodemailer SMTP',
     description: 'Tạo mã OTP 6 số ngẫu nhiên có hiệu lực 5 phút và gửi email thực tế đến hộp thư người dùng.',
   })
   @Post('send-otp')
