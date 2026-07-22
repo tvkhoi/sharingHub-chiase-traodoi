@@ -42,12 +42,19 @@ export class AuthService {
 
     this.otpStore.set(cleanEmail, { otp, expiresAt });
 
-    // Send real email via Nodemailer
-    await this.emailService.sendOtpEmail(cleanEmail, otp);
+    // Send real email via Nodemailer - check if it actually succeeded
+    const emailSent = await this.emailService.sendOtpEmail(cleanEmail, otp);
+
+    if (!emailSent) {
+      // Remove OTP from store since email failed
+      this.otpStore.delete(cleanEmail);
+      throw new BadRequestException(
+        'Không thể gửi email xác thực OTP. Vui lòng kiểm tra lại địa chỉ email hoặc thử lại sau!'
+      );
+    }
 
     return {
-      message: 'Mã OTP xác thực 6 số đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư!',
-      otpSimulated: otp,
+      message: `Mã OTP xác thực 6 số đã được gửi đến ${cleanEmail}. Vui lòng kiểm tra hộp thư (kể cả thư mục Spam)!`,
     };
   }
 
