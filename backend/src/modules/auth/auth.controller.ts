@@ -18,22 +18,26 @@ export class AuthController {
     const nodemailer = require('nodemailer');
     const user = process.env.SMTP_USER;
     const pass = (process.env.SMTP_PASS || '').replace(/\s+/g, '');
-    const port = parseInt(process.env.SMTP_PORT || '587');
-    try {
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port,
-        secure: port === 465,
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
-        auth: { user, pass },
-      });
-      await transporter.verify();
-      return { success: true, message: `SMTP verify OK! user=${user} port=${port}` };
-    } catch (err) {
-      return { success: false, error: err.message, code: err.code, response: err.response || null };
-    }
+
+    const testPort = async (port: number) => {
+      try {
+        const t = nodemailer.createTransport({
+          host: 'smtp.gmail.com', port,
+          secure: port === 465,
+          connectionTimeout: 8000,
+          greetingTimeout: 8000,
+          socketTimeout: 8000,
+          auth: { user, pass },
+        });
+        await t.verify();
+        return { port, success: true };
+      } catch (err) {
+        return { port, success: false, error: err.message, code: err.code };
+      }
+    };
+
+    const [r587, r465] = await Promise.all([testPort(587), testPort(465)]);
+    return { port_587: r587, port_465: r465 };
   }
 
   @ApiOperation({
