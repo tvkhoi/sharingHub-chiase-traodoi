@@ -1,21 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength, Matches } from 'class-validator';
 
 export class RegisterDto {
   @ApiProperty({
     description: 'Địa chỉ Email chính thức',
     example: 'user1@gmail.com',
   })
-  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  @IsEmail({}, { message: 'Email không đúng định dạng hợp lệ (Ví dụ: name@example.com)' })
   @IsNotEmpty({ message: 'Email không được để trống' })
   email: string;
 
   @ApiPropertyOptional({
-    description: 'Số điện thoại liên hệ (tùy chọn)',
+    description: 'Số điện thoại liên hệ',
     example: '0912345678',
   })
   @IsString()
   @IsOptional()
+  @Matches(/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/, { message: 'Số điện thoại không đúng định dạng hợp lệ (Ví dụ: 0912345678)' })
   so_dien_thoai?: string;
 
   @ApiProperty({

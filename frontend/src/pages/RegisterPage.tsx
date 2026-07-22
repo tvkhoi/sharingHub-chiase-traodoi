@@ -25,13 +25,27 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
+    // Validate Email format (5e.2)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error('Email không đúng định dạng hợp lệ (Ví dụ: name@example.com)');
+      return;
+    }
+
+    // Validate Phone number format (5e.2)
+    const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/;
+    if (!phoneRegex.test(soDienThoai.trim())) {
+      toast.error('Số điện thoại không đúng định dạng hợp lệ (Ví dụ: 0912345678)');
+      return;
+    }
+
     if (matKhau.length < 6) {
       toast.error('Mật khẩu phải có tối thiểu 6 ký tự');
       return;
     }
 
     if (matKhau !== xacNhanMatKhau) {
-      toast.error('Mật khẩu xác nhận không khớp với mật khẩu đã nhập!');
+      toast.error('Mật khẩu và xác nhận mật khẩu không trùng khớp. Vui lòng nhập lại.');
       return;
     }
 
