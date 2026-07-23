@@ -454,23 +454,23 @@ export const AdminDashboardPage: React.FC = () => {
           ) : users.length === 0 ? (
             <div className="py-12 text-center text-muted">Không tìm thấy tài khoản nào phù hợp</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+              <table className="w-full text-left border-collapse text-sm min-w-[720px]">
                 <thead>
-                  <tr className="border-b border-color text-xs text-muted uppercase tracking-wider">
-                    <th className="py-3 px-4">Thành viên</th>
-                    <th className="py-3 px-4">Email</th>
-                    <th className="py-3 px-4">Vai trò</th>
-                    <th className="py-3 px-4">Điểm uy tín</th>
-                    <th className="py-3 px-4">Trạng thái</th>
-                    <th className="py-3 px-4 text-right">Thao tác</th>
+                  <tr className="border-b border-color text-xs text-muted uppercase tracking-wider whitespace-nowrap">
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Thành viên</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Email</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Vai trò</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Điểm uy tín</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Trạng thái</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-color">
                   {users.map((u) => (
-                    <tr key={u.nguoi_dung_id} className="hover:bg-card-hover transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
+                    <tr key={u.nguoi_dung_id} className="hover:bg-card-hover transition-colors whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-left whitespace-nowrap">
+                        <div className="flex items-center gap-3 whitespace-nowrap">
                           <div className="w-9 h-9 rounded-full bg-indigo-600/20 text-brand-primary flex items-center justify-center font-bold text-sm overflow-hidden shrink-0 border border-indigo-500/30">
                             {u.ho_so?.anh_dai_dien ? (
                               <img src={u.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
@@ -478,42 +478,58 @@ export const AdminDashboardPage: React.FC = () => {
                               u.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
                             )}
                           </div>
-                          <div>
-                            <Link to={`/profile/${u.nguoi_dung_id}`} className="font-bold text-primary hover:text-brand-primary hover:underline">
+                          <div className="whitespace-nowrap">
+                            <Link
+                              to={`/profile/${u.nguoi_dung_id}`}
+                              className="font-bold text-primary hover:text-brand-primary hover:underline whitespace-nowrap truncate block max-w-[160px] sm:max-w-[200px]"
+                              title={u.ho_so?.ho_ten || 'Chưa cập nhật'}
+                            >
                               {u.ho_so?.ho_ten || 'Chưa cập nhật'}
                             </Link>
-                            <span className="text-xs text-muted block">{u.ho_so?.so_dien_thoai || 'Chưa có SĐT'}</span>
+                            <span className="text-xs text-muted whitespace-nowrap truncate block max-w-[160px] sm:max-w-[200px]">
+                              {u.ho_so?.so_dien_thoai || 'Chưa có SĐT'}
+                            </span>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-secondary">{u.email}</td>
-                      <td className="py-3 px-4">
-                        <span className={`badge ${u.vai_tro === 'QUAN_TRI_VIEN' ? 'badge-rose' : 'badge-indigo'}`}>
-                          {u.vai_tro === 'QUAN_TRI_VIEN' ? 'Quản trị viên' : 'Thành viên'}
+                      <td className="py-3.5 px-4 text-left text-secondary whitespace-nowrap">
+                        <span className="whitespace-nowrap truncate block max-w-[200px]" title={u.email}>
+                          {u.email}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-brand-amber">
+                      <td className="py-3.5 px-4 text-left whitespace-nowrap">
+                        <div className="flex items-center justify-start whitespace-nowrap">
+                          <span className={`badge ${u.vai_tro === 'QUAN_TRI_VIEN' ? 'badge-rose' : 'badge-indigo'} whitespace-nowrap`}>
+                            {u.vai_tro === 'QUAN_TRI_VIEN' ? 'Quản trị viên' : 'Thành viên'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-left font-bold text-brand-amber whitespace-nowrap">
                         ⭐ {u.uy_tin?.diem_trung_binh ?? '5.0'} / 5.0
                       </td>
-                      <td className="py-3 px-4">
-                        <span className={`badge ${u.trang_thai === 'HOAT_DONG' ? 'badge-emerald' : 'badge-rose'}`}>
-                          {u.trang_thai === 'HOAT_DONG' ? 'Hoạt động' : 'Đã bị khóa'}
-                        </span>
+                      <td className="py-3.5 px-4 text-left whitespace-nowrap">
+                        <div className="flex items-center justify-start whitespace-nowrap">
+                          <span className={`badge ${u.trang_thai === 'HOAT_DONG' ? 'badge-emerald' : 'badge-rose'} whitespace-nowrap`}>
+                            {u.trang_thai === 'HOAT_DONG' ? 'Hoạt động' : 'Đã bị khóa'}
+                          </span>
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-3.5 px-4 text-left whitespace-nowrap">
                         {u.vai_tro !== 'QUAN_TRI_VIEN' && (
-                          <button
-                            onClick={() => handleToggleUserStatus(u)}
-                            className={`btn text-xs py-1.5 px-3 ${
-                              u.trang_thai === 'HOAT_DONG' ? 'btn-danger' : 'btn-emerald'
-                            }`}
-                          >
-                            {u.trang_thai === 'HOAT_DONG' ? (
-                              <><Lock className="w-3.5 h-3.5" /> Khóa TK</>
-                            ) : (
-                              <><Unlock className="w-3.5 h-3.5" /> Mở khóa</>
-                            )}
-                          </button>
+                          <div className="flex items-center justify-start whitespace-nowrap">
+                            <button
+                              onClick={() => handleToggleUserStatus(u)}
+                              className={`btn text-xs py-1.5 px-3 whitespace-nowrap ${
+                                u.trang_thai === 'HOAT_DONG' ? 'btn-danger' : 'btn-emerald'
+                              }`}
+                            >
+                              {u.trang_thai === 'HOAT_DONG' ? (
+                                <><Lock className="w-3.5 h-3.5" /> Khóa TK</>
+                              ) : (
+                                <><Unlock className="w-3.5 h-3.5" /> Mở khóa</>
+                              )}
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
