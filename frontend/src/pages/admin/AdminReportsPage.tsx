@@ -97,12 +97,12 @@ export const AdminReportsPage: React.FC = () => {
             <table className="w-full min-w-[900px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-color bg-card-hover text-xs font-bold text-secondary uppercase tracking-wider whitespace-nowrap">
-                  <th className="p-4">Ngày gửi</th>
-                  <th className="p-4">Người báo cáo</th>
-                  <th className="p-4">Đối tượng vi phạm</th>
-                  <th className="p-4">Lý do vi phạm</th>
-                  <th className="p-4">Trạng thái</th>
-                  <th className="p-4 text-right">Thao tác</th>
+                  <th className="p-4 text-left whitespace-nowrap">Ngày gửi</th>
+                  <th className="p-4 text-left whitespace-nowrap">Người báo cáo</th>
+                  <th className="p-4 text-left whitespace-nowrap">Đối tượng vi phạm</th>
+                  <th className="p-4 text-left whitespace-nowrap">Lý do vi phạm</th>
+                  <th className="p-4 text-left whitespace-nowrap">Trạng thái</th>
+                  <th className="p-4 text-left whitespace-nowrap">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-color text-sm">
@@ -111,34 +111,42 @@ export const AdminReportsPage: React.FC = () => {
                     <td className="p-4 text-muted text-xs whitespace-nowrap">
                       {new Date(report.ngay_bao_cao).toLocaleDateString('vi-VN')}
                     </td>
-                    <td className="p-4 font-semibold text-primary">
-                      {report.nguoi_bao_cao?.ho_so?.ho_ten || 'Thành viên'}
+                    <td className="p-4 font-semibold text-primary whitespace-nowrap">
+                      <span className="truncate max-w-[160px] block">
+                        {report.nguoi_bao_cao?.ho_so?.ho_ten || 'Thành viên'}
+                      </span>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       {report.bai_dang_bi_bao_cao ? (
-                        <span className="text-brand-primary font-medium line-clamp-1">
+                        <span className="text-brand-primary font-medium truncate max-w-[200px] block" title={report.bai_dang_bi_bao_cao.ten_tai_san}>
                           [Bài đăng] {report.bai_dang_bi_bao_cao.ten_tai_san}
                         </span>
                       ) : (
-                        <span className="text-brand-amber font-medium">
+                        <span className="text-brand-amber font-medium truncate max-w-[200px] block">
                           [Tài khoản] {report.nguoi_dung_bi_bao_cao?.ho_so?.ho_ten}
                         </span>
                       )}
                     </td>
-                    <td className="p-4 text-brand-rose font-semibold">{report.ly_do_vi_pham}</td>
-                    <td className="p-4">
-                      {report.trang_thai_xu_ly === 'CHO_KIEM_DUYET' ? (
-                        <span className="badge badge-amber">Chờ kiểm duyệt</span>
-                      ) : report.trang_thai_xu_ly === 'DA_XU_LY' ? (
-                        <span className="badge badge-emerald">Đã xử lý</span>
-                      ) : (
-                        <span className="badge badge-rose">Từ chối</span>
-                      )}
+                    <td className="p-4 text-brand-rose font-semibold whitespace-nowrap">
+                      <span className="truncate max-w-[220px] block" title={report.ly_do_vi_pham}>
+                        {report.ly_do_vi_pham}
+                      </span>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-4 whitespace-nowrap">
+                      <div className="flex items-center justify-start">
+                        {report.trang_thai_xu_ly === 'CHO_KIEM_DUYET' ? (
+                          <span className="badge badge-amber">Chờ kiểm duyệt</span>
+                        ) : report.trang_thai_xu_ly === 'DA_XU_LY' ? (
+                          <span className="badge badge-emerald">Đã xử lý</span>
+                        ) : (
+                          <span className="badge badge-rose">Từ chối</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4 text-left whitespace-nowrap">
                       <button
                         onClick={() => setSelectedReport(report)}
-                        className="btn btn-outline py-1.5 px-3 text-xs"
+                        className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-1.5 whitespace-nowrap"
                       >
                         <Eye className="w-3.5 h-3.5" /> Kiểm duyệt
                       </button>
