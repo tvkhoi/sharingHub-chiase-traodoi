@@ -40,8 +40,8 @@ export default {
         "brand-rose": "var(--brand-rose)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
-        heading: ["var(--font-heading)"],
+        sans: ["var(--font-sans)", "Plus Jakarta Sans", "Inter", "sans-serif"],
+        heading: ["var(--font-heading)", "Plus Jakarta Sans", "Inter", "sans-serif"],
       }
     },
   },
