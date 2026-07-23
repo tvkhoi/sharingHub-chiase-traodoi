@@ -49,47 +49,59 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
       {/* Body Content */}
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
-          <div className="text-xs font-semibold text-brand-primary mb-1">
+          <div className="text-xs font-semibold text-brand-primary mb-1 truncate">
             {asset.danh_muc?.ten_danh_muc || 'Danh mục tài sản'}
           </div>
 
-          <h3 className="font-bold text-lg text-primary line-clamp-1 mb-2 group-hover:text-brand-primary transition-colors">
+          <h3 className="font-bold text-base sm:text-lg text-primary line-clamp-1 mb-1.5 group-hover:text-brand-primary transition-colors">
             {asset.ten_tai_san}
           </h3>
 
-          <p className="text-sm text-secondary line-clamp-2 mb-4">
+          <p className="text-sm text-secondary line-clamp-2 min-h-[2.5rem] mb-4">
             {asset.mo_ta_hien_trang}
           </p>
         </div>
 
-        {/* Location & Owner Footer */}
-        <div className="pt-3 border-t border-color flex items-center justify-between text-xs text-muted">
-          <div className="flex items-center gap-1 truncate max-w-[60%]">
-            <MapPin className="w-3.5 h-3.5 text-brand-rose flex-shrink-0" />
-            <span className="truncate">{asset.dia_diem}</span>
+        {/* Location & Owner Footer (pushed to bottom) */}
+        <div className="mt-auto pt-3 border-t border-color">
+          <div className="flex items-center justify-between text-xs text-muted mb-3">
+            <div className="flex items-center gap-1 truncate max-w-[55%]">
+              <MapPin className="w-3.5 h-3.5 text-brand-rose flex-shrink-0" />
+              <span className="truncate">{asset.dia_diem}</span>
+            </div>
+
+            <div className="flex items-center gap-1 truncate max-w-[45%]">
+              <User className="w-3.5 h-3.5 text-brand-primary flex-shrink-0" />
+              {asset.chu_so_huu?.nguoi_dung_id ? (
+                <Link
+                  to={`/profile/${asset.chu_so_huu.nguoi_dung_id}`}
+                  className="font-medium text-secondary hover:text-brand-primary hover:underline truncate"
+                  title="Xem hồ sơ chủ sở hữu"
+                >
+                  {asset.chu_so_huu?.ho_so?.ho_ten || 'Thành viên'}
+                </Link>
+              ) : (
+                <span className="font-medium text-secondary truncate">
+                  {asset.chu_so_huu?.ho_so?.ho_ten || 'Thành viên'}
+                </span>
+              )}
+              {asset.chu_so_huu?.uy_tin && (
+                <span className="flex items-center gap-0.5 text-brand-amber font-bold ml-0.5 flex-shrink-0">
+                  <Star className="w-3 h-3 fill-amber-400" />
+                  {asset.chu_so_huu.uy_tin.diem_trung_binh}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1">
-            <User className="w-3.5 h-3.5 text-brand-primary" />
-            <span className="font-medium text-secondary truncate max-w-[80px]">
-              {asset.chu_so_huu?.ho_so?.ho_ten || 'Thành viên'}
-            </span>
-            {asset.chu_so_huu?.uy_tin && (
-              <span className="flex items-center gap-0.5 text-brand-amber font-bold ml-1">
-                <Star className="w-3 h-3 fill-amber-400" />
-                {asset.chu_so_huu.uy_tin.diem_trung_binh}
-              </span>
-            )}
-          </div>
+          {/* Action button */}
+          <Link
+            to={`/assets/${asset.bai_dang_id}`}
+            className="btn btn-outline w-full text-sm py-2 justify-center"
+          >
+            Xem chi tiết & Đề xuất
+          </Link>
         </div>
-
-        {/* Action button */}
-        <Link
-          to={`/assets/${asset.bai_dang_id}`}
-          className="mt-4 btn btn-outline w-full text-sm py-2 justify-center"
-        >
-          Xem chi tiết & Đề xuất
-        </Link>
       </div>
     </div>
   );

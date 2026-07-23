@@ -186,7 +186,7 @@ export const HomePage: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {assets.map((asset) => (
             <AssetCard key={asset.bai_dang_id} asset={asset} />
           ))}
