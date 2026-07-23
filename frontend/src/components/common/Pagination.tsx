@@ -16,13 +16,9 @@ export const Pagination: React.FC<PaginationProps> = ({
   page,
   totalPages,
   onPageChange,
-  totalItems,
-  limit,
-  onLimitChange,
-  limitOptions = [10, 20, 50],
   className = '',
 }) => {
-  if (totalPages <= 1 && !totalItems) {
+  if (totalPages <= 1) {
     return null;
   }
 
@@ -44,41 +40,8 @@ export const Pagination: React.FC<PaginationProps> = ({
     return pages;
   };
 
-  const startItem = totalItems !== undefined && limit ? (page - 1) * limit + 1 : undefined;
-  const endItem = totalItems !== undefined && limit ? Math.min(page * limit, totalItems) : undefined;
-
   return (
-    <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 py-4 ${className}`}>
-      {/* Items Summary Info & Limit Selector */}
-      <div className="flex items-center gap-4 text-xs sm:text-sm text-secondary">
-        {totalItems !== undefined && (
-          <span>
-            {startItem && endItem ? (
-              <>Hiển thị <strong className="text-primary font-semibold">{startItem} - {endItem}</strong> trong <strong className="text-primary font-semibold">{totalItems}</strong> mục</>
-            ) : (
-              <>Tổng số <strong className="text-primary font-semibold">{totalItems}</strong> mục</>
-            )}
-          </span>
-        )}
-
-        {limit && onLimitChange && (
-          <div className="flex items-center gap-1.5 border-l border-gray-700/50 pl-4">
-            <span className="text-xs text-muted hidden sm:inline">Hiển thị:</span>
-            <select
-              value={limit}
-              onChange={(e) => onLimitChange(Number(e.target.value))}
-              className="bg-slate-900/80 border border-indigo-500/30 text-xs text-primary rounded-lg px-2 py-1 focus:border-indigo-400 focus:outline-none cursor-pointer"
-            >
-              {limitOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt} / trang
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
+    <div className={`flex items-center justify-center gap-4 py-4 ${className}`}>
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex items-center gap-1.5">
