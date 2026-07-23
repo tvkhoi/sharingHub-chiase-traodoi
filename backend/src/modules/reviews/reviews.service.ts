@@ -1,10 +1,14 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 
 @Injectable()
 export class ReviewsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private negotiationGateway: NegotiationGateway,
+  ) {}
 
   async createReview(userId: string, dto: CreateReviewDto) {
     // 1. Fetch transaction
@@ -72,10 +76,30 @@ export class ReviewsService {
         },
       });
 
-      return {
+      const result = {
         message: 'Đã gửi đánh giá thành công',
         danh_gia: review,
       };
+
+      try {
+        const reviewer = await prismaTx.nguoiDung.findUnique({
+          where: { nguoi_dung_id: userId },
+          include: { ho_so: true },
+        });
+        const reviewerName = reviewer?.ho_so?.ho_ten || 'Một thành viên';
+
+        this.negotiationGateway.sendNotificationToUser(targetUserId, {
+          type: 'NEW_REVIEW',
+          title: 'Đánh giá uy tín mới! ⭐',
+          message: `${reviewerName} vừa gửi cho bạn đánh giá ${dto.diem_sao}/5 sao: "${dto.nhan_xet || 'Giao dịch tuyệt vời!'}"`,
+          link: `/profile/${targetUserId}`,
+          payload: { reviewId: review.danh_gia_id },
+        });
+      } catch (err) {
+        console.error('Lỗi gửi push notification đánh giá mới:', err);
+      }
+
+      return result;
     });
   }
 

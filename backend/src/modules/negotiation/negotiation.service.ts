@@ -5,6 +5,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class NegotiationService {
   constructor(private prisma: PrismaService) {}
 
+  async getProposalById(proposalId: string) {
+    return this.prisma.deXuatGiaoDich.findUnique({
+      where: { de_xuat_id: proposalId },
+      include: { bai_dang: true },
+    });
+  }
+
   async getMessages(proposalId: string, userId: string) {
     const proposal = await this.prisma.deXuatGiaoDich.findUnique({
       where: { de_xuat_id: proposalId },

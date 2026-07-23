@@ -58,6 +58,27 @@ export class NegotiationGateway implements OnGatewayConnection, OnGatewayDisconn
       // Broadcast to room
       this.server.to(data.proposalId).emit('new_message', message);
 
+      // Send push notification to partner
+      try {
+        const proposal = await this.negotiationService.getProposalById(data.proposalId);
+        if (proposal) {
+          const isOwner = proposal.bai_dang?.chu_so_huu_id === data.userId;
+          const targetUserId = isOwner ? proposal.nguoi_gui_id : proposal.bai_dang?.chu_so_huu_id;
+          if (targetUserId) {
+            const senderName = message.nguoi_gui?.ho_so?.ho_ten || 'Đối tác';
+            this.sendNotificationToUser(targetUserId, {
+              type: 'NEW_MESSAGE',
+              title: 'Tin nhắn thương lượng mới 💬',
+              message: `${senderName}: "${data.noiDung.length > 40 ? data.noiDung.substring(0, 40) + '...' : data.noiDung}"`,
+              link: '/proposals',
+              payload: { proposalId: data.proposalId },
+            });
+          }
+        }
+      } catch (err) {
+        this.logger.error('Lỗi gửi push notification tin nhắn thương lượng:', err);
+      }
+
       return { success: true, message };
     } catch (error) {
       return { success: false, error: error.message };
@@ -78,7 +99,7 @@ export class NegotiationGateway implements OnGatewayConnection, OnGatewayDisconn
   }
 
   sendNotificationToUser(userId: string, notification: {
-    type: 'NEW_PROPOSAL' | 'PROPOSAL_ACCEPTED' | 'PROPOSAL_REJECTED' | 'TRANSACTION_UPDATED' | 'ASSET_MODERATED';
+    type: 'NEW_PROPOSAL' | 'PROPOSAL_ACCEPTED' | 'PROPOSAL_REJECTED' | 'TRANSACTION_UPDATED' | 'ASSET_MODERATED' | 'NEW_REVIEW' | 'NEW_MESSAGE';
     title: string;
     message: string;
     link?: string;

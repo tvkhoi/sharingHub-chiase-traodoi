@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { socketService } from '../../services/socket.service';
 import type { AppNotification } from '../../types';
 import toast from 'react-hot-toast';
-import { Bell, CheckCheck, Trash2, MessageSquare, CheckCircle2, XCircle, Repeat, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Bell, CheckCheck, Trash2, MessageSquare, CheckCircle2, XCircle, Repeat, ShieldAlert, ArrowRight, Star } from 'lucide-react';
 
 export const NotificationDropdown: React.FC = () => {
   const { user } = useAuth();
@@ -131,6 +131,10 @@ export const NotificationDropdown: React.FC = () => {
         return <Repeat className="w-4 h-4 text-amber-400" />;
       case 'ASSET_MODERATED':
         return <ShieldAlert className="w-4 h-4 text-rose-500" />;
+      case 'NEW_REVIEW':
+        return <Star className="w-4 h-4 text-amber-400 fill-amber-400" />;
+      case 'NEW_MESSAGE':
+        return <MessageSquare className="w-4 h-4 text-emerald-400" />;
       default:
         return <Bell className="w-4 h-4 text-indigo-400" />;
     }
