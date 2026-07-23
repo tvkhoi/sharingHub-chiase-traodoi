@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { proposalsService } from '../services/proposals.service';
 import { negotiationService } from '../services/negotiation.service';
 import { socketService } from '../services/socket.service';
@@ -267,6 +268,36 @@ export const ProposalsPage: React.FC = () => {
                       Lý do hủy/từ chối: "{prop.ly_do_tu_choi}"
                     </p>
                   )}
+
+                  {/* Partner Info Link */}
+                  {(() => {
+                    const partnerId = activeTab === 'received' ? prop.nguoi_gui_id : prop.bai_dang?.chu_so_huu_id;
+                    const partnerName = activeTab === 'received' ? (prop.nguoi_gui?.ho_so?.ho_ten || 'Người gửi đề xuất') : (prop.bai_dang?.chu_so_huu?.ho_so?.ho_ten || 'Chủ bài đăng');
+                    const partnerAvatar = activeTab === 'received' ? prop.nguoi_gui?.ho_so?.anh_dai_dien : prop.bai_dang?.chu_so_huu?.ho_so?.anh_dai_dien;
+
+                    if (!partnerId) return null;
+
+                    return (
+                      <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-700/30">
+                        <span className="text-xs text-muted">Đối tác:</span>
+                        <Link
+                          to={`/profile/${partnerId}`}
+                          className="inline-flex items-center gap-1.5 hover:opacity-85 text-xs font-semibold text-brand-primary hover:underline"
+                          title="Xem thông tin & uy tín đối tác"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden flex-shrink-0">
+                            {partnerAvatar ? (
+                              <img src={partnerAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              partnerName?.charAt(0).toUpperCase() || 'U'
+                            )}
+                          </div>
+                          <span>{partnerName}</span>
+                          <span className="text-[10px] text-muted font-normal">(Xem uy tín)</span>
+                        </Link>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 

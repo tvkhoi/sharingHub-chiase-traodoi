@@ -214,22 +214,26 @@ export const AssetDetailPage: React.FC = () => {
             {/* Owner Info Card */}
             {asset.chu_so_huu && (
               <div className="glass-card p-4 rounded-2xl mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md">
+                <Link
+                  to={`/profile/${asset.chu_so_huu.nguoi_dung_id}`}
+                  className="flex items-center gap-3 hover:opacity-85 transition-opacity group"
+                  title="Xem hồ sơ & uy tín của chủ sở hữu"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md overflow-hidden flex-shrink-0 group-hover:ring-2 group-hover:ring-indigo-400">
                     {asset.chu_so_huu.ho_so?.anh_dai_dien ? (
-                      <img src={asset.chu_so_huu.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+                      <img src={asset.chu_so_huu.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       asset.chu_so_huu.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
                     )}
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-primary text-base">
+                    <h4 className="font-bold text-primary text-base group-hover:text-indigo-400 group-hover:underline">
                       {asset.chu_so_huu.ho_so?.ho_ten || 'Thành viên'}
                     </h4>
-                    <p className="text-xs text-muted">Chủ sở hữu bài đăng</p>
+                    <p className="text-xs text-muted">Chủ sở hữu bài đăng (Nhấn để xem hồ sơ)</p>
                   </div>
-                </div>
+                </Link>
 
                 {asset.chu_so_huu.uy_tin && (
                   <div className="text-right">

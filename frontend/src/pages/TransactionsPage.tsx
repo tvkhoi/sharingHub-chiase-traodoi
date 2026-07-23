@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { transactionsService } from '../services/transactions.service';
 import { reviewsService } from '../services/reviews.service';
 import type { Transaction } from '../types';
@@ -200,9 +201,30 @@ export const TransactionsPage: React.FC = () => {
                         <span className="text-xs text-brand-amber w-fit">Chưa xác nhận</span>
                       )}
                     </div>
-                    <p className="text-sm text-secondary mt-2">
-                      Người tiếp nhận: <span className="font-semibold text-primary">{tx.nguoi_tiep_nhan?.ho_so?.ho_ten || 'Thành viên'}</span>
-                    </p>
+                    {(() => {
+                      const partner = isOwner ? tx.nguoi_tiep_nhan : tx.nguoi_so_huu;
+                      if (!partner?.nguoi_dung_id) return null;
+                      return (
+                        <p className="text-sm text-secondary mt-2 flex items-center gap-2 flex-wrap">
+                          <span>Đối tác:</span>
+                          <Link
+                            to={`/profile/${partner.nguoi_dung_id}`}
+                            className="inline-flex items-center gap-1.5 font-bold text-brand-primary hover:underline hover:text-indigo-400"
+                            title="Xem thông tin & điểm uy tín của đối tác"
+                          >
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden flex-shrink-0">
+                              {partner.ho_so?.anh_dai_dien ? (
+                                <img src={partner.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
+                              ) : (
+                                partner.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
+                              )}
+                            </div>
+                            <span>{partner.ho_so?.ho_ten || 'Thành viên'}</span>
+                            <span className="text-xs text-muted font-normal">(Xem uy tín)</span>
+                          </Link>
+                        </p>
+                      );
+                    })()}
                   </div>
                 </div>
 

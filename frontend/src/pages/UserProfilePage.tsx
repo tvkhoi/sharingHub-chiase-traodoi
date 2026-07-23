@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { authService } from '../services/auth.service';
 import { reviewsService } from '../services/reviews.service';
 import { useAuth } from '../context/AuthContext';
@@ -137,9 +137,28 @@ export const UserProfilePage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <RatingStars rating={rev.diem_sao} size={16} />
-                    <span className="text-xs font-bold text-primary">
-                      {rev.nguoi_danh_gia?.ho_so?.ho_ten || 'Thành viên'}
-                    </span>
+                    {rev.nguoi_danh_gia?.nguoi_dung_id ? (
+                      <Link
+                        to={`/profile/${rev.nguoi_danh_gia.nguoi_dung_id}`}
+                        className="flex items-center gap-1.5 hover:opacity-85 transition-opacity"
+                        title="Xem hồ sơ thành viên"
+                      >
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden flex-shrink-0">
+                          {rev.nguoi_danh_gia.ho_so?.anh_dai_dien ? (
+                            <img src={rev.nguoi_danh_gia.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            rev.nguoi_danh_gia.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
+                          )}
+                        </div>
+                        <span className="text-xs font-bold text-primary hover:underline hover:text-indigo-400">
+                          {rev.nguoi_danh_gia.ho_so?.ho_ten || 'Thành viên'}
+                        </span>
+                      </Link>
+                    ) : (
+                      <span className="text-xs font-bold text-primary">
+                        {rev.nguoi_danh_gia?.ho_so?.ho_ten || 'Thành viên'}
+                      </span>
+                    )}
                   </div>
                   <span className="text-[11px] text-muted">
                     {new Date(rev.ngay_danh_gia).toLocaleDateString('vi-VN')}
