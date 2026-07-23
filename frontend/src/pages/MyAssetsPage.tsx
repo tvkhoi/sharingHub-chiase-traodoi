@@ -8,11 +8,16 @@ import toast from 'react-hot-toast';
 import { PlusCircle, Layers, Trash2, Edit, UploadCloud, X, Save } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { getImageUrl, DEFAULT_ASSET_IMAGE } from '../utils/image';
+import { ConfirmModal } from '../components/common/ConfirmModal';
 
 export const MyAssetsPage: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Confirm modal state
+  const [deleteAssetId, setDeleteAssetId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   // Pagination State
   const [page, setPage] = useState<number>(1);
@@ -160,15 +165,19 @@ export const MyAssetsPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa bài đăng tài sản này?')) return;
+  const confirmDelete = async () => {
+    if (!deleteAssetId) return;
+    setIsDeleting(true);
     try {
-      await assetsService.deleteAsset(id);
+      await assetsService.deleteAsset(deleteAssetId);
       toast.success('Đã xóa bài đăng thành công');
       fetchMyAssets();
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Xóa thất bại!';
       toast.error(msg);
+    } finally {
+      setIsDeleting(false);
+      setDeleteAssetId(null);
     }
   };
 
@@ -245,7 +254,7 @@ export const MyAssetsPage: React.FC = () => {
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(asset.bai_dang_id)}
+                    onClick={() => setDeleteAssetId(asset.bai_dang_id)}
                     className="p-2 btn btn-danger rounded-lg text-xs"
                     title="Xóa bài đăng"
                   >
@@ -508,6 +517,19 @@ export const MyAssetsPage: React.FC = () => {
         </div>,
         document.body
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteAssetId)}
+        title="Xác nhận Xóa Bài Đăng"
+        message="Bạn có chắc chắn muốn xóa bài đăng tài sản này khỏi hệ thống? Hành động này không thể hoàn tác."
+        confirmText="Xóa vĩnh viễn"
+        variant="danger"
+        icon="trash"
+        isLoading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteAssetId(null)}
+      />
     </div>
   );
 };

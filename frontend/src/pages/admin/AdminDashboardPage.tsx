@@ -21,6 +21,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ConfirmModal } from '../../components/common/ConfirmModal';
 
 type AdminTab = 'stats' | 'users' | 'categories' | 'assets' | 'reports';
 
@@ -31,6 +32,23 @@ let cachedAdminAssetsList: Asset[] = [];
 
 export const AdminDashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
+
+  // Custom Confirm Modal state
+  const [confirmConfig, setConfirmConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText?: string;
+    variant?: 'danger' | 'warning' | 'emerald' | 'primary';
+    icon?: 'lock' | 'unlock' | 'trash' | 'warning' | 'check';
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: async () => {},
+  });
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
 
   // Stats state
   const [stats, setStats] = useState<SystemStats | null>(cachedAdminStats);
@@ -110,19 +128,33 @@ export const AdminDashboardPage: React.FC = () => {
     fetchUsers();
   };
 
-  const handleToggleUserStatus = async (user: User) => {
-    const newStatus = user.trang_thai === 'HOAT_DONG' ? 'BI_KHOA' : 'HOAT_DONG';
-    const actionText = newStatus === 'BI_KHOA' ? 'khóa' : 'mở khóa';
-    if (!window.confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản "${user.ho_so?.ho_ten || user.email}"?`)) return;
+  const handleToggleUserStatus = (user: User) => {
+    const isLocking = user.trang_thai === 'HOAT_DONG';
+    const newStatus = isLocking ? 'BI_KHOA' : 'HOAT_DONG';
+    const userName = user.ho_so?.ho_ten || user.email;
 
-    try {
-      await adminService.updateUserStatus(user.nguoi_dung_id, newStatus);
-      toast.success(`Đã ${actionText} tài khoản thành công`);
-      fetchUsers();
-      fetchStats();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || `Lỗi ${actionText} tài khoản`);
-    }
+    setConfirmConfig({
+      isOpen: true,
+      title: isLocking ? 'Xác nhận Khóa tài khoản' : 'Xác nhận Mở khóa tài khoản',
+      message: `Bạn có chắc chắn muốn ${isLocking ? 'khóa' : 'mở khóa'} tài khoản thành viên "${userName}"?`,
+      confirmText: isLocking ? 'Khóa tài khoản' : 'Mở khóa ngay',
+      variant: isLocking ? 'danger' : 'emerald',
+      icon: isLocking ? 'lock' : 'unlock',
+      onConfirm: async () => {
+        setConfirmLoading(true);
+        try {
+          await adminService.updateUserStatus(user.nguoi_dung_id, newStatus);
+          toast.success(`Đã ${isLocking ? 'khóa' : 'mở khóa'} tài khoản thành công`);
+          fetchUsers();
+          fetchStats();
+        } catch (err: any) {
+          toast.error(err.response?.data?.message || `Lỗi xử lý tài khoản`);
+        } finally {
+          setConfirmLoading(false);
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   const fetchCategories = async () => {
@@ -166,15 +198,28 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  const handleDeleteCategory = async (cat: AssetCategory) => {
-    if (!window.confirm(`Bạn có chắc muốn xóa danh mục "${cat.ten_danh_muc}"?`)) return;
-    try {
-      await adminService.deleteCategory(cat.danh_muc_id);
-      toast.success('Đã xóa danh mục');
-      fetchCategories();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Không thể xóa danh mục đang có bài đăng');
-    }
+  const handleDeleteCategory = (cat: AssetCategory) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: 'Xác nhận Xóa Danh Mục',
+      message: `Bạn có chắc chắn muốn xóa danh mục "${cat.ten_danh_muc}"?`,
+      confirmText: 'Xóa danh mục',
+      variant: 'danger',
+      icon: 'trash',
+      onConfirm: async () => {
+        setConfirmLoading(true);
+        try {
+          await adminService.deleteCategory(cat.danh_muc_id);
+          toast.success('Đã xóa danh mục');
+          fetchCategories();
+        } catch (err: any) {
+          toast.error(err.response?.data?.message || 'Không thể xóa danh mục đang có bài đăng');
+        } finally {
+          setConfirmLoading(false);
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   const fetchAdminAssets = async () => {
@@ -202,19 +247,32 @@ export const AdminDashboardPage: React.FC = () => {
     fetchAdminAssets();
   };
 
-  const handleToggleAssetStatus = async (asset: Asset) => {
-    const newStatus = asset.trang_thai === 'KHA_DUNG' ? 'DA_KHOA_SO' : 'KHA_DUNG';
-    const actionText = newStatus === 'DA_KHOA_SO' ? 'tạm khóa' : 'kích hoạt lại';
-    if (!window.confirm(`Bạn có chắc chắn muốn ${actionText} bài đăng "${asset.ten_tai_san}"?`)) return;
+  const handleToggleAssetStatus = (asset: Asset) => {
+    const isLocking = asset.trang_thai === 'KHA_DUNG';
+    const newStatus = isLocking ? 'DA_KHOA_SO' : 'KHA_DUNG';
 
-    try {
-      await adminService.updateAssetStatusAdmin(asset.bai_dang_id, newStatus);
-      toast.success(`Đã ${actionText} bài đăng thành công`);
-      fetchAdminAssets();
-      fetchStats();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || `Lỗi ${actionText} bài đăng`);
-    }
+    setConfirmConfig({
+      isOpen: true,
+      title: isLocking ? 'Xác nhận Tạm khóa bài đăng' : 'Xác nhận Kích hoạt lại bài đăng',
+      message: `Bạn có chắc chắn muốn ${isLocking ? 'tạm khóa' : 'kích hoạt lại'} bài đăng tài sản "${asset.ten_tai_san}"?`,
+      confirmText: isLocking ? 'Khóa bài đăng' : 'Kích hoạt ngay',
+      variant: isLocking ? 'danger' : 'emerald',
+      icon: isLocking ? 'lock' : 'unlock',
+      onConfirm: async () => {
+        setConfirmLoading(true);
+        try {
+          await adminService.updateAssetStatusAdmin(asset.bai_dang_id, newStatus);
+          toast.success(`Đã ${isLocking ? 'tạm khóa' : 'kích hoạt lại'} bài đăng thành công`);
+          fetchAdminAssets();
+          fetchStats();
+        } catch (err: any) {
+          toast.error(err.response?.data?.message || `Lỗi xử lý bài đăng`);
+        } finally {
+          setConfirmLoading(false);
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   return (
@@ -631,54 +689,51 @@ export const AdminDashboardPage: React.FC = () => {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-color text-xs text-muted uppercase tracking-wider">
-                    <th className="py-3 px-4">Bài đăng tài sản</th>
-                    <th className="py-3 px-4">Hình thức</th>
-                    <th className="py-3 px-4">Chủ sở hữu</th>
-                    <th className="py-3 px-4">Trạng thái</th>
-                    <th className="py-3 px-4 text-right">Thao tác</th>
+                    <th className="py-3.5 px-4 text-left">Bài đăng tài sản</th>
+                    <th className="py-3.5 px-4 text-center">Hình thức</th>
+                    <th className="py-3.5 px-4 text-left">Chủ sở hữu</th>
+                    <th className="py-3.5 px-4 text-center">Trạng thái</th>
+                    <th className="py-3.5 px-4 text-center">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-color">
                   {adminAssets.map((a) => (
                     <tr key={a.bai_dang_id} className="hover:bg-card-hover transition-colors">
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4 text-left">
                         <div className="font-bold text-primary max-w-xs truncate">{a.ten_tai_san}</div>
                         <span className="text-xs text-muted block truncate max-w-xs">{a.dia_diem}</span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4 text-center">
                         <span className={`badge ${a.hinh_thuc_chia_se === 'CHO_TANG' ? 'badge-emerald' : 'badge-indigo'}`}>
                           {a.hinh_thuc_chia_se === 'CHO_TANG' ? 'Cho tặng' : 'Trao đổi'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-secondary">
+                      <td className="py-3.5 px-4 text-left text-secondary">
                         {a.chu_so_huu?.ho_so?.ho_ten || a.chu_so_huu?.email || 'Thành viên'}
                       </td>
-                      <td className="py-3 px-4">
-                        <span className={`badge ${a.trang_thai === 'KHA_DUNG' ? 'badge-emerald' : 'badge-rose'}`}>
-                          {a.trang_thai === 'KHA_DUNG' ? 'Khả dụng' : a.trang_thai === 'DA_KHOA_SO' ? 'Bị khóa' : 'Đã kết thúc'}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right flex items-center justify-end gap-2">
-                        <Link
-                          to={`/assets/${a.bai_dang_id}`}
-                          className="p-1.5 rounded-lg text-muted hover:text-brand-primary transition-colors"
-                          title="Xem chi tiết"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="inline-flex items-center justify-center gap-2">
+                          <Link
+                            to={`/assets/${a.bai_dang_id}`}
+                            className="p-1.5 rounded-lg text-muted hover:text-brand-primary transition-colors"
+                            title="Xem chi tiết"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Link>
 
-                        <button
-                          onClick={() => handleToggleAssetStatus(a)}
-                          className={`btn text-xs py-1.5 px-3 ${
-                            a.trang_thai === 'KHA_DUNG' ? 'btn-danger' : 'btn-emerald'
-                          }`}
-                        >
-                          {a.trang_thai === 'KHA_DUNG' ? (
-                            <><Lock className="w-3.5 h-3.5" /> Khóa bài</>
-                          ) : (
-                            <><Unlock className="w-3.5 h-3.5" /> Mở bài</>
-                          )}
-                        </button>
+                          <button
+                            onClick={() => handleToggleAssetStatus(a)}
+                            className={`btn text-xs py-1.5 px-3 whitespace-nowrap ${
+                              a.trang_thai === 'KHA_DUNG' ? 'btn-danger' : 'btn-emerald'
+                            }`}
+                          >
+                            {a.trang_thai === 'KHA_DUNG' ? (
+                              <><Lock className="w-3.5 h-3.5" /> Khóa bài</>
+                            ) : (
+                              <><Unlock className="w-3.5 h-3.5" /> Mở bài</>
+                            )}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -701,6 +756,19 @@ export const AdminDashboardPage: React.FC = () => {
           <AdminReportsPage />
         </div>
       )}
+
+      {/* Global Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        confirmText={confirmConfig.confirmText}
+        variant={confirmConfig.variant}
+        icon={confirmConfig.icon}
+        isLoading={confirmLoading}
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };
