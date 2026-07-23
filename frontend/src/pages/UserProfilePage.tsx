@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import type { User, Review } from '../types';
 import { RatingStars } from '../components/reviews/RatingStars';
 import { EditProfileModal } from '../components/profile/EditProfileModal';
+import { Pagination } from '../components/common/Pagination';
 import { Star, CheckCircle2, Phone, MapPin, Mail, MessageSquare, Edit } from 'lucide-react';
 
 export const UserProfilePage: React.FC = () => {
@@ -16,6 +17,14 @@ export const UserProfilePage: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [reviewPage, setReviewPage] = useState<number>(1);
+  const reviewsPerPage = 5;
+
+  const paginatedReviews = reviews.slice(
+    (reviewPage - 1) * reviewsPerPage,
+    reviewPage * reviewsPerPage
+  );
+  const totalReviewPages = Math.ceil(reviews.length / reviewsPerPage);
 
   useEffect(() => {
     if (id) fetchProfileAndReviews(id);
@@ -131,43 +140,55 @@ export const UserProfilePage: React.FC = () => {
         {reviews.length === 0 ? (
           <p className="text-sm text-secondary text-center py-8">Chưa có đánh giá nào được ghi nhận cho thành viên này.</p>
         ) : (
-          <div className="space-y-4">
-            {reviews.map((rev) => (
-              <div key={rev.danh_gia_id} className="p-4 rounded-2xl bg-card-hover border border-color flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <RatingStars rating={rev.diem_sao} size={16} />
-                    {rev.nguoi_danh_gia?.nguoi_dung_id ? (
-                      <Link
-                        to={`/profile/${rev.nguoi_danh_gia.nguoi_dung_id}`}
-                        className="flex items-center gap-1.5 hover:opacity-85 transition-opacity"
-                        title="Xem hồ sơ thành viên"
-                      >
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden flex-shrink-0">
-                          {rev.nguoi_danh_gia.ho_so?.anh_dai_dien ? (
-                            <img src={rev.nguoi_danh_gia.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
-                          ) : (
-                            rev.nguoi_danh_gia.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
-                          )}
-                        </div>
-                        <span className="text-xs font-bold text-primary hover:underline hover:text-indigo-400">
-                          {rev.nguoi_danh_gia.ho_so?.ho_ten || 'Thành viên'}
+          <>
+            <div className="space-y-4">
+              {paginatedReviews.map((rev) => (
+                <div key={rev.danh_gia_id} className="p-4 rounded-2xl bg-card-hover border border-color flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <RatingStars rating={rev.diem_sao} size={16} />
+                      {rev.nguoi_danh_gia?.nguoi_dung_id ? (
+                        <Link
+                          to={`/profile/${rev.nguoi_danh_gia.nguoi_dung_id}`}
+                          className="flex items-center gap-1.5 hover:opacity-85 transition-opacity"
+                          title="Xem hồ sơ thành viên"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden flex-shrink-0">
+                            {rev.nguoi_danh_gia.ho_so?.anh_dai_dien ? (
+                              <img src={rev.nguoi_danh_gia.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              rev.nguoi_danh_gia.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
+                            )}
+                          </div>
+                          <span className="text-xs font-bold text-primary hover:underline hover:text-indigo-400">
+                            {rev.nguoi_danh_gia.ho_so?.ho_ten || 'Thành viên'}
+                          </span>
+                        </Link>
+                      ) : (
+                        <span className="text-xs font-bold text-primary">
+                          {rev.nguoi_danh_gia?.ho_so?.ho_ten || 'Thành viên'}
                         </span>
-                      </Link>
-                    ) : (
-                      <span className="text-xs font-bold text-primary">
-                        {rev.nguoi_danh_gia?.ho_so?.ho_ten || 'Thành viên'}
-                      </span>
-                    )}
+                      )}
+                    </div>
+                    <span className="text-[11px] text-muted">
+                      {new Date(rev.ngay_danh_gia).toLocaleDateString('vi-VN')}
+                    </span>
                   </div>
-                  <span className="text-[11px] text-muted">
-                    {new Date(rev.ngay_danh_gia).toLocaleDateString('vi-VN')}
-                  </span>
+                  {rev.nhan_xet && <p className="text-sm text-secondary italic">"{rev.nhan_xet}"</p>}
                 </div>
-                {rev.nhan_xet && <p className="text-sm text-secondary italic">"{rev.nhan_xet}"</p>}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+
+            {totalReviewPages > 1 && (
+              <Pagination
+                page={reviewPage}
+                totalPages={totalReviewPages}
+                totalItems={reviews.length}
+                onPageChange={setReviewPage}
+                className="mt-4"
+              />
+            )}
+          </>
         )}
       </div>
 
