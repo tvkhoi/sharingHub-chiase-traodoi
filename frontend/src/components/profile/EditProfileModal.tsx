@@ -84,12 +84,12 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[100] min-h-screen overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-transparent animate-fade-in"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
-      {/* Modal Dialog Card - Floating card with elevation shadow & responsive padding */}
+      {/* Modal Dialog Card - Viewport Centered */}
       <div
-        className="w-full max-w-lg mx-auto rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-slate-950/5 dark:ring-white/10 overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[90vh] my-auto transition-all"
+        className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
