@@ -2,15 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { authService } from '../services/auth.service';
 import { reviewsService } from '../services/reviews.service';
+import { useAuth } from '../context/AuthContext';
 import type { User, Review } from '../types';
 import { RatingStars } from '../components/reviews/RatingStars';
-import { Star, CheckCircle2, Phone, MapPin, Mail, MessageSquare } from 'lucide-react';
+import { EditProfileModal } from '../components/profile/EditProfileModal';
+import { Star, CheckCircle2, Phone, MapPin, Mail, MessageSquare, Edit } from 'lucide-react';
 
 export const UserProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user: currentUser, updateUser } = useAuth();
+
   const [profileUser, setProfileUser] = useState<User | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (id) fetchProfileAndReviews(id);
@@ -32,6 +37,12 @@ export const UserProfilePage: React.FC = () => {
     }
   };
 
+  const handleProfileUpdated = (updatedUser: User) => {
+    updateUser(updatedUser);
+    setProfileUser((prev) => (prev ? { ...prev, ...updatedUser } : updatedUser));
+    if (id) fetchProfileAndReviews(id);
+  };
+
   if (loading || !profileUser) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 flex items-center justify-center">
@@ -41,6 +52,8 @@ export const UserProfilePage: React.FC = () => {
   }
 
   const reputation = profileUser.uy_tin;
+  const isOwner = currentUser?.nguoi_dung_id === profileUser.nguoi_dung_id;
+  const displayPhone = profileUser.so_dien_thoai || profileUser.ho_so?.so_dien_thoai;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in space-y-8">
@@ -56,7 +69,19 @@ export const UserProfilePage: React.FC = () => {
           </div>
 
           <div className="flex-1 text-center sm:text-left">
-            <h1 className="text-2xl font-bold text-primary">{profileUser.ho_so?.ho_ten || 'Thành viên'}</h1>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h1 className="text-2xl font-bold text-primary">{profileUser.ho_so?.ho_ten || 'Thành viên'}</h1>
+              {isOwner && (
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="btn btn-outline text-xs rounded-xl flex items-center justify-center gap-1.5 px-3 py-1.5 hover:border-indigo-500 hover:text-indigo-400 transition-colors self-center sm:self-auto"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  Chỉnh sửa hồ sơ
+                </button>
+              )}
+            </div>
+
             <p className="text-sm text-secondary mt-1 max-w-lg">
               {profileUser.ho_so?.mo_ta_ca_nhan || 'Chưa cập nhật mô tả bản thân.'}
             </p>
@@ -65,8 +90,8 @@ export const UserProfilePage: React.FC = () => {
               {profileUser.email && (
                 <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5 text-brand-primary" /> {profileUser.email}</span>
               )}
-              {profileUser.ho_so?.so_dien_thoai && (
-                <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-brand-emerald" /> {profileUser.ho_so.so_dien_thoai}</span>
+              {displayPhone && (
+                <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-brand-emerald" /> {displayPhone}</span>
               )}
               {profileUser.ho_so?.dia_chi && (
                 <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-brand-rose" /> {profileUser.ho_so.dia_chi}</span>
@@ -123,9 +148,18 @@ export const UserProfilePage: React.FC = () => {
                 {rev.nhan_xet && <p className="text-sm text-secondary italic">"{rev.nhan_xet}"</p>}
               </div>
             ))}
-          </div>
         )}
       </div>
+
+      {/* Edit Profile Modal for Owner */}
+      {isOwner && (
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          currentUser={profileUser}
+          onSuccess={handleProfileUpdated}
+        />
+      )}
     </div>
   );
 };

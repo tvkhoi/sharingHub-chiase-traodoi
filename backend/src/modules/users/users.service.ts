@@ -29,6 +29,8 @@ export class UsersService {
   }
 
   async updateProfile(nguoi_dung_id: string, dto: UpdateProfileDto) {
+    const { ho_ten, anh_dai_dien, dia_chi, mo_ta_ca_nhan, so_dien_thoai } = dto;
+
     const hoSo = await this.prisma.hoSoThanhVien.findUnique({
       where: { nguoi_dung_id },
     });
@@ -37,14 +39,30 @@ export class UsersService {
       throw new NotFoundException('Hồ sơ thành viên không tồn tại');
     }
 
-    const updated = await this.prisma.hoSoThanhVien.update({
+    const hoSoData: any = {};
+    if (ho_ten !== undefined) hoSoData.ho_ten = ho_ten;
+    if (anh_dai_dien !== undefined) hoSoData.anh_dai_dien = anh_dai_dien;
+    if (dia_chi !== undefined) hoSoData.dia_chi = dia_chi;
+    if (mo_ta_ca_nhan !== undefined) hoSoData.mo_ta_ca_nhan = mo_ta_ca_nhan;
+
+    const updatedHoSo = await this.prisma.hoSoThanhVien.update({
       where: { nguoi_dung_id },
-      data: dto,
+      data: hoSoData,
     });
+
+    if (so_dien_thoai !== undefined) {
+      await this.prisma.nguoiDung.update({
+        where: { nguoi_dung_id },
+        data: { so_dien_thoai },
+      });
+    }
+
+    const updatedUser = await this.getProfile(nguoi_dung_id);
 
     return {
       message: 'Cập nhật hồ sơ thành công',
-      ho_so: updated,
+      user: updatedUser,
+      ho_so: updatedHoSo,
     };
   }
 

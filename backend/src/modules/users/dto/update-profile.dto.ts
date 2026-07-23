@@ -33,4 +33,12 @@ export class UpdateProfileDto {
   @IsString()
   @IsOptional()
   mo_ta_ca_nhan?: string;
+
+  @ApiPropertyOptional({
+    description: 'Số điện thoại liên hệ',
+    example: '0987654321',
+  })
+  @IsString()
+  @IsOptional()
+  so_dien_thoai?: string;
 }
