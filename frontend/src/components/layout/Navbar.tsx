@@ -53,10 +53,10 @@ export const Navbar: React.FC = () => {
         <nav className="hidden xl:flex items-center gap-1">
           <Link
             to="/"
-            className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-colors duration-150 ${
+            className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
               location.pathname === '/'
-                ? 'bg-indigo-600/20 text-brand-primary border border-indigo-500/30'
-                : 'text-secondary hover:text-primary hover:bg-card-hover border border-transparent'
+                ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
             }`}
           >
             <Package className="w-4 h-4" />
@@ -67,10 +67,10 @@ export const Navbar: React.FC = () => {
             <>
               <Link
                 to="/my-assets"
-                className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-colors duration-150 ${
+                className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                   location.pathname === '/my-assets'
-                    ? 'bg-indigo-600/20 text-brand-primary border border-indigo-500/30'
-                    : 'text-secondary hover:text-primary hover:bg-card-hover border border-transparent'
+                    ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                    : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
                 }`}
               >
                 <Layers className="w-4 h-4" />
@@ -79,10 +79,10 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/proposals"
-                className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-colors duration-150 ${
+                className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                   location.pathname === '/proposals'
-                    ? 'bg-indigo-600/20 text-brand-primary border border-indigo-500/30'
-                    : 'text-secondary hover:text-primary hover:bg-card-hover border border-transparent'
+                    ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                    : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
                 }`}
               >
                 <MessageSquare className="w-4 h-4" />
@@ -91,10 +91,10 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/transactions"
-                className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-colors duration-150 ${
+                className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                   location.pathname === '/transactions'
-                    ? 'bg-indigo-600/20 text-brand-primary border border-indigo-500/30'
-                    : 'text-secondary hover:text-primary hover:bg-card-hover border border-transparent'
+                    ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                    : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
                 }`}
               >
                 <Repeat className="w-4 h-4" />
@@ -104,10 +104,10 @@ export const Navbar: React.FC = () => {
               {user.vai_tro === 'QUAN_TRI_VIEN' && (
                 <Link
                   to="/admin"
-                  className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-colors duration-150 ${
+                  className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                     location.pathname.startsWith('/admin')
-                      ? 'bg-rose-500/20 text-brand-rose border border-rose-500/30'
-                      : 'text-brand-rose hover:bg-rose-500/10 border border-transparent'
+                      ? 'bg-rose-500/20 text-brand-rose border-rose-500/30 shadow-sm'
+                      : 'text-brand-rose hover:bg-rose-500/10 border-transparent'
                   }`}
                 >
                   <ShieldAlert className="w-4 h-4" />

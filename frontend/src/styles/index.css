@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Always reserve scrollbar gutter to prevent Navbar layout shift when switching between long and short pages */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 /* 
   ShareHub Design System Tokens 
   8pt Grid System & WCAG AA Compliant Color Palette
