@@ -18,7 +18,13 @@ import { UserProfilePage } from './pages/UserProfilePage';
 import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 
+import { socketService } from './services/socket.service';
+
 export const App: React.FC = () => {
+  React.useEffect(() => {
+    socketService.connect();
+  }, []);
+
   return (
     <LanguageProvider>
       <ThemeProvider>

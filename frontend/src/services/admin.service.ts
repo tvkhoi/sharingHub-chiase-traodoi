@@ -2,7 +2,7 @@ import { api } from './api';
 import type { User, Asset, AssetCategory } from '../types';
 
 export interface SystemStats {
-  users: { total: number; active: number; locked: number };
+  users: { total: number; active: number; locked: number; online?: number };
   assets: { total: number; available: number };
   transactions: { total: number; completed: number };
   reports: { total: number; pending: number };

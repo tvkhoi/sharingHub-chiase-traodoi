@@ -1,12 +1,19 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => NegotiationGateway))
+    private negotiationGateway: NegotiationGateway,
+  ) {}
 
   // 1. Get System Statistics
   async getSystemStats() {
+    const onlineUsers = this.negotiationGateway ? this.negotiationGateway.getOnlineUsersCount() : 0;
+
     const [
       totalUsers,
       activeUsers,
@@ -34,6 +41,7 @@ export class AdminService {
         total: totalUsers,
         active: activeUsers,
         locked: lockedUsers,
+        online: onlineUsers,
       },
       assets: {
         total: totalAssets,
@@ -76,8 +84,8 @@ export class AdminService {
       const keyword = query.search.trim();
       where.OR = [
         { email: { contains: keyword, mode: 'insensitive' } },
+        { so_dien_thoai: { contains: keyword, mode: 'insensitive' } },
         { ho_so: { isNot: null, ho_ten: { contains: keyword, mode: 'insensitive' } } },
-        { ho_so: { isNot: null, so_dien_thoai: { contains: keyword, mode: 'insensitive' } } },
       ];
     }
 

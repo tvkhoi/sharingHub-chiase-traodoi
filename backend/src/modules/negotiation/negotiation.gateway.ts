@@ -22,15 +22,30 @@ export class NegotiationGateway implements OnGatewayConnection, OnGatewayDisconn
   server: Server;
 
   private readonly logger = new Logger(NegotiationGateway.name);
+  private activeSockets = new Set<string>();
 
   constructor(private negotiationService: NegotiationService) {}
 
   handleConnection(client: Socket) {
-    this.logger.log(`Client connected to WSS negotiation: ${client.id}`);
+    this.activeSockets.add(client.id);
+    this.logger.log(`Client connected to WSS negotiation: ${client.id}. Online sockets: ${this.activeSockets.size}`);
+    this.broadcastOnlineCount();
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
+    this.activeSockets.delete(client.id);
+    this.logger.log(`Client disconnected: ${client.id}. Online sockets: ${this.activeSockets.size}`);
+    this.broadcastOnlineCount();
+  }
+
+  public getOnlineUsersCount(): number {
+    return this.activeSockets.size;
+  }
+
+  private broadcastOnlineCount() {
+    if (this.server) {
+      this.server.emit('online_count_update', { count: this.activeSockets.size });
+    }
   }
 
   @SubscribeMessage('join_room')

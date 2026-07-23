@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { adminService, type SystemStats } from '../../services/admin.service';
 import { assetsService } from '../../services/assets.service';
+import { socketService } from '../../services/socket.service';
 import type { User, Asset, AssetCategory } from '../../types';
 import { Pagination } from '../../components/common/Pagination';
 import { AdminReportsPage } from './AdminReportsPage';
@@ -79,6 +80,22 @@ export const AdminDashboardPage: React.FC = () => {
   const [assetStatusFilter, setAssetStatusFilter] = useState<string>('');
   const [loadingAdminAssets, setLoadingAdminAssets] = useState<boolean>(cachedAdminAssetsList.length === 0);
 
+  // Real-time Online Sockets Listener via WSS
+  useEffect(() => {
+    socketService.onOnlineCountUpdate((data) => {
+      setStats((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          users: {
+            ...prev.users,
+            online: data.count,
+          },
+        };
+      });
+    });
+  }, []);
+
   useEffect(() => {
     fetchStats();
   }, []);
@@ -88,6 +105,26 @@ export const AdminDashboardPage: React.FC = () => {
     if (activeTab === 'categories') fetchCategories();
     if (activeTab === 'assets') fetchAdminAssets();
   }, [activeTab, usersPage, userRoleFilter, userStatusFilter, assetsPage, assetStatusFilter]);
+
+  // Debounced search trigger for Users
+  useEffect(() => {
+    if (activeTab === 'users') {
+      const timer = setTimeout(() => {
+        fetchUsers(1);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [usersSearch]);
+
+  // Debounced search trigger for Assets
+  useEffect(() => {
+    if (activeTab === 'assets') {
+      const timer = setTimeout(() => {
+        fetchAdminAssets(1);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [assetsSearch]);
 
   const fetchStats = async () => {
     if (!stats) setLoadingStats(true);
@@ -359,10 +396,16 @@ export const AdminDashboardPage: React.FC = () => {
               <div className="glass-card p-6 rounded-2xl text-left border-l-4 border-indigo-500">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-muted font-bold uppercase">Người dùng</span>
-                  <Users className="w-6 h-6 text-brand-primary" />
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-brand-emerald bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
+                      {stats.users.online ?? 0} online
+                    </span>
+                    <Users className="w-6 h-6 text-brand-primary" />
+                  </div>
                 </div>
                 <div className="text-3xl font-extrabold text-primary">{stats.users.total}</div>
-                <div className="text-xs text-muted mt-1 flex justify-between">
+                <div className="text-xs text-muted mt-1 flex items-center justify-between gap-2">
                   <span>Hoạt động: <strong className="text-brand-emerald">{stats.users.active}</strong></span>
                   <span>Bị khóa: <strong className="text-brand-rose">{stats.users.locked}</strong></span>
                 </div>

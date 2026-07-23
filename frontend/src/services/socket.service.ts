@@ -51,6 +51,12 @@ class SocketService {
     socket.on('push_notification', callback);
   }
 
+  onOnlineCountUpdate(callback: (data: { count: number }) => void) {
+    const socket = this.connect();
+    socket.off('online_count_update');
+    socket.on('online_count_update', callback);
+  }
+
   leaveRoom() {
     if (this.socket) {
       this.socket.off('new_message');
