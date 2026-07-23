@@ -134,9 +134,14 @@ export const LoginPage: React.FC = () => {
           <div className="form-group">
             <div className="flex items-center justify-between">
               <label className="form-label">Mật khẩu *</label>
-              {touched.matKhau && !errors.matKhau && matKhau && (
-                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Hợp lệ</span>
-              )}
+              <div className="flex items-center gap-2">
+                {touched.matKhau && !errors.matKhau && matKhau && (
+                  <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Hợp lệ</span>
+                )}
+                <Link to="/forgot-password" className="text-xs text-brand-primary font-medium hover:underline">
+                  Quên mật khẩu?
+                </Link>
+              </div>
             </div>
             <div className="relative">
               <Lock className="absolute left-3.5 top-3 w-5 h-5 text-muted" />

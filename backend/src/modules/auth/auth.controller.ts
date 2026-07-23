@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordSendOtpDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
@@ -18,6 +19,25 @@ export class AuthController {
   @Post('send-otp')
   async sendOtp(@Body('email') email: string) {
     return this.authService.sendOtp(email);
+  }
+
+  @ApiOperation({
+    summary: 'Gửi mã OTP khôi phục mật khẩu qua Email',
+    description: 'Tạo mã OTP 6 số ngẫu nhiên cho tài khoản đã tồn tại và gửi qua Gmail.',
+  })
+  @Post('forgot-password/send-otp')
+  async forgotPasswordSendOtp(@Body() dto: ForgotPasswordSendOtpDto) {
+    return this.authService.forgotPasswordSendOtp(dto.email);
+  }
+
+  @ApiOperation({
+    summary: 'Xác thực OTP và đặt lại mật khẩu mới',
+    description: 'Xác minh mã OTP 6 số và cập nhật mật khẩu mới cho tài khoản.',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Post('forgot-password/reset')
+  async forgotPasswordReset(@Body() dto: ResetPasswordDto) {
+    return this.authService.forgotPasswordReset(dto);
   }
 
   @ApiOperation({

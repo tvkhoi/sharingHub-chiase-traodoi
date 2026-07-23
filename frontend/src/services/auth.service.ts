@@ -18,6 +18,13 @@ export interface LoginDto {
   mat_khau: string;
 }
 
+export interface ResetPasswordDto {
+  email: string;
+  otp: string;
+  mat_khau_moi: string;
+  xac_nhan_mat_khau_moi?: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   user: User;
@@ -26,6 +33,16 @@ export interface AuthResponse {
 export const authService = {
   async sendOtp(email: string): Promise<{ message: string; otpSimulated?: string }> {
     const res = await api.post('/auth/send-otp', { email });
+    return res.data;
+  },
+
+  async forgotPasswordSendOtp(email: string): Promise<{ message: string; otpDev?: string }> {
+    const res = await api.post('/auth/forgot-password/send-otp', { email });
+    return res.data;
+  },
+
+  async resetPassword(data: ResetPasswordDto): Promise<{ message: string }> {
+    const res = await api.post('/auth/forgot-password/reset', data);
     return res.data;
   },
 

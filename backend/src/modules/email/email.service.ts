@@ -125,4 +125,96 @@ export class EmailService {
       </div>
     `;
   }
+
+  /**
+   * Gửi mã OTP xác thực Quên/Khôi Phục Mật Khẩu 6 chữ số
+   * @param toEmail Email người nhận
+   * @param otp Mã OTP ngẫu nhiên
+   */
+  async sendForgotPasswordOtpEmail(toEmail: string, otp: string): Promise<boolean> {
+    const brevoApiKey = process.env.BREVO_API_KEY;
+
+    if (brevoApiKey && brevoApiKey.trim()) {
+      try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': brevoApiKey.trim(),
+          },
+          body: JSON.stringify({
+            sender: { name: 'ShareHub Security', email: process.env.SMTP_USER || 'no-reply@sharehub.com' },
+            to: [{ email: toEmail }],
+            subject: `[ShareHub] Mã OTP Đặt Lại Mật Khẩu Của Bạn: ${otp}`,
+            htmlContent: this.getForgotPasswordOtpTemplate(otp),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.logger.log(`Đã gửi email khôi phục mật khẩu tới ${toEmail} qua Brevo API (MessageId: ${data.messageId})`);
+          return true;
+        }
+
+        const errText = await response.text();
+        this.logger.error(`Gửi email qua Brevo API thất bại: ${errText}`);
+      } catch (err) {
+        this.logger.error(`Lỗi khi gọi Brevo API: ${err.message}`);
+      }
+    }
+
+    const fromAddress = process.env.SMTP_USER || 'no-reply@sharehub.com';
+
+    const mailOptions = {
+      from: `"ShareHub Security" <${fromAddress}>`,
+      to: toEmail,
+      subject: `[ShareHub] Mã OTP Đặt Lại Mật Khẩu Của Bạn: ${otp}`,
+      html: this.getForgotPasswordOtpTemplate(otp),
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Đã gửi email khôi phục mật khẩu tới ${toEmail} qua SMTP (MessageId: ${info.messageId})`);
+      return true;
+    } catch (err) {
+      this.logger.error(`Gửi email SMTP khôi phục mật khẩu tới ${toEmail} thất bại: ${err.message}`);
+      return false;
+    }
+  }
+
+  /**
+   * Tạo giao diện HTML cho Email khôi phục mật khẩu
+   */
+  private getForgotPasswordOtpTemplate(otp: string): string {
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 16px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 style="color: #4f46e5; margin: 0; font-size: 28px; font-weight: 800;">ShareHub</h1>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Nền Tảng Chia Sẻ & Trao Đổi Tài Sản</p>
+        </div>
+
+        <div style="background-color: #fff1f2; border: 1px solid #fecdd3; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+          <h2 style="color: #be123c; font-size: 18px; margin-top: 0;">🔐 Yêu Cầu Đặt Lại Mật Khẩu</h2>
+          <p style="color: #374151; font-size: 14px; line-height: 1.6;">
+            Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản liên kết với địa chỉ email này trên <strong>ShareHub</strong>. Mã xác nhận OTP của bạn là:
+          </p>
+          
+          <div style="text-align: center; margin: 28px 0;">
+            <span style="font-family: monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #e11d48; background: #ffffff; padding: 12px 28px; border-radius: 12px; border: 2px dashed #f43f5e; display: inline-block;">
+              ${otp}
+            </span>
+          </div>
+
+          <p style="color: #4b5563; font-size: 13px; text-align: center; margin: 0;">
+            ⏰ Mã OTP có hiệu lực trong <strong>5 phút</strong>. Tuyệt đối không chia sẻ mã này với bất kỳ ai để bảo vệ tài khoản của bạn.
+          </p>
+        </div>
+
+        <div style="text-align: center; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; margin-top: 24px; padding-top: 16px;">
+          <p style="margin: 0;">Nếu bạn không thực hiện yêu cầu này, tài khoản của bạn vẫn an toàn và bạn có thể an tâm bỏ qua email này.</p>
+          <p style="margin: 4px 0 0 0;">© 2026 ShareHub. All rights reserved.</p>
+        </div>
+      </div>
+    `;
+  }
 }
