@@ -148,6 +148,7 @@ export const UserProfilePage: React.FC = () => {
                 {rev.nhan_xet && <p className="text-sm text-secondary italic">"{rev.nhan_xet}"</p>}
               </div>
             ))}
+          </div>
         )}
       </div>
 
