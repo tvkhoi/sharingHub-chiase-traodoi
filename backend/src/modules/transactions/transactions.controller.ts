@@ -1,6 +1,7 @@
-import { Controller, Get, Put, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
@@ -13,11 +14,14 @@ export class TransactionsController {
 
   @ApiOperation({
     summary: 'Truy vấn danh sách giao dịch cá nhân (UC4.3)',
-    description: 'Trả về toàn bộ các bản ghi giao dịch mà người dùng tham gia với vai trò bên sở hữu hoặc bên tiếp nhận.',
+    description: 'Trả về các bản ghi giao dịch mà người dùng tham gia với vai trò bên sở hữu hoặc bên tiếp nhận (có phân trang).',
   })
   @Get()
-  async findAll(@CurrentUser('nguoi_dung_id') userId: string) {
-    return this.transactionsService.findAllMyTransactions(userId);
+  async findAll(
+    @CurrentUser('nguoi_dung_id') userId: string,
+    @Query() query: QueryPaginationDto,
+  ) {
+    return this.transactionsService.findAllMyTransactions(userId, query);
   }
 
   @ApiOperation({

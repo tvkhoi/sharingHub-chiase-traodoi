@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { Proposal, Transaction } from '../types';
+import type { Proposal, Transaction, PaginatedResponse } from '../types';
 
 export interface CreateProposalPayload {
   bai_dang_id: string;
@@ -15,13 +15,13 @@ export const proposalsService = {
     return res.data;
   },
 
-  async getSentProposals(): Promise<Proposal[]> {
-    const res = await api.get<Proposal[]>('/proposals/sent');
+  async getSentProposals(params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Proposal>> {
+    const res = await api.get<PaginatedResponse<Proposal>>('/proposals/sent', { params });
     return res.data;
   },
 
-  async getReceivedProposals(): Promise<Proposal[]> {
-    const res = await api.get<Proposal[]>('/proposals/received');
+  async getReceivedProposals(params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Proposal>> {
+    const res = await api.get<PaginatedResponse<Proposal>>('/proposals/received', { params });
     return res.data;
   },
 

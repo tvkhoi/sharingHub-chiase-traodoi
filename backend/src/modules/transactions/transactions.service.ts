@@ -1,45 +1,67 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class TransactionsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllMyTransactions(userId: string) {
-    return this.prisma.giaoDich.findMany({
-      where: {
-        OR: [
-          { nguoi_so_huu_id: userId },
-          { nguoi_tiep_nhan_id: userId },
-        ],
-      },
-      orderBy: { ngay_tao: 'desc' },
-      include: {
-        de_xuat: {
-          include: {
-            bai_dang: {
-              include: { hinh_anh: true },
+  async findAllMyTransactions(userId: string, query?: QueryPaginationDto) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      OR: [
+        { nguoi_so_huu_id: userId },
+        { nguoi_tiep_nhan_id: userId },
+      ],
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.giaoDich.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { ngay_tao: 'desc' },
+        include: {
+          de_xuat: {
+            include: {
+              bai_dang: {
+                include: { hinh_anh: true },
+              },
+            },
+          },
+          nguoi_so_huu: {
+            select: {
+              nguoi_dung_id: true,
+              email: true,
+              ho_so: true,
+              ho_so_uy_tin: true,
+            },
+          },
+          nguoi_tiep_nhan: {
+            select: {
+              nguoi_dung_id: true,
+              email: true,
+              ho_so: true,
+              ho_so_uy_tin: true,
             },
           },
         },
-        nguoi_so_huu: {
-          select: {
-            nguoi_dung_id: true,
-            email: true,
-            ho_so: true,
-            ho_so_uy_tin: true,
-          },
-        },
-        nguoi_tiep_nhan: {
-          select: {
-            nguoi_dung_id: true,
-            email: true,
-            ho_so: true,
-            ho_so_uy_tin: true,
-          },
-        },
+      }),
+      this.prisma.giaoDich.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: string, userId: string) {

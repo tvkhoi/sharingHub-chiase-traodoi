@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { reportsService } from '../../services/reports.service';
 import type { Report } from '../../types';
+import { Pagination } from '../../components/common/Pagination';
 import toast from 'react-hot-toast';
 import { ShieldAlert, CheckCircle, Eye } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -8,6 +9,12 @@ import { createPortal } from 'react-dom';
 export const AdminReportsPage: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Pagination state
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Process Modal state
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
@@ -18,13 +25,22 @@ export const AdminReportsPage: React.FC = () => {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [page, limit]);
 
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const data = await reportsService.getAllReportsAdmin();
-      setReports(data);
+      const data = await reportsService.getAllReportsAdmin({ page, limit });
+      if (Array.isArray(data)) {
+        setReports(data);
+      } else {
+        setReports(data.items || []);
+        const meta = data.meta || data.pagination;
+        if (meta) {
+          setTotalItems(meta.total);
+          setTotalPages(meta.totalPages);
+        }
+      }
     } catch (err) {
       console.error('Lỗi lấy danh sách báo cáo vi phạm:', err);
     } finally {
@@ -134,6 +150,21 @@ export const AdminReportsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Pagination Bar */}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        limit={limit}
+        onPageChange={(p) => setPage(p)}
+        onLimitChange={(l) => {
+          setLimit(l);
+          setPage(1);
+        }}
+        limitOptions={[5, 10, 20, 50]}
+        className="mt-8"
+      />
 
       {/* Modal: Process Report Action */}
       {selectedReport && createPortal(

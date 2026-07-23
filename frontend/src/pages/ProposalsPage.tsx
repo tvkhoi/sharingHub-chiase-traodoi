@@ -4,6 +4,7 @@ import { negotiationService } from '../services/negotiation.service';
 import { socketService } from '../services/socket.service';
 import type { Proposal, NegotiationMessage } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { Pagination } from '../components/common/Pagination';
 import toast from 'react-hot-toast';
 import { MessageSquare, Send, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -14,6 +15,12 @@ export const ProposalsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Pagination state
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Negotiation Drawer state
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
@@ -30,7 +37,15 @@ export const ProposalsPage: React.FC = () => {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [activeTab]);
+  }, [activeTab, page, limit]);
+
+  // Handle Tab Switch
+  const handleTabChange = (tab: 'received' | 'sent') => {
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+      setPage(1);
+    }
+  };
 
   // Real-time Chat Listener & Sync Effect
   useEffect(() => {
@@ -64,12 +79,22 @@ export const ProposalsPage: React.FC = () => {
   const fetchProposals = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
+      let data: any;
       if (activeTab === 'received') {
-        const res = await proposalsService.getReceivedProposals();
-        setProposals(res);
+        data = await proposalsService.getReceivedProposals({ page, limit });
       } else {
-        const res = await proposalsService.getSentProposals();
-        setProposals(res);
+        data = await proposalsService.getSentProposals({ page, limit });
+      }
+
+      if (Array.isArray(data)) {
+        setProposals(data);
+      } else {
+        setProposals(data.items || []);
+        const meta = data.meta || data.pagination;
+        if (meta) {
+          setTotalItems(meta.total);
+          setTotalPages(meta.totalPages);
+        }
       }
     } catch (err) {
       console.error('Lỗi lấy danh sách đề xuất:', err);
@@ -158,7 +183,7 @@ export const ProposalsPage: React.FC = () => {
         {/* Tab switcher */}
         <div className="flex items-center w-full md:w-auto gap-1 p-1.5 glass-panel rounded-xl">
           <button
-            onClick={() => setActiveTab('received')}
+            onClick={() => handleTabChange('received')}
             className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
               activeTab === 'received' ? 'bg-indigo-600 text-white shadow-md' : 'text-secondary hover:text-primary'
             }`}
@@ -166,7 +191,7 @@ export const ProposalsPage: React.FC = () => {
             Đề xuất nhận được
           </button>
           <button
-            onClick={() => setActiveTab('sent')}
+            onClick={() => handleTabChange('sent')}
             className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
               activeTab === 'sent' ? 'bg-indigo-600 text-white shadow-md' : 'text-secondary hover:text-primary'
             }`}
@@ -276,6 +301,21 @@ export const ProposalsPage: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Pagination Bar */}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        limit={limit}
+        onPageChange={(p) => setPage(p)}
+        onLimitChange={(l) => {
+          setLimit(l);
+          setPage(1);
+        }}
+        limitOptions={[5, 10, 20, 50]}
+        className="mt-8"
+      />
 
       {/* Drawer / Modal: Negotiation Room */}
       {selectedProposal && createPortal(

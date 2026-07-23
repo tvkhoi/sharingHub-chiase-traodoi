@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { Asset, AssetCategory } from '../types';
+import type { Asset, AssetCategory, PaginatedResponse } from '../types';
 
 export interface CreateAssetPayload {
   danh_muc_id: string;
@@ -21,24 +21,14 @@ export interface QueryAssetParams {
   limit?: number;
 }
 
-export interface AssetFeedResponse {
-  items: Asset[];
-  pagination: {
-    page: number;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-  };
-}
-
 export const assetsService = {
   async getCategories(): Promise<AssetCategory[]> {
     const res = await api.get<AssetCategory[]>('/categories');
     return res.data;
   },
 
-  async getAssets(params?: QueryAssetParams): Promise<AssetFeedResponse> {
-    const res = await api.get<AssetFeedResponse>('/assets', { params });
+  async getAssets(params?: QueryAssetParams): Promise<PaginatedResponse<Asset>> {
+    const res = await api.get<PaginatedResponse<Asset>>('/assets', { params });
     return res.data;
   },
 
@@ -47,8 +37,8 @@ export const assetsService = {
     return res.data;
   },
 
-  async getMyAssets(): Promise<Asset[]> {
-    const res = await api.get<Asset[]>('/assets/my');
+  async getMyAssets(params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Asset>> {
+    const res = await api.get<PaginatedResponse<Asset>>('/assets/my', { params });
     return res.data;
   },
 

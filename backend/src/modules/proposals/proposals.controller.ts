@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { ProposalsService } from './proposals.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
@@ -26,20 +27,26 @@ export class ProposalsController {
 
   @ApiOperation({
     summary: 'Truy vấn các đề xuất nhận được (UC3.1)',
-    description: 'Danh sách các đề xuất từ những người dùng khác gửi tới bài đăng tài sản thuộc quyền sở hữu của người dùng hiện tại.',
+    description: 'Danh sách các đề xuất từ những người dùng khác gửi tới bài đăng tài sản thuộc quyền sở hữu của người dùng hiện tại (có phân trang).',
   })
   @Get('received')
-  async getReceived(@CurrentUser('nguoi_dung_id') userId: string) {
-    return this.proposalsService.getReceivedProposals(userId);
+  async getReceived(
+    @CurrentUser('nguoi_dung_id') userId: string,
+    @Query() query: QueryPaginationDto,
+  ) {
+    return this.proposalsService.getReceivedProposals(userId, query);
   }
 
   @ApiOperation({
     summary: 'Truy vấn các đề xuất đã gửi (UC3.1)',
-    description: 'Danh sách các đề xuất mà người dùng hiện tại đã khởi tạo gửi tới các bài đăng tài sản khác.',
+    description: 'Danh sách các đề xuất mà người dùng hiện tại đã khởi tạo gửi tới các bài đăng tài sản khác (có phân trang).',
   })
   @Get('sent')
-  async getSent(@CurrentUser('nguoi_dung_id') userId: string) {
-    return this.proposalsService.getSentProposals(userId);
+  async getSent(
+    @CurrentUser('nguoi_dung_id') userId: string,
+    @Query() query: QueryPaginationDto,
+  ) {
+    return this.proposalsService.getSentProposals(userId, query);
   }
 
   @ApiOperation({

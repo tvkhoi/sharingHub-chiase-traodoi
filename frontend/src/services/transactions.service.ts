@@ -1,9 +1,9 @@
 import { api } from './api';
-import type { Transaction } from '../types';
+import type { Transaction, PaginatedResponse } from '../types';
 
 export const transactionsService = {
-  async getTransactions(): Promise<Transaction[]> {
-    const res = await api.get<Transaction[]>('/transactions');
+  async getTransactions(params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Transaction>> {
+    const res = await api.get<PaginatedResponse<Transaction>>('/transactions', { params });
     return res.data;
   },
 

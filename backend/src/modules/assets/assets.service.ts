@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { QueryAssetDto } from './dto/query-asset.dto';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class AssetsService {
@@ -118,15 +119,36 @@ export class AssetsService {
     };
   }
 
-  async findMyAssets(userId: string) {
-    return this.prisma.baiDangTaiSan.findMany({
-      where: { chu_so_huu_id: userId },
-      orderBy: { ngay_tao: 'desc' },
-      include: {
-        hinh_anh: true,
-        danh_muc: true,
+  async findMyAssets(userId: string, query?: QueryPaginationDto) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where = { chu_so_huu_id: userId };
+
+    const [items, total] = await Promise.all([
+      this.prisma.baiDangTaiSan.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { ngay_tao: 'desc' },
+        include: {
+          hinh_anh: true,
+          danh_muc: true,
+        },
+      }),
+      this.prisma.baiDangTaiSan.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: string) {

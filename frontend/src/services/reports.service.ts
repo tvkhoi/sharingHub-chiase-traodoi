@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { Report } from '../types';
+import type { Report, PaginatedResponse } from '../types';
 
 export interface CreateReportPayload {
   bai_dang_bi_bao_cao_id?: string;
@@ -21,8 +21,8 @@ export const reportsService = {
     return res.data;
   },
 
-  async getAllReportsAdmin(): Promise<Report[]> {
-    const res = await api.get<Report[]>('/reports');
+  async getAllReportsAdmin(params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Report>> {
+    const res = await api.get<PaginatedResponse<Report>>('/reports', { params });
     return res.data;
   },
 

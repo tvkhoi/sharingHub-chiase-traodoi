@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { assetsService } from '../services/assets.service';
 import { uploadService } from '../services/upload.service';
 import type { Asset, AssetCategory } from '../types';
+import { Pagination } from '../components/common/Pagination';
 import toast from 'react-hot-toast';
 import { PlusCircle, Layers, Trash2, Edit, UploadCloud, X, Save } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -12,6 +13,12 @@ export const MyAssetsPage: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Pagination State
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(8);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Edit Modal State
   const [editAsset, setEditAsset] = useState<Asset | null>(null);
@@ -29,14 +36,26 @@ export const MyAssetsPage: React.FC = () => {
 
   useEffect(() => {
     fetchMyAssets();
+  }, [page, limit]);
+
+  useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchMyAssets = async () => {
     setLoading(true);
     try {
-      const data = await assetsService.getMyAssets();
-      setAssets(data);
+      const data = await assetsService.getMyAssets({ page, limit });
+      if (Array.isArray(data)) {
+        setAssets(data);
+      } else {
+        setAssets(data.items || []);
+        const meta = data.meta || data.pagination;
+        if (meta) {
+          setTotalItems(meta.total);
+          setTotalPages(meta.totalPages);
+        }
+      }
     } catch (err) {
       console.error('Lỗi lấy danh sách bài đăng cá nhân:', err);
     } finally {
@@ -238,6 +257,21 @@ export const MyAssetsPage: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Pagination Bar */}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        limit={limit}
+        onPageChange={(p) => setPage(p)}
+        onLimitChange={(l) => {
+          setLimit(l);
+          setPage(1);
+        }}
+        limitOptions={[8, 16, 24, 48]}
+        className="mt-8"
+      />
 
       {/* Modal: Edit Asset */}
       {editAsset && createPortal(

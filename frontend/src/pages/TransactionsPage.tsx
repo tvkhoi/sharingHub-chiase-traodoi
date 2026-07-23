@@ -4,6 +4,7 @@ import { reviewsService } from '../services/reviews.service';
 import type { Transaction } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { RatingStars } from '../components/reviews/RatingStars';
+import { Pagination } from '../components/common/Pagination';
 import toast from 'react-hot-toast';
 import { Repeat, CheckCircle2, Clock, Truck, Star, XCircle, AlertCircle } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -12,6 +13,12 @@ export const TransactionsPage: React.FC = () => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Pagination state
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Review modal state
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
@@ -33,13 +40,22 @@ export const TransactionsPage: React.FC = () => {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [page, limit]);
 
   const fetchTransactions = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const data = await transactionsService.getTransactions();
-      setTransactions(data);
+      const data = await transactionsService.getTransactions({ page, limit });
+      if (Array.isArray(data)) {
+        setTransactions(data);
+      } else {
+        setTransactions(data.items || []);
+        const meta = data.meta || data.pagination;
+        if (meta) {
+          setTotalItems(meta.total);
+          setTotalPages(meta.totalPages);
+        }
+      }
     } catch (err) {
       console.error('Lỗi lấy danh sách giao dịch:', err);
     } finally {
@@ -240,6 +256,21 @@ export const TransactionsPage: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Pagination Bar */}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        limit={limit}
+        onPageChange={(p) => setPage(p)}
+        onLimitChange={(l) => {
+          setLimit(l);
+          setPage(1);
+        }}
+        limitOptions={[5, 10, 20, 50]}
+        className="mt-8"
+      />
 
       {/* Modal: Cancel Transaction */}
       {cancelTx && createPortal(

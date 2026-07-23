@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ProcessReportDto } from './dto/process-report.dto';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class ReportsService {
@@ -59,38 +60,57 @@ export class ReportsService {
     });
   }
 
-  async getAllReportsAdmin() {
-    return this.prisma.baoCaoViPham.findMany({
-      orderBy: { ngay_bao_cao: 'desc' },
-      include: {
-        nguoi_bao_cao: {
-          select: {
-            nguoi_dung_id: true,
-            email: true,
-            ho_so: true,
+  async getAllReportsAdmin(query?: QueryPaginationDto) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      this.prisma.baoCaoViPham.findMany({
+        skip,
+        take: limit,
+        orderBy: { ngay_bao_cao: 'desc' },
+        include: {
+          nguoi_bao_cao: {
+            select: {
+              nguoi_dung_id: true,
+              email: true,
+              ho_so: true,
+            },
           },
-        },
-        bai_dang_bi_bao_cao: true,
-        nguoi_dung_bi_bao_cao: {
-          select: {
-            nguoi_dung_id: true,
-            email: true,
-            ho_so: true,
+          bai_dang_bi_bao_cao: true,
+          nguoi_dung_bi_bao_cao: {
+            select: {
+              nguoi_dung_id: true,
+              email: true,
+              ho_so: true,
+            },
           },
-        },
-        bien_phap: {
-          include: {
-            quan_tri_vien: {
-              select: {
-                nguoi_dung_id: true,
-                email: true,
-                ho_so: true,
+          bien_phap: {
+            include: {
+              quan_tri_vien: {
+                select: {
+                  nguoi_dung_id: true,
+                  email: true,
+                  ho_so: true,
+                },
               },
             },
           },
         },
+      }),
+      this.prisma.baoCaoViPham.count(),
+    ]);
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async getReportByIdAdmin(id: string) {

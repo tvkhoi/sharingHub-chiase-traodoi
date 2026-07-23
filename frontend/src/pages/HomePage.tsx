@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { assetsService } from '../services/assets.service';
 import type { Asset, AssetCategory } from '../types';
 import { AssetCard } from '../components/assets/AssetCard';
-import { Search, Filter, Layers, Gift, ArrowLeftRight, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { Pagination } from '../components/common/Pagination';
+import { Search, Filter, Layers, Gift, ArrowLeftRight, RefreshCw } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -12,6 +13,8 @@ export const HomePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [shareType, setShareType] = useState<string>('');
   const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(8);
+  const [totalItems, setTotalItems] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
@@ -20,7 +23,7 @@ export const HomePage: React.FC = () => {
 
   useEffect(() => {
     fetchAssets();
-  }, [selectedCategory, shareType, page]);
+  }, [selectedCategory, shareType, page, limit]);
 
   const fetchCategories = async () => {
     try {
@@ -39,10 +42,14 @@ export const HomePage: React.FC = () => {
         hinh_thuc_chia_se: shareType || undefined,
         search: search || undefined,
         page,
-        limit: 8,
+        limit,
       });
-      setAssets(data.items);
-      setTotalPages(data.pagination.totalPages || 1);
+      setAssets(data.items || []);
+      const meta = data.meta || data.pagination;
+      if (meta) {
+        setTotalItems(meta.total ?? (meta as any).totalItems ?? 0);
+        setTotalPages(meta.totalPages || 1);
+      }
     } catch (err) {
       console.error('Lỗi lấy bài đăng tài sản:', err);
     } finally {
@@ -187,29 +194,19 @@ export const HomePage: React.FC = () => {
       )}
 
       {/* Pagination Bar */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 mt-12">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="btn btn-outline py-2 px-3 text-sm"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Trang trước
-          </button>
-          <span className="text-sm font-semibold text-secondary">
-            Trang {page} / {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="btn btn-outline py-2 px-3 text-sm"
-          >
-            Trang sau
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        limit={limit}
+        onPageChange={(p) => setPage(p)}
+        onLimitChange={(l) => {
+          setLimit(l);
+          setPage(1);
+        }}
+        limitOptions={[8, 16, 24, 48]}
+        className="mt-8"
+      />
     </div>
   );
 };

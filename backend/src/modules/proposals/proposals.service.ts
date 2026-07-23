@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class ProposalsService {
@@ -68,47 +69,89 @@ export class ProposalsService {
     });
   }
 
-  async getReceivedProposals(userId: string) {
-    return this.prisma.deXuatGiaoDich.findMany({
-      where: {
-        bai_dang: { chu_so_huu_id: userId },
-      },
-      orderBy: { ngay_gui: 'desc' },
-      include: {
-        bai_dang: {
-          include: { hinh_anh: true },
-        },
-        nguoi_gui: {
-          select: {
-            nguoi_dung_id: true,
-            email: true,
-            ho_so: true,
-            ho_so_uy_tin: true,
+  async getReceivedProposals(userId: string, query?: QueryPaginationDto) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      bai_dang: { chu_so_huu_id: userId },
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.deXuatGiaoDich.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { ngay_gui: 'desc' },
+        include: {
+          bai_dang: {
+            include: { hinh_anh: true },
+          },
+          nguoi_gui: {
+            select: {
+              nguoi_dung_id: true,
+              email: true,
+              ho_so: true,
+              ho_so_uy_tin: true,
+            },
           },
         },
+      }),
+      this.prisma.deXuatGiaoDich.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
-  async getSentProposals(userId: string) {
-    return this.prisma.deXuatGiaoDich.findMany({
-      where: { nguoi_gui_id: userId },
-      orderBy: { ngay_gui: 'desc' },
-      include: {
-        bai_dang: {
-          include: {
-            hinh_anh: true,
-            chu_so_huu: {
-              select: {
-                nguoi_dung_id: true,
-                email: true,
-                ho_so: true,
+  async getSentProposals(userId: string, query?: QueryPaginationDto) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const where = { nguoi_gui_id: userId };
+
+    const [items, total] = await Promise.all([
+      this.prisma.deXuatGiaoDich.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { ngay_gui: 'desc' },
+        include: {
+          bai_dang: {
+            include: {
+              hinh_anh: true,
+              chu_so_huu: {
+                select: {
+                  nguoi_dung_id: true,
+                  email: true,
+                  ho_so: true,
+                },
               },
             },
           },
         },
+      }),
+      this.prisma.deXuatGiaoDich.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: string) {

@@ -15,6 +15,7 @@ import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { QueryAssetDto } from './dto/query-asset.dto';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
@@ -61,13 +62,16 @@ export class AssetsController {
 
   @ApiOperation({
     summary: 'Danh sách bài đăng tài sản của người dùng hiện tại (UC1.4)',
-    description: 'Truy vấn tất cả các bài đăng tài sản do người dùng đang đăng nhập khởi tạo.',
+    description: 'Truy vấn các bài đăng tài sản do người dùng đang đăng nhập khởi tạo (có phân trang).',
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('assets/my')
-  async findMyAssets(@CurrentUser('nguoi_dung_id') userId: string) {
-    return this.assetsService.findMyAssets(userId);
+  async findMyAssets(
+    @CurrentUser('nguoi_dung_id') userId: string,
+    @Query() query: QueryPaginationDto,
+  ) {
+    return this.assetsService.findMyAssets(userId, query);
   }
 
   @ApiOperation({

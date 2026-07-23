@@ -155,3 +155,17 @@ export interface Report {
   bai_dang_bi_bao_cao?: Asset;
   bien_phap?: PenaltyAction[];
 }
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  meta?: PaginationMeta;
+  pagination?: PaginationMeta; // Fallback for legacy response key if any
+}
+

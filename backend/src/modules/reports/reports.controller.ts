@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ProcessReportDto } from './dto/process-report.dto';
+import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -29,12 +30,12 @@ export class ReportsController {
 
   @ApiOperation({
     summary: 'Truy vấn danh sách báo cáo vi phạm [Quản trị viên] (UC7.2)',
-    description: 'Trả về toàn bộ danh sách báo cáo vi phạm chưa xử lý và đã xử lý dành cho Quản trị viên.',
+    description: 'Trả về danh sách báo cáo vi phạm chưa xử lý và đã xử lý dành cho Quản trị viên (có phân trang).',
   })
   @Roles('QUAN_TRI_VIEN')
   @Get()
-  async getAllReports() {
-    return this.reportsService.getAllReportsAdmin();
+  async getAllReports(@Query() query: QueryPaginationDto) {
+    return this.reportsService.getAllReportsAdmin(query);
   }
 
   @ApiOperation({
