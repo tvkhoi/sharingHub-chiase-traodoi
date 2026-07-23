@@ -689,11 +689,11 @@ export const AdminDashboardPage: React.FC = () => {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-color text-xs text-muted uppercase tracking-wider">
-                    <th className="py-3.5 px-4 text-left w-2/6">Bài đăng tài sản</th>
-                    <th className="py-3.5 px-4 text-left w-1/6">Hình thức</th>
-                    <th className="py-3.5 px-4 text-left w-2/6">Chủ sở hữu</th>
-                    <th className="py-3.5 px-4 text-left w-1/6">Trạng thái</th>
-                    <th className="py-3.5 px-4 text-center w-1/6">Thao tác</th>
+                    <th className="py-3.5 px-4 text-left">Bài đăng tài sản</th>
+                    <th className="py-3.5 px-4 text-left">Hình thức</th>
+                    <th className="py-3.5 px-4 text-left">Chủ sở hữu</th>
+                    <th className="py-3.5 px-4 text-left">Trạng thái</th>
+                    <th className="py-3.5 px-4 text-right whitespace-nowrap">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-color">
@@ -720,11 +720,11 @@ export const AdminDashboardPage: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <div className="inline-flex items-center justify-center gap-2">
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
                           <Link
                             to={`/assets/${a.bai_dang_id}`}
-                            className="p-1.5 rounded-lg text-muted hover:text-brand-primary transition-colors"
+                            className="p-1.5 rounded-lg text-muted hover:text-brand-primary hover:bg-card-hover transition-colors"
                             title="Xem chi tiết"
                           >
                             <Eye className="w-4 h-4" />
