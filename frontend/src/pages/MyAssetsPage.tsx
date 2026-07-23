@@ -217,9 +217,9 @@ export const MyAssetsPage: React.FC = () => {
                   />
                   <div className="absolute top-2 left-2">
                     {asset.hinh_thuc_chia_se === 'CHO_TANG' ? (
-                      <span className="badge badge-emerald text-[10px]">Cho tặng</span>
+                      <span className="badge badge-solid-emerald text-[10px] shadow-md">Cho tặng</span>
                     ) : (
-                      <span className="badge badge-indigo text-[10px]">Trao đổi</span>
+                      <span className="badge badge-solid-indigo text-[10px] shadow-md">Trao đổi</span>
                     )}
                   </div>
                 </div>

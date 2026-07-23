@@ -29,14 +29,14 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
 
         <div className="absolute top-3 left-3 flex gap-2">
           {isGift ? (
-            <span className="badge badge-emerald flex items-center gap-1 shadow-lg">
+            <span className="badge badge-solid-emerald flex items-center gap-1 shadow-md px-2.5 py-1 text-xs">
               <Gift className="w-3.5 h-3.5" />
               {t('common.gift')}
             </span>
           ) : (
-            <span className="badge badge-indigo flex items-center gap-1 shadow-lg">
+            <span className="badge badge-solid-indigo flex items-center gap-1 shadow-md px-2.5 py-1 text-xs">
               <ArrowLeftRight className="w-3.5 h-3.5" />
-              {t('common.exchange')} ({asset.hinh_thuc_trao_doi === 'TIEN' ? 'Money' : 'Asset'})
+              {t('common.exchange')}
             </span>
           )}
         </div>

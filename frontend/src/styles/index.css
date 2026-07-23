@@ -262,25 +262,72 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
+
+  /* High-Contrast Solid Badges (for photo overlays) */
+  .badge-solid-emerald {
+    background: #059669 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+  }
+  .badge-solid-indigo {
+    background: #4F46E5 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+  }
+  .badge-solid-amber {
+    background: #D97706 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+  }
+  .badge-solid-rose {
+    background: #E11D48 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* Standard Inline Badges */
   .badge-primary, .badge-emerald {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.2);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.4);
   }
+  .dark-theme .badge-primary, .dark-theme .badge-emerald {
+    color: #34D399;
+  }
+
   .badge-secondary, .badge-indigo {
-    background: rgba(99, 102, 241, 0.15);
-    color: #6366F1;
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.2);
+    color: #4338CA;
+    border: 1px solid rgba(99, 102, 241, 0.4);
   }
+  .dark-theme .badge-secondary, .dark-theme .badge-indigo {
+    color: #818CF8;
+  }
+
   .badge-amber {
-    background: rgba(245, 158, 11, 0.15);
-    color: #F59E0B;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.2);
+    color: #B45309;
+    border: 1px solid rgba(245, 158, 11, 0.4);
   }
+  .dark-theme .badge-amber {
+    color: #FBBF24;
+  }
+
   .badge-rose {
-    background: rgba(244, 63, 94, 0.15);
-    color: #F43F5E;
-    border: 1px solid rgba(244, 63, 94, 0.3);
+    background: rgba(244, 63, 94, 0.2);
+    color: #BE123C;
+    border: 1px solid rgba(244, 63, 94, 0.4);
+  }
+  .dark-theme .badge-rose {
+    color: #FB7185;
   }
 
   /* Form Inputs (8pt System spacing) */
