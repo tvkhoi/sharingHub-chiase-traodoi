@@ -38,11 +38,11 @@ export const Navbar: React.FC = () => {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-3 text-decoration-none">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
             <Layers className="w-6 h-6 text-white" />
           </div>
           <div>
-            <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-400 via-emerald-400 to-amber-300 bg-clip-text text-transparent">
+            <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
               {t('nav.brand')}
             </span>
             <span className="text-xs block text-secondary opacity-90 font-medium -mt-1 whitespace-nowrap">{t('nav.subBrand')}</span>
@@ -55,7 +55,7 @@ export const Navbar: React.FC = () => {
             to="/"
             className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
               location.pathname === '/'
-                ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-sm'
                 : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
             }`}
           >
@@ -69,7 +69,7 @@ export const Navbar: React.FC = () => {
                 to="/my-assets"
                 className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                   location.pathname === '/my-assets'
-                    ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-sm'
                     : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
                 }`}
               >
@@ -81,7 +81,7 @@ export const Navbar: React.FC = () => {
                 to="/proposals"
                 className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                   location.pathname === '/proposals'
-                    ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-sm'
                     : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
                 }`}
               >
@@ -93,7 +93,7 @@ export const Navbar: React.FC = () => {
                 to="/transactions"
                 className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                   location.pathname === '/transactions'
-                    ? 'bg-indigo-600/20 text-brand-primary border-indigo-500/30 shadow-sm'
+                    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-sm'
                     : 'text-secondary hover:text-primary hover:bg-card-hover border-transparent'
                 }`}
               >
@@ -106,8 +106,8 @@ export const Navbar: React.FC = () => {
                   to="/admin"
                   className={`whitespace-nowrap px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1.5 border transition-colors duration-150 ${
                     location.pathname.startsWith('/admin')
-                      ? 'bg-rose-500/20 text-brand-rose border-rose-500/30 shadow-sm'
-                      : 'text-brand-rose hover:bg-rose-500/10 border-transparent'
+                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/30 shadow-sm'
+                      : 'text-rose-400 hover:bg-rose-500/10 border-transparent'
                   }`}
                 >
                   <ShieldAlert className="w-4 h-4" />

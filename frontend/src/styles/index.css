@@ -24,32 +24,32 @@ html {
   --bg-glass: rgba(255, 255, 255, 0.95);
   
   --border-color: #E2E8F0;      /* Slate-200: Đường viền Card, Input, Divider */
-  --border-accent: #2E7D32;     /* Viền highlight primary */
+  --border-accent: #10B981;     /* Viền highlight primary (Emerald Teal) */
 
-  --text-primary: #1E293B;     /* Slate-800: Tiêu đề, Nội dung chính */
+  --text-primary: #0F172A;     /* Slate-900: Tiêu đề, Nội dung chính */
   --text-secondary: #475569;   /* Slate-600: Nội dung phụ */
   --text-muted: #64748B;       /* Slate-500: Placeholder, Caption, Thời gian đăng */
 
-  --accent-primary: #2E7D32;   /* Primary: Nút chính, CTA, Icon active, Branding */
-  --accent-primary-hover: #1B5E20;
-  --accent-secondary: #1976D2; /* Secondary: Link, Nút phụ, Highlight thông tin */
-  --accent-secondary-hover: #1565C0;
-  --accent-amber: #FF9800;     /* Accent: Badge nổi bật, Notification dot, Đánh giá sao */
-  --accent-success: #4CAF50;   /* Success: Trạng thái thành công, Toast message, Dấu tick */
-  --accent-warning: #FB8C00;   /* Warning: Trạng thái chờ, Cảnh báo nhẹ */
-  --accent-danger: #E53935;    /* Danger: Nút xóa, Báo cáo vi phạm, Thông báo lỗi */
+  --accent-primary: #10B981;   /* Emerald Teal: Nút chính, CTA, Icon active, Branding */
+  --accent-primary-hover: #059669;
+  --accent-secondary: #6366F1; /* Indigo: Link, Nút phụ, Highlight thông tin */
+  --accent-secondary-hover: #4F46E5;
+  --accent-amber: #F59E0B;     /* Accent: Badge chờ duyệt, Đánh giá sao */
+  --accent-success: #10B981;   /* Success: Trạng thái thành công */
+  --accent-warning: #F59E0B;   /* Warning: Trạng thái chờ, Cảnh báo */
+  --accent-danger: #F43F5E;    /* Danger: Nút xóa, Báo cáo vi phạm, Thông báo lỗi */
 
-  --brand-primary: #2E7D32;
-  --brand-secondary: #1976D2;
-  --brand-accent: #FF9800;
-  --brand-emerald: #4CAF50;
-  --brand-amber: #FB8C00;
-  --brand-rose: #E53935;
+  --brand-primary: #10B981;
+  --brand-secondary: #6366F1;
+  --brand-accent: #F59E0B;
+  --brand-emerald: #10B981;
+  --brand-amber: #F59E0B;
+  --brand-rose: #F43F5E;
 
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  --shadow-glow: 0 0 20px rgba(46, 125, 50, 0.25);
+  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.25);
 
   --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-heading: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -65,30 +65,30 @@ html {
 
 /* Dark Theme Override */
 .dark-theme {
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --bg-card: #1E293B;
-  --bg-card-hover: #334155;
-  --bg-input: #1E293B;
-  --bg-glass: rgba(15, 23, 42, 0.9);
+  --bg-primary: #0B0F17;       /* Deep Sapphire Dark */
+  --bg-secondary: #111827;     /* Slate-900 */
+  --bg-card: #111827;
+  --bg-card-hover: #1F2937;
+  --bg-input: #111827;
+  --bg-glass: rgba(17, 24, 39, 0.9);
   
-  --border-color: rgba(226, 232, 240, 0.15);
-  --border-accent: #4CAF50;
+  --border-color: rgba(243, 244, 246, 0.12);
+  --border-accent: #10B981;
 
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
 
-  --brand-primary: #4CAF50;
-  --brand-secondary: #42A5F5;
-  --brand-accent: #FFB74D;
-  --brand-emerald: #66BB6A;
-  --brand-amber: #FFA726;
-  --brand-rose: #EF5350;
+  --brand-primary: #10B981;
+  --brand-secondary: #818CF8;
+  --brand-accent: #FBBF24;
+  --brand-emerald: #34D399;
+  --brand-amber: #FBBF24;
+  --brand-rose: #FB7185;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(76, 175, 80, 0.35);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.35);
 }
 
 * {
@@ -192,39 +192,39 @@ h1, h2, h3, h4, h5, h6 {
     cursor: not-allowed;
   }
   
-  /* Primary Button - #2E7D32 */
+  /* Primary Button - Emerald Teal */
   .btn-primary {
-    background: #2E7D32;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
     color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   }
   .btn-primary:hover:not(:disabled) {
-    background: #1B5E20;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(46, 125, 50, 0.45);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
   }
 
-  /* Secondary Button - #1976D2 */
+  /* Secondary Button - Indigo */
   .btn-secondary {
-    background: #1976D2;
+    background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
     color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
   }
   .btn-secondary:hover:not(:disabled) {
-    background: #1565C0;
+    background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(25, 118, 210, 0.45);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
   }
 
   .btn-emerald {
-    background: #4CAF50;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
     color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   }
   .btn-emerald:hover:not(:disabled) {
-    background: #388E3C;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.45);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
   }
 
   .btn-outline {
@@ -238,16 +238,16 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--accent-primary);
   }
 
-  /* Danger Button - #E53935 */
+  /* Danger Button - Rose */
   .btn-danger {
-    background: #E53935;
+    background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%);
     color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
   }
   .btn-danger:hover:not(:disabled) {
-    background: #C62828;
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(229, 57, 53, 0.45);
+    box-shadow: 0 6px 18px rgba(244, 63, 94, 0.45);
   }
 
   /* Badges */
@@ -262,35 +262,25 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .badge-primary {
-    background: rgba(46, 125, 50, 0.12);
-    color: #2E7D32;
-    border: 1px solid rgba(46, 125, 50, 0.25);
+  .badge-primary, .badge-emerald {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
   }
-  .badge-secondary {
-    background: rgba(25, 118, 210, 0.12);
-    color: #1976D2;
-    border: 1px solid rgba(25, 118, 210, 0.25);
+  .badge-secondary, .badge-indigo {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366F1;
+    border: 1px solid rgba(99, 102, 241, 0.3);
   }
   .badge-amber {
-    background: rgba(255, 152, 0, 0.12);
-    color: #E65100;
-    border: 1px solid rgba(255, 152, 0, 0.3);
-  }
-  .badge-emerald {
-    background: rgba(76, 175, 80, 0.12);
-    color: #2E7D32;
-    border: 1px solid rgba(76, 175, 80, 0.3);
-  }
-  .badge-indigo {
-    background: rgba(25, 118, 210, 0.12);
-    color: #1976D2;
-    border: 1px solid rgba(25, 118, 210, 0.25);
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.3);
   }
   .badge-rose {
-    background: rgba(229, 57, 53, 0.12);
-    color: #E53935;
-    border: 1px solid rgba(229, 57, 53, 0.3);
+    background: rgba(244, 63, 94, 0.15);
+    color: #F43F5E;
+    border: 1px solid rgba(244, 63, 94, 0.3);
   }
 
   /* Form Inputs (8pt System spacing) */

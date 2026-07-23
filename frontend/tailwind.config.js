@@ -7,16 +7,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Spec design tokens
-        "brand-green": "#2E7D32",     // Primary CTA & Branding
-        "brand-blue": "#1976D2",      // Secondary Link & Highlight
-        "brand-orange": "#FF9800",    // Accent Badge & Stars
-        "brand-success": "#4CAF50",   // Success state
-        "brand-warning": "#FB8C00",   // Warning state
-        "brand-danger": "#E53935",    // Danger / Error state
+        // Spec design tokens (Emerald Teal System)
+        "brand-green": "#10B981",     // Primary CTA & Branding (Emerald Teal)
+        "brand-blue": "#6366F1",      // Secondary Link & Highlight (Indigo)
+        "brand-orange": "#F59E0B",    // Accent Badge & Stars (Amber)
+        "brand-success": "#10B981",   // Success state
+        "brand-warning": "#F59E0B",   // Warning state
+        "brand-danger": "#F43F5E",    // Danger / Error state
         "brand-bg": "#F8FAFC",        // Background Slate-50
         "brand-surface": "#FFFFFF",   // Surface / Card White
-        "brand-text": "#1E293B",      // Text Main Slate-800
+        "brand-text": "#0F172A",      // Text Main Slate-900
         "brand-muted": "#64748B",     // Text Muted Slate-500
         "brand-border": "#E2E8F0",    // Border Slate-200
 
