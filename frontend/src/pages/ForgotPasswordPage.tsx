@@ -18,7 +18,6 @@ export const ForgotPasswordPage: React.FC = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const [countdown, setCountdown] = useState<number>(0);
-  const [otpDev, setOtpDev] = useState<string | null>(null);
 
   // Validation states
   const [touched, setTouched] = useState<{
@@ -98,15 +97,10 @@ export const ForgotPasswordPage: React.FC = () => {
     }
 
     setSendingOtp(true);
-    setOtpDev(null);
 
     try {
       const res = await authService.forgotPasswordSendOtp(email.trim());
       toast.success(res.message);
-      if (res.otpDev) {
-        setOtpDev(res.otpDev);
-        setOtp(res.otpDev); // Auto-fill in dev fallback mode for convenience
-      }
       setStep(2);
       setCountdown(60);
     } catch (err: any) {
@@ -248,20 +242,6 @@ export const ForgotPasswordPage: React.FC = () => {
         {/* Step 2: Verify OTP & Reset Password */}
         {step === 2 && (
           <form onSubmit={handleResetPassword} className="space-y-4" noValidate>
-            {/* Dev Fallback Banner */}
-            {otpDev && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-600 dark:text-amber-400 text-xs font-medium flex items-center justify-between">
-                <span>⚠️ Mã OTP thử nghiệm (Dev Mode): <strong>{otpDev}</strong></span>
-                <button
-                  type="button"
-                  onClick={() => setOtp(otpDev)}
-                  className="px-2 py-1 bg-amber-500 text-white rounded-lg text-[11px] font-bold hover:bg-amber-600 transition-colors"
-                >
-                  Tự điền
-                </button>
-              </div>
-            )}
-
             {/* Email display and change */}
             <div className="p-3 bg-indigo-500/5 border border-indigo-500/20 rounded-xl flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-secondary truncate">

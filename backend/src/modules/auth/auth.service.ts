@@ -272,15 +272,11 @@ export class AuthService {
     const emailSent = await this.emailService.sendForgotPasswordOtpEmail(cleanEmail, otp);
 
     if (!emailSent) {
-      this.logger.warn(`Email sending failed. Fallback dev OTP for forgot password ${cleanEmail}: ${otp}`);
-      return {
-        message: `Mã OTP khôi phục mật khẩu đã được tạo. Mã test của bạn là: ${otp}`,
-        otpDev: otp,
-      };
+      this.logger.warn(`Email sending failed for forgot password to ${cleanEmail}`);
     }
 
     return {
-      message: `Mã OTP xác nhận đặt lại mật khẩu đã được gửi đến Gmail ${cleanEmail}. Vui lòng kiểm tra hộp thư.`,
+      message: `Mã OTP xác nhận đặt lại mật khẩu đã được gửi đến Gmail ${cleanEmail}. Vui lòng kiểm tra hộp thư (bao gồm thư mục Thư rác/Spam).`,
     };
   }
 
