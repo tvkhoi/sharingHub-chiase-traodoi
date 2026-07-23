@@ -81,10 +81,10 @@ export const Pagination: React.FC<PaginationProps> = ({
                 <button
                   key={p}
                   onClick={() => onPageChange(p)}
-                  className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all flex items-center justify-center ${
+                  className={`w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center ${
                     isCurrent
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                      : 'glass-panel text-secondary hover:text-primary hover:bg-slate-800/60'
+                      ? 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-md shadow-emerald-500/25 scale-105'
+                      : 'border border-color bg-card-hover text-secondary hover:text-brand-primary hover:border-emerald-500/50'
                   }`}
                 >
                   {p}
