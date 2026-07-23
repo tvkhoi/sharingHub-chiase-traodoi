@@ -24,7 +24,7 @@ export const App: React.FC = () => {
       <ThemeProvider>
         <AuthProvider>
           <Router>
-          <div className="min-h-screen flex flex-col transition-colors">
+          <div className="min-h-screen flex flex-col bg-[var(--bg-primary)]">
             <Navbar />
             <main className="flex-1">
               <Routes>
