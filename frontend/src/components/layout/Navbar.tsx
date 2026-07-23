@@ -37,15 +37,15 @@ export const Navbar: React.FC = () => {
     <header className="glass-nav sticky top-0 z-50 transition-colors duration-150">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 text-decoration-none">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-            <Layers className="w-6 h-6 text-white" />
+        <Link to="/" className="flex items-center gap-2.5 text-decoration-none shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
-          <div>
-            <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
+          <div className="hidden xs:block sm:block">
+            <span className="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent block whitespace-nowrap">
               {t('nav.brand')}
             </span>
-            <span className="text-xs block text-secondary opacity-90 font-medium -mt-1 whitespace-nowrap">{t('nav.subBrand')}</span>
+            <span className="text-[10px] sm:text-xs text-secondary opacity-90 font-medium -mt-1 hidden sm:block whitespace-nowrap">{t('nav.subBrand')}</span>
           </div>
         </Link>
 
@@ -119,24 +119,26 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Language Switcher Button */}
           <button
             onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
-            className="p-2 rounded-xl border border-color bg-card-hover text-xs font-bold text-primary flex items-center gap-1.5 hover:border-accent transition-all cursor-pointer"
+            className="h-9 px-2.5 rounded-xl border border-color bg-card-hover text-xs font-bold text-primary flex items-center gap-1.5 hover:border-emerald-500/50 transition-all cursor-pointer whitespace-nowrap shrink-0"
             title={language === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
           >
-            <Globe className="w-4 h-4 text-indigo-400" />
-            <span>{language === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}</span>
+            <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="font-extrabold text-xs whitespace-nowrap tracking-wider">
+              {language === 'vi' ? 'VI' : 'EN'}
+            </span>
           </button>
 
           {/* Dark / Light Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl border border-color bg-card-hover hover:border-accent text-secondary hover:text-primary transition-all cursor-pointer"
+            className="w-9 h-9 rounded-xl border border-color bg-card-hover hover:border-accent text-secondary hover:text-primary flex items-center justify-center transition-all cursor-pointer shrink-0"
             title={`Chuyển sang chế độ ${theme === 'dark' ? 'Sáng (Light)' : 'Tối (Dark)'}`}
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5 text-brand-amber animate-pulse" /> : <Moon className="w-5 h-5 text-indigo-600" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-brand-amber animate-pulse" /> : <Moon className="w-4 h-4 text-indigo-600" />}
           </button>
 
           {/* Real-time Notification Bell Dropdown */}
