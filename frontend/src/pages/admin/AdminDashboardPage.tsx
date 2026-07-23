@@ -690,9 +690,9 @@ export const AdminDashboardPage: React.FC = () => {
                 <thead>
                   <tr className="border-b border-color text-xs text-muted uppercase tracking-wider">
                     <th className="py-3.5 px-4 text-left">Bài đăng tài sản</th>
-                    <th className="py-3.5 px-4 text-center">Hình thức</th>
+                    <th className="py-3.5 px-4 text-left">Hình thức</th>
                     <th className="py-3.5 px-4 text-left">Chủ sở hữu</th>
-                    <th className="py-3.5 px-4 text-center">Trạng thái</th>
+                    <th className="py-3.5 px-4 text-left">Trạng thái</th>
                     <th className="py-3.5 px-4 text-center">Thao tác</th>
                   </tr>
                 </thead>
@@ -703,13 +703,18 @@ export const AdminDashboardPage: React.FC = () => {
                         <div className="font-bold text-primary max-w-xs truncate">{a.ten_tai_san}</div>
                         <span className="text-xs text-muted block truncate max-w-xs">{a.dia_diem}</span>
                       </td>
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-3.5 px-4 text-left">
                         <span className={`badge ${a.hinh_thuc_chia_se === 'CHO_TANG' ? 'badge-emerald' : 'badge-indigo'}`}>
                           {a.hinh_thuc_chia_se === 'CHO_TANG' ? 'Cho tặng' : 'Trao đổi'}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-left text-secondary">
                         {a.chu_so_huu?.ho_so?.ho_ten || a.chu_so_huu?.email || 'Thành viên'}
+                      </td>
+                      <td className="py-3.5 px-4 text-left">
+                        <span className={`badge ${a.trang_thai === 'KHA_DUNG' ? 'badge-emerald' : 'badge-rose'}`}>
+                          {a.trang_thai === 'KHA_DUNG' ? 'Khả dụng' : a.trang_thai === 'DA_KHOA_SO' ? 'Bị khóa' : 'Đã kết thúc'}
+                        </span>
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <div className="inline-flex items-center justify-center gap-2">
