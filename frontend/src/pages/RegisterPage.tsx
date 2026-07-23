@@ -331,7 +331,9 @@ export const RegisterPage: React.FC = () => {
                   placeholder="Nhập 6 số OTP..."
                   value={otpInput}
                   onChange={(e) => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="form-input pl-11 font-mono text-base font-bold tracking-widest uppercase"
+                  className={`form-input pl-11 font-mono text-base font-bold transition-all ${
+                    otpInput ? 'tracking-[0.3em] uppercase' : 'tracking-normal normal-case'
+                  }`}
                   required
                 />
               </div>

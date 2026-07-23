@@ -280,7 +280,9 @@ export const ForgotPasswordPage: React.FC = () => {
                     if (touched.otp) validateField('otp', val);
                   }}
                   onBlur={(e) => handleBlur('otp', e.target.value)}
-                  className={`form-input pl-11 tracking-widest text-lg font-mono transition-all ${
+                  className={`form-input pl-11 font-mono text-base font-bold transition-all ${
+                    otp ? 'tracking-[0.3em] uppercase' : 'tracking-normal normal-case'
+                  } ${
                     touched.otp && errors.otp
                       ? 'border-rose-500 focus:border-rose-500 bg-rose-500/5'
                       : touched.otp && !errors.otp && otp.trim().length === 6
