@@ -102,11 +102,12 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  const fetchUsers = async () => {
-    if (users.length === 0) setLoadingUsers(true);
+  const fetchUsers = async (targetPage?: number) => {
+    setLoadingUsers(true);
+    const p = targetPage ?? usersPage;
     try {
       const res = await adminService.getUsers({
-        page: usersPage,
+        page: p,
         limit: 10,
         search: usersSearch || undefined,
         vai_tro: userRoleFilter || undefined,
@@ -125,7 +126,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleSearchUsers = (e: React.FormEvent) => {
     e.preventDefault();
     setUsersPage(1);
-    fetchUsers();
+    fetchUsers(1);
   };
 
   const handleToggleUserStatus = (user: User) => {
@@ -222,11 +223,12 @@ export const AdminDashboardPage: React.FC = () => {
     });
   };
 
-  const fetchAdminAssets = async () => {
-    if (adminAssets.length === 0) setLoadingAdminAssets(true);
+  const fetchAdminAssets = async (targetPage?: number) => {
+    setLoadingAdminAssets(true);
+    const p = targetPage ?? assetsPage;
     try {
       const res = await adminService.getAssetsAdmin({
-        page: assetsPage,
+        page: p,
         limit: 10,
         search: assetsSearch || undefined,
         trang_thai: assetStatusFilter || undefined,
@@ -244,7 +246,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleSearchAssets = (e: React.FormEvent) => {
     e.preventDefault();
     setAssetsPage(1);
-    fetchAdminAssets();
+    fetchAdminAssets(1);
   };
 
   const handleToggleAssetStatus = (asset: Asset) => {

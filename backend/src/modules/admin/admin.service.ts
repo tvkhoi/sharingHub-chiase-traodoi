@@ -72,11 +72,12 @@ export class AdminService {
       where.trang_thai = query.trang_thai;
     }
 
-    if (query.search) {
+    if (query.search && query.search.trim() !== '') {
+      const keyword = query.search.trim();
       where.OR = [
-        { email: { contains: query.search, mode: 'insensitive' } },
-        { ho_so: { ho_ten: { contains: query.search, mode: 'insensitive' } } },
-        { ho_so: { so_dien_thoai: { contains: query.search, mode: 'insensitive' } } },
+        { email: { contains: keyword, mode: 'insensitive' } },
+        { ho_so: { isNot: null, ho_ten: { contains: keyword, mode: 'insensitive' } } },
+        { ho_so: { isNot: null, so_dien_thoai: { contains: keyword, mode: 'insensitive' } } },
       ];
     }
 
@@ -143,11 +144,12 @@ export class AdminService {
       where.trang_thai = query.trang_thai;
     }
 
-    if (query.search) {
+    if (query.search && query.search.trim() !== '') {
+      const keyword = query.search.trim();
       where.OR = [
-        { ten_tai_san: { contains: query.search, mode: 'insensitive' } },
-        { mo_ta_hien_trang: { contains: query.search, mode: 'insensitive' } },
-        { dia_diem: { contains: query.search, mode: 'insensitive' } },
+        { ten_tai_san: { contains: keyword, mode: 'insensitive' } },
+        { mo_ta_hien_trang: { contains: keyword, mode: 'insensitive' } },
+        { dia_diem: { contains: keyword, mode: 'insensitive' } },
       ];
     }
 
