@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { authService } from '../services/auth.service';
 import { reviewsService } from '../services/reviews.service';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import type { User, Review } from '../types';
 import { RatingStars } from '../components/reviews/RatingStars';
 import { EditProfileModal } from '../components/profile/EditProfileModal';
@@ -10,6 +11,7 @@ import { Pagination } from '../components/common/Pagination';
 import { Star, CheckCircle2, Phone, MapPin, Mail, MessageSquare, Edit } from 'lucide-react';
 
 export const UserProfilePage: React.FC = () => {
+  const { t } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const { user: currentUser, updateUser } = useAuth();
 
@@ -52,46 +54,63 @@ export const UserProfilePage: React.FC = () => {
     if (id) fetchProfileAndReviews(id);
   };
 
-  if (loading || !profileUser) {
+  if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="max-w-4xl mx-auto px-4 py-12 flex justify-center">
+        <div className="glass-card p-8 rounded-3xl w-full max-w-xl h-64 animate-pulse" />
       </div>
     );
   }
 
-  const reputation = profileUser.uy_tin;
+  if (!profileUser) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <h2 className="text-xl font-bold text-primary mb-2">Không tìm thấy thông tin thành viên</h2>
+        <Link to="/" className="btn btn-primary text-sm">Quay về Trang chủ</Link>
+      </div>
+    );
+  }
+
   const isOwner = currentUser?.nguoi_dung_id === profileUser.nguoi_dung_id;
+  const reputation = profileUser.uy_tin;
   const displayPhone = profileUser.so_dien_thoai || profileUser.ho_so?.so_dien_thoai;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in space-y-8">
-      {/* Header Profile Info Card */}
-      <div className="glass-panel p-8 rounded-3xl border border-color shadow-2xl relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl flex-shrink-0">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-fade-in">
+      {/* Profile Header Card */}
+      <div className="glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl overflow-hidden shrink-0 border-4 border-indigo-500/20">
             {profileUser.ho_so?.anh_dai_dien ? (
-              <img src={profileUser.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+              <img src={profileUser.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               profileUser.ho_so?.ho_ten?.charAt(0).toUpperCase() || 'U'
             )}
           </div>
 
           <div className="flex-1 text-center sm:text-left">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h1 className="text-2xl font-bold text-primary">{profileUser.ho_so?.ho_ten || 'Thành viên'}</h1>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-primary">
+                  {profileUser.ho_so?.ho_ten || 'Thành viên'}
+                </h1>
+                <span className="text-xs text-brand-primary font-semibold block mt-0.5">
+                  Thành viên ShareHub ({profileUser.vai_tro === 'QUAN_TRI_VIEN' ? 'Quản trị viên' : 'Thành viên'})
+                </span>
+              </div>
+
               {isOwner && (
                 <button
                   onClick={() => setIsEditModalOpen(true)}
-                  className="btn btn-outline text-xs rounded-xl flex items-center justify-center gap-1.5 px-3 py-1.5 hover:border-indigo-500 hover:text-indigo-400 transition-colors self-center sm:self-auto"
+                  className="btn btn-outline text-xs py-2 px-3.5 flex items-center gap-1.5 self-center sm:self-auto"
                 >
-                  <Edit className="w-3.5 h-3.5" />
-                  Chỉnh sửa hồ sơ
+                  <Edit className="w-3.5 h-3.5 text-brand-primary" />
+                  {t('profile.editProfile')}
                 </button>
               )}
             </div>
 
-            <p className="text-sm text-secondary mt-1 max-w-lg">
+            <p className="text-sm text-secondary leading-relaxed line-clamp-3">
               {profileUser.ho_so?.mo_ta_ca_nhan || 'Chưa cập nhật mô tả bản thân.'}
             </p>
 
@@ -116,29 +135,29 @@ export const UserProfilePage: React.FC = () => {
           <div className="glass-card p-6 rounded-2xl text-center">
             <Star className="w-8 h-8 text-brand-amber fill-amber-400 mx-auto mb-2" />
             <div className="text-2xl font-extrabold text-brand-amber">{reputation.diem_trung_binh} / 5.0</div>
-            <span className="text-xs text-muted font-semibold">Điểm uy tín trung bình</span>
+            <span className="text-xs text-muted font-semibold">{t('profile.reputationScore')}</span>
           </div>
 
           <div className="glass-card p-6 rounded-2xl text-center">
             <MessageSquare className="w-8 h-8 text-brand-primary mx-auto mb-2" />
             <div className="text-2xl font-extrabold text-brand-primary">{reputation.tong_so_danh_gia}</div>
-            <span className="text-xs text-muted font-semibold">Tổng lượt đánh giá cộng đồng</span>
+            <span className="text-xs text-muted font-semibold">{t('profile.totalReviews')}</span>
           </div>
 
           <div className="glass-card p-6 rounded-2xl text-center">
             <CheckCircle2 className="w-8 h-8 text-brand-emerald mx-auto mb-2" />
             <div className="text-2xl font-extrabold text-brand-emerald">{reputation.so_giao_dich_hoan_tat}</div>
-            <span className="text-xs text-muted font-semibold">Giao dịch đã hoàn tất</span>
+            <span className="text-xs text-muted font-semibold">{t('profile.completedTx')}</span>
           </div>
         </div>
       )}
 
       {/* Reviews History List */}
       <div className="glass-card p-6 rounded-3xl">
-        <h2 className="text-xl font-bold text-primary mb-4">Lịch Sử Đánh Giá Từ Thành Viên khác</h2>
+        <h2 className="text-xl font-bold text-primary mb-4">{t('profile.reviewsHistory')}</h2>
 
         {reviews.length === 0 ? (
-          <p className="text-sm text-secondary text-center py-8">Chưa có đánh giá nào được ghi nhận cho thành viên này.</p>
+          <p className="text-sm text-secondary text-center py-8">{t('profile.noReviews')}</p>
         ) : (
           <>
             <div className="space-y-4">

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
@@ -18,9 +19,10 @@ import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 
 export const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
+    <LanguageProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
           <div className="min-h-screen flex flex-col transition-colors">
             <Navbar />
             <main className="flex-1">
@@ -60,6 +62,7 @@ export const App: React.FC = () => {
         </Router>
       </AuthProvider>
     </ThemeProvider>
+  </LanguageProvider>
   );
 };
 

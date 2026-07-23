@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { NotificationDropdown } from '../notifications/NotificationDropdown';
 import {
   Sun,
@@ -17,11 +18,13 @@ import {
   Layers,
   Menu,
   X,
+  Globe,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -40,9 +43,9 @@ export const Navbar: React.FC = () => {
           </div>
           <div>
             <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-400 via-emerald-400 to-amber-300 bg-clip-text text-transparent">
-              ShareHub
+              {t('nav.brand')}
             </span>
-            <span className="text-xs block text-secondary opacity-90 font-medium -mt-1 whitespace-nowrap">Chia sẻ & Trao đổi</span>
+            <span className="text-xs block text-secondary opacity-90 font-medium -mt-1 whitespace-nowrap">{t('nav.subBrand')}</span>
           </div>
         </Link>
 
@@ -55,7 +58,7 @@ export const Navbar: React.FC = () => {
             }`}
           >
             <Package className="w-4 h-4" />
-            Bảng tin
+            {t('nav.feed')}
           </Link>
 
           {user && (
@@ -67,7 +70,7 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 <Layers className="w-4 h-4" />
-                Tài sản của tôi
+                {t('nav.myAssets')}
               </Link>
 
               <Link
@@ -77,7 +80,7 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 <MessageSquare className="w-4 h-4" />
-                Đề xuất
+                {t('nav.proposals')}
               </Link>
 
               <Link
@@ -87,7 +90,7 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 <Repeat className="w-4 h-4" />
-                Giao dịch
+                {t('nav.transactions')}
               </Link>
 
               {user.vai_tro === 'QUAN_TRI_VIEN' && (
@@ -98,7 +101,7 @@ export const Navbar: React.FC = () => {
                   }`}
                 >
                   <ShieldAlert className="w-4 h-4" />
-                  Admin
+                  {t('nav.admin')}
                 </Link>
               )}
             </>
@@ -106,7 +109,17 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          {/* Language Switcher Button */}
+          <button
+            onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
+            className="p-2 rounded-xl border border-color bg-card-hover text-xs font-bold text-primary flex items-center gap-1.5 hover:border-accent transition-all cursor-pointer"
+            title={language === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
+          >
+            <Globe className="w-4 h-4 text-indigo-400" />
+            <span>{language === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}</span>
+          </button>
+
           {/* Dark / Light Theme Toggle Button */}
           <button
             onClick={toggleTheme}
@@ -120,10 +133,10 @@ export const Navbar: React.FC = () => {
           <NotificationDropdown />
 
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Link to="/assets/create" className="btn btn-emerald text-sm py-2 px-3.5 hidden sm:inline-flex">
                 <PlusCircle className="w-4 h-4" />
-                Đăng bài mới
+                {t('nav.postAsset')}
               </Link>
 
               <Link to={`/profile/${user.nguoi_dung_id}`} className="flex items-center gap-2 hover:opacity-85 transition-opacity">
@@ -151,11 +164,11 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <Link to="/login" className="btn btn-outline text-sm py-2 px-3.5">
                 <LogIn className="w-4 h-4" />
-                Đăng nhập
+                {t('nav.login')}
               </Link>
               <Link to="/register" className="btn btn-primary text-sm py-2 px-3.5 hidden sm:inline-flex">
                 <UserIcon className="w-4 h-4" />
-                Đăng ký
+                {t('nav.register')}
               </Link>
             </div>
           )}

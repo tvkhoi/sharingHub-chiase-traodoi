@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import type { Asset } from '../../types';
 import { MapPin, Box, ArrowLeftRight, Gift, User, Star } from 'lucide-react';
 import { getImageUrl, DEFAULT_ASSET_IMAGE } from '../../utils/image';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface AssetCardProps {
   asset: Asset;
 }
 
 export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
+  const { t } = useLanguage();
   const imageUrl = getImageUrl(asset.hinh_anh?.[0]?.duong_dan_anh);
-
   const isGift = asset.hinh_thuc_chia_se === 'CHO_TANG';
 
   return (
@@ -30,19 +31,19 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
           {isGift ? (
             <span className="badge badge-emerald flex items-center gap-1 shadow-lg">
               <Gift className="w-3.5 h-3.5" />
-              Cho tặng
+              {t('common.gift')}
             </span>
           ) : (
             <span className="badge badge-indigo flex items-center gap-1 shadow-lg">
               <ArrowLeftRight className="w-3.5 h-3.5" />
-              Trao đổi ({asset.hinh_thuc_trao_doi === 'TIEN' ? 'Tiền' : 'Tài sản'})
+              {t('common.exchange')} ({asset.hinh_thuc_trao_doi === 'TIEN' ? 'Money' : 'Asset'})
             </span>
           )}
         </div>
 
         <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1">
           <Box className="w-3.5 h-3.5 text-brand-emerald" />
-          Còn {asset.so_luong_kha_dung}/{asset.so_luong_tong}
+          {t('common.available')} {asset.so_luong_kha_dung}/{asset.so_luong_tong}
         </div>
       </div>
 
@@ -50,7 +51,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
           <div className="text-xs font-semibold text-brand-primary mb-1 truncate">
-            {asset.danh_muc?.ten_danh_muc || 'Danh mục tài sản'}
+            {asset.danh_muc?.ten_danh_muc || 'Category'}
           </div>
 
           <h3 className="font-bold text-base sm:text-lg text-primary line-clamp-1 mb-1.5 group-hover:text-brand-primary transition-colors">
@@ -78,11 +79,11 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
                   className="font-medium text-secondary hover:text-brand-primary hover:underline truncate"
                   title="Xem hồ sơ chủ sở hữu"
                 >
-                  {asset.chu_so_huu?.ho_so?.ho_ten || 'Thành viên'}
+                  {asset.chu_so_huu?.ho_so?.ho_ten || 'Member'}
                 </Link>
               ) : (
                 <span className="font-medium text-secondary truncate">
-                  {asset.chu_so_huu?.ho_so?.ho_ten || 'Thành viên'}
+                  {asset.chu_so_huu?.ho_so?.ho_ten || 'Member'}
                 </span>
               )}
               {asset.chu_so_huu?.uy_tin && (
@@ -99,7 +100,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
             to={`/assets/${asset.bai_dang_id}`}
             className="btn btn-outline w-full text-sm py-2 justify-center"
           >
-            Xem chi tiết & Đề xuất
+            {t('common.viewDetails')}
           </Link>
         </div>
       </div>

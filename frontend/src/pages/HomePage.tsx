@@ -3,9 +3,11 @@ import { assetsService } from '../services/assets.service';
 import type { Asset, AssetCategory } from '../types';
 import { AssetCard } from '../components/assets/AssetCard';
 import { Pagination } from '../components/common/Pagination';
+import { useLanguage } from '../context/LanguageContext';
 import { Search, Filter, Layers, Gift, ArrowLeftRight, RefreshCw } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
+  const { t } = useLanguage();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,7 +53,7 @@ export const HomePage: React.FC = () => {
         setTotalPages(meta.totalPages || 1);
       }
     } catch (err) {
-      console.error('Lỗi lấy bài đăng tài sản:', err);
+      console.error('Lỗi lấy danh sách tài sản:', err);
     } finally {
       setLoading(false);
     }
@@ -68,15 +70,15 @@ export const HomePage: React.FC = () => {
       {/* Hero Banner Section */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 border border-indigo-500/30 p-8 sm:p-12 mb-10 shadow-2xl">
         <div className="relative z-10 max-w-2xl">
-          <span className="badge badge-emerald mb-4">🌱 Nền tảng chia sẻ cộng đồng</span>
+          <span className="badge badge-emerald mb-4">🌱 {t('hero.badge')}</span>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
-            Chia Sẻ Tài Sản, <br />
+            {t('hero.titleLine1')} <br />
             <span className="bg-gradient-to-r from-indigo-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent">
-              Trao Đổi Giá Trị
+              {t('hero.titleLine2')}
             </span>
           </h1>
           <p className="text-gray-300 text-base sm:text-lg mb-8">
-            Dễ dàng cho tặng vật dụng không dùng đến hoặc tìm kiếm đối tác trao đổi đồ dùng cần thiết một cách văn minh, tin cậy.
+            {t('hero.subtitle')}
           </p>
 
           {/* Search Form */}
@@ -85,14 +87,14 @@ export const HomePage: React.FC = () => {
               <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Tìm kiếm tài sản (vd: Laptop, Sách, Đồ gia dụng...)..."
+                placeholder={t('common.searchPlaceholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="form-input pl-12 py-3 bg-slate-950/80 border-indigo-400/40 text-white placeholder-gray-400 focus:border-indigo-400 shadow-inner"
               />
             </div>
             <button type="submit" className="btn btn-primary py-3 px-6 text-base font-semibold">
-              Tìm kiếm
+              Search
             </button>
           </form>
         </div>
@@ -113,7 +115,7 @@ export const HomePage: React.FC = () => {
             }`}
           >
             <Layers className="w-4 h-4 sm:w-4 sm:h-4" />
-            <span className="whitespace-nowrap">Tất cả</span>
+            <span className="whitespace-nowrap">{t('common.allCategories')}</span>
           </button>
           <button
             onClick={() => { setShareType('CHO_TANG'); setPage(1); }}
@@ -122,7 +124,7 @@ export const HomePage: React.FC = () => {
             }`}
           >
             <Gift className="w-4 h-4 sm:w-4 sm:h-4" />
-            <span className="whitespace-nowrap">Cho tặng</span>
+            <span className="whitespace-nowrap">{t('common.gift')}</span>
           </button>
           <button
             onClick={() => { setShareType('TRAO_DOI'); setPage(1); }}
@@ -131,7 +133,7 @@ export const HomePage: React.FC = () => {
             }`}
           >
             <ArrowLeftRight className="w-4 h-4 sm:w-4 sm:h-4" />
-            <span className="whitespace-nowrap">Trao đổi</span>
+            <span className="whitespace-nowrap">{t('common.exchange')}</span>
           </button>
         </div>
 
@@ -144,7 +146,7 @@ export const HomePage: React.FC = () => {
               onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
               className="form-select pl-10 py-2.5 text-sm"
             >
-              <option value="">Tất cả danh mục</option>
+              <option value="">{t('common.allCategories')}</option>
               {categories.map((cat) => (
                 <option key={cat.danh_muc_id} value={cat.danh_muc_id}>
                   {cat.ten_danh_muc}
