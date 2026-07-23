@@ -693,7 +693,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <th className="py-3.5 px-4 text-left">Hình thức</th>
                     <th className="py-3.5 px-4 text-left">Chủ sở hữu</th>
                     <th className="py-3.5 px-4 text-left">Trạng thái</th>
-                    <th className="py-3.5 px-4 text-right whitespace-nowrap">Thao tác</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-color">
@@ -720,11 +720,11 @@ export const AdminDashboardPage: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="py-3.5 px-4 text-left">
+                        <div className="flex items-center justify-start gap-2">
                           <Link
                             to={`/assets/${a.bai_dang_id}`}
-                            className="p-1.5 rounded-lg text-muted hover:text-brand-primary hover:bg-card-hover transition-colors"
+                            className="p-1.5 rounded-lg text-muted hover:text-brand-primary hover:bg-card-hover transition-colors shrink-0"
                             title="Xem chi tiết"
                           >
                             <Eye className="w-4 h-4" />
