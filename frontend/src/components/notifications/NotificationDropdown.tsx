@@ -143,12 +143,12 @@ export const NotificationDropdown: React.FC = () => {
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl text-secondary hover:text-primary hover:bg-card-hover transition-colors focus:outline-none"
+        className="relative p-2.5 rounded-xl border border-color bg-card-hover hover:border-accent text-secondary hover:text-primary transition-all cursor-pointer focus:outline-none"
         title="Thông báo hệ thống"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-rose-500 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center px-1 animate-pulse shadow-md">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] bg-gradient-to-r from-rose-500 to-pink-600 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center px-1 animate-pulse shadow-lg ring-2 ring-white dark:ring-slate-900">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
