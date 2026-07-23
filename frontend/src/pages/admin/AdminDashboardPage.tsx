@@ -689,11 +689,11 @@ export const AdminDashboardPage: React.FC = () => {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-color text-xs text-muted uppercase tracking-wider">
-                    <th className="py-3.5 px-4 text-left">Bài đăng tài sản</th>
-                    <th className="py-3.5 px-4 text-left">Hình thức</th>
-                    <th className="py-3.5 px-4 text-left">Chủ sở hữu</th>
-                    <th className="py-3.5 px-4 text-left">Trạng thái</th>
-                    <th className="py-3.5 px-4 text-center">Thao tác</th>
+                    <th className="py-3.5 px-4 text-left w-2/6">Bài đăng tài sản</th>
+                    <th className="py-3.5 px-4 text-left w-1/6">Hình thức</th>
+                    <th className="py-3.5 px-4 text-left w-2/6">Chủ sở hữu</th>
+                    <th className="py-3.5 px-4 text-left w-1/6">Trạng thái</th>
+                    <th className="py-3.5 px-4 text-center w-1/6">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-color">
@@ -704,17 +704,21 @@ export const AdminDashboardPage: React.FC = () => {
                         <span className="text-xs text-muted block truncate max-w-xs">{a.dia_diem}</span>
                       </td>
                       <td className="py-3.5 px-4 text-left">
-                        <span className={`badge ${a.hinh_thuc_chia_se === 'CHO_TANG' ? 'badge-emerald' : 'badge-indigo'}`}>
-                          {a.hinh_thuc_chia_se === 'CHO_TANG' ? 'Cho tặng' : 'Trao đổi'}
-                        </span>
+                        <div className="flex items-center justify-start">
+                          <span className={`badge ${a.hinh_thuc_chia_se === 'CHO_TANG' ? 'badge-emerald' : 'badge-indigo'}`}>
+                            {a.hinh_thuc_chia_se === 'CHO_TANG' ? 'Cho tặng' : 'Trao đổi'}
+                          </span>
+                        </div>
                       </td>
                       <td className="py-3.5 px-4 text-left text-secondary">
                         {a.chu_so_huu?.ho_so?.ho_ten || a.chu_so_huu?.email || 'Thành viên'}
                       </td>
                       <td className="py-3.5 px-4 text-left">
-                        <span className={`badge ${a.trang_thai === 'KHA_DUNG' ? 'badge-emerald' : 'badge-rose'}`}>
-                          {a.trang_thai === 'KHA_DUNG' ? 'Khả dụng' : a.trang_thai === 'DA_KHOA_SO' ? 'Bị khóa' : 'Đã kết thúc'}
-                        </span>
+                        <div className="flex items-center justify-start">
+                          <span className={`badge ${a.trang_thai === 'KHA_DUNG' ? 'badge-emerald' : 'badge-rose'}`}>
+                            {a.trang_thai === 'KHA_DUNG' ? 'Khả dụng' : a.trang_thai === 'DA_KHOA_SO' ? 'Bị khóa' : 'Đã kết thúc'}
+                          </span>
+                        </div>
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <div className="inline-flex items-center justify-center gap-2">
