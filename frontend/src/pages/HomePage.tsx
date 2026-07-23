@@ -106,7 +106,7 @@ export const HomePage: React.FC = () => {
               />
             </div>
             <button type="submit" className="btn btn-primary py-3 px-6 text-base font-semibold">
-              Search
+              {t('common.search')}
             </button>
           </form>
         </div>

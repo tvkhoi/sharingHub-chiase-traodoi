@@ -24,6 +24,7 @@ export const vi = {
     owner: 'Chủ sở hữu',
     partner: 'Đối tác',
     viewDetails: 'Xem chi tiết & Đề xuất',
+    search: 'Tìm kiếm',
     searchPlaceholder: 'Tìm kiếm tài sản, đồ dùng...',
     allCategories: 'Tất cả danh mục',
     allShareTypes: 'Tất cả hình thức',

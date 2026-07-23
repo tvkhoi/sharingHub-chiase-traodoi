@@ -26,6 +26,7 @@ export const en: Translations = {
     owner: 'Owner',
     partner: 'Partner',
     viewDetails: 'View Details & Propose',
+    search: 'Search',
     searchPlaceholder: 'Search assets, items...',
     allCategories: 'All Categories',
     allShareTypes: 'All Types',
