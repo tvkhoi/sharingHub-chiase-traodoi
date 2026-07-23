@@ -559,34 +559,40 @@ export const AdminDashboardPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.map((c) => (
-                <div key={c.danh_muc_id} className="glass-card p-4 rounded-2xl border border-color flex justify-between items-start">
+                <div key={c.danh_muc_id} className="glass-card p-4 rounded-2xl border border-color flex flex-col justify-between h-full space-y-3">
                   <div>
-                    <h4 className="font-bold text-primary text-base">{c.ten_danh_muc}</h4>
-                    <p className="text-xs text-secondary mt-1">{c.mo_ta || 'Chưa có mô tả'}</p>
-                    <span className="badge badge-emerald mt-2 inline-block text-[10px]">Đang hoạt động</span>
+                    <div className="flex justify-between items-start gap-2 mb-1">
+                      <h4 className="font-bold text-primary text-base truncate flex-1" title={c.ten_danh_muc}>
+                        {c.ten_danh_muc}
+                      </h4>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => {
+                            setEditingCategory(c);
+                            setCatName(c.ten_danh_muc);
+                            setCatDesc(c.mo_ta || '');
+                            setIsCategoryModalOpen(true);
+                          }}
+                          className="p-1 rounded-lg text-muted hover:text-brand-primary transition-colors"
+                          title="Chỉnh sửa"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCategory(c)}
+                          className="p-1 rounded-lg text-muted hover:text-brand-rose transition-colors"
+                          title="Xóa danh mục"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-secondary truncate max-w-full" title={c.mo_ta || 'Chưa có mô tả'}>
+                      {c.mo_ta || 'Chưa có mô tả'}
+                    </p>
                   </div>
-
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => {
-                        setEditingCategory(c);
-                        setCatName(c.ten_danh_muc);
-                        setCatDesc(c.mo_ta || '');
-                        setIsCategoryModalOpen(true);
-                      }}
-                      className="p-1.5 rounded-lg text-muted hover:text-brand-primary transition-colors"
-                      title="Chỉnh sửa"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      onClick={() => handleDeleteCategory(c)}
-                      className="p-1.5 rounded-lg text-muted hover:text-brand-rose transition-colors"
-                      title="Xóa danh mục"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="pt-2 border-t border-color/40 flex items-center justify-between">
+                    <span className="badge badge-emerald text-[10px]">Đang hoạt động</span>
                   </div>
                 </div>
               ))}
