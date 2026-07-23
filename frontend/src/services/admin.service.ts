@@ -55,7 +55,7 @@ export const adminService = {
 
   // 6. Category Management
   createCategory: async (data: { ten_danh_muc: string; mo_ta?: string; bieu_tuong?: string }): Promise<AssetCategory> => {
-    const res = await api.post('/api/v1/admin/categories', data);
+    const res = await api.post('/admin/categories', data);
     return res.data;
   },
 
@@ -63,11 +63,11 @@ export const adminService = {
     id: string,
     data: { ten_danh_muc?: string; mo_ta?: string; bieu_tuong?: string; trang_thai?: string },
   ): Promise<AssetCategory> => {
-    const res = await api.put(`/api/v1/admin/categories/${id}`, data);
+    const res = await api.put(`/admin/categories/${id}`, data);
     return res.data;
   },
 
   deleteCategory: async (id: string): Promise<void> => {
-    await api.delete(`/api/v1/admin/categories/${id}`);
+    await api.delete(`/admin/categories/${id}`);
   },
 };
