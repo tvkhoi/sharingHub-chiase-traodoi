@@ -2,10 +2,14 @@ import { Injectable, BadRequestException, NotFoundException, ForbiddenException 
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { QueryPaginationDto } from '../../common/dto/pagination.dto';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 
 @Injectable()
 export class ProposalsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private negotiationGateway: NegotiationGateway,
+  ) {}
 
   async create(userId: string, dto: CreateProposalDto) {
     // 1. Get asset details
@@ -45,7 +49,7 @@ export class ProposalsService {
       throw new BadRequestException('Bạn đã có một đề xuất đang chờ xử lý cho bài đăng này');
     }
 
-    return this.prisma.deXuatGiaoDich.create({
+    const result = await this.prisma.deXuatGiaoDich.create({
       data: {
         bai_dang_id: dto.bai_dang_id,
         nguoi_gui_id: userId,
@@ -67,6 +71,21 @@ export class ProposalsService {
         },
       },
     });
+
+    try {
+      const senderName = result.nguoi_gui?.ho_so?.ho_ten || 'Một thành viên';
+      this.negotiationGateway.sendNotificationToUser(asset.chu_so_huu_id, {
+        type: 'NEW_PROPOSAL',
+        title: 'Đề xuất nhận/trao đổi mới',
+        message: `${senderName} vừa gửi đề xuất nhận/trao đổi cho bài đăng "${asset.ten_tai_san}".`,
+        link: '/proposals',
+        payload: { proposalId: result.de_xuat_id, assetId: asset.bai_dang_id },
+      });
+    } catch (err) {
+      console.error('Lỗi gửi push notification đề xuất mới:', err);
+    }
+
+    return result;
   }
 
   async getReceivedProposals(userId: string, query?: QueryPaginationDto) {
@@ -246,6 +265,19 @@ export class ProposalsService {
         },
       });
 
+      try {
+        const ownerName = proposal.bai_dang?.chu_so_huu?.ho_so?.ho_ten || 'Chủ bài đăng';
+        this.negotiationGateway.sendNotificationToUser(proposal.nguoi_gui_id, {
+          type: 'PROPOSAL_ACCEPTED',
+          title: 'Đề xuất đã được chấp nhận! 🎉',
+          message: `${ownerName} đã chấp nhận đề xuất cho tài sản "${proposal.bai_dang.ten_tai_san}". Giao dịch đã được khởi tạo.`,
+          link: '/transactions',
+          payload: { proposalId: id, transactionId: giaoDich.giao_dich_id },
+        });
+      } catch (err) {
+        console.error('Lỗi gửi push notification chấp nhận đề xuất:', err);
+      }
+
       return {
         message: 'Đã chấp nhận đề xuất và khởi tạo giao dịch mới',
         giao_dich: giaoDich,
@@ -271,6 +303,19 @@ export class ProposalsService {
         ly_do_tu_choi: lyDoTuChoi || 'Chủ tài sản từ chối đề xuất',
       },
     });
+
+    try {
+      const ownerName = proposal.bai_dang?.chu_so_huu?.ho_so?.ho_ten || 'Chủ bài đăng';
+      this.negotiationGateway.sendNotificationToUser(proposal.nguoi_gui_id, {
+        type: 'PROPOSAL_REJECTED',
+        title: 'Đề xuất bị từ chối',
+        message: `${ownerName} đã từ chối đề xuất cho tài sản "${proposal.bai_dang.ten_tai_san}".`,
+        link: '/proposals',
+        payload: { proposalId: id },
+      });
+    } catch (err) {
+      console.error('Lỗi gửi push notification từ chối đề xuất:', err);
+    }
 
     return { message: 'Đã từ chối đề xuất giao dịch' };
   }

@@ -6,6 +6,6 @@ import { NegotiationGateway } from './negotiation.gateway';
 @Module({
   controllers: [NegotiationController],
   providers: [NegotiationService, NegotiationGateway],
-  exports: [NegotiationService],
+  exports: [NegotiationService, NegotiationGateway],
 })
 export class NegotiationModule {}

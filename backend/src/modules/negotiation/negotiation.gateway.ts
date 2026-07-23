@@ -63,4 +63,35 @@ export class NegotiationGateway implements OnGatewayConnection, OnGatewayDisconn
       return { success: false, error: error.message };
     }
   }
+
+  @SubscribeMessage('join_user')
+  handleJoinUserRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { userId: string },
+  ) {
+    if (data?.userId) {
+      const room = `user_${data.userId}`;
+      client.join(room);
+      this.logger.log(`Client ${client.id} joined personal notification channel: ${room}`);
+      return { status: 'joined', room };
+    }
+  }
+
+  sendNotificationToUser(userId: string, notification: {
+    type: 'NEW_PROPOSAL' | 'PROPOSAL_ACCEPTED' | 'PROPOSAL_REJECTED' | 'TRANSACTION_UPDATED' | 'ASSET_MODERATED';
+    title: string;
+    message: string;
+    link?: string;
+    payload?: any;
+  }) {
+    const room = `user_${userId}`;
+    const fullPayload = {
+      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      createdAt: new Date().toISOString(),
+      read: false,
+      ...notification,
+    };
+    this.logger.log(`Emitting push_notification to channel ${room}: ${notification.title}`);
+    this.server.to(room).emit('push_notification', fullPayload);
+  }
 }

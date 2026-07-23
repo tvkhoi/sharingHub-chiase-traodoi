@@ -3,10 +3,14 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ProcessReportDto } from './dto/process-report.dto';
 import { QueryPaginationDto } from '../../common/dto/pagination.dto';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 
 @Injectable()
 export class ReportsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private negotiationGateway: NegotiationGateway,
+  ) {}
 
   async createReport(userId: string, dto: CreateReportDto) {
     if (!dto.bai_dang_bi_bao_cao_id && !dto.nguoi_dung_bi_bao_cao_id) {
@@ -173,10 +177,22 @@ export class ReportsService {
 
       // 2. Apply action penalty if required
       if (dto.loai_bien_phap === 'AN_BAI_DANG' && report.bai_dang_bi_bao_cao_id) {
-        await tx.baiDangTaiSan.update({
+        const updatedAsset = await tx.baiDangTaiSan.update({
           where: { bai_dang_id: report.bai_dang_bi_bao_cao_id },
           data: { trang_thai: 'DA_KET_THUC' },
         });
+
+        try {
+          this.negotiationGateway.sendNotificationToUser(updatedAsset.chu_so_huu_id, {
+            type: 'ASSET_MODERATED',
+            title: 'Bài đăng bị tạm khóa',
+            message: `Bài đăng "${updatedAsset.ten_tai_san}" của bạn đã bị Quản trị viên khóa do vi phạm quy định cộng đồng.`,
+            link: '/my-assets',
+            payload: { assetId: updatedAsset.bai_dang_id },
+          });
+        } catch (err) {
+          console.error('Lỗi gửi push notification khóa bài đăng:', err);
+        }
       } else if (dto.loai_bien_phap === 'KHOA_TAI_KHOAN') {
         const targetUserId =
           report.nguoi_dung_bi_bao_cao_id ||

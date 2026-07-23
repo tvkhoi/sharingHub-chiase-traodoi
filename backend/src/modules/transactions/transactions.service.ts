@@ -1,10 +1,14 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { QueryPaginationDto } from '../../common/dto/pagination.dto';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 
 @Injectable()
 export class TransactionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private negotiationGateway: NegotiationGateway,
+  ) {}
 
   async findAllMyTransactions(userId: string, query?: QueryPaginationDto) {
     const page = Number(query?.page) || 1;
@@ -167,6 +171,30 @@ export class TransactionsService {
           },
         });
 
+        // Notify both sides that transaction is completed
+        try {
+          const partnerId = isOwner ? txData.nguoi_tiep_nhan_id : txData.nguoi_so_huu_id;
+          const assetTitle = txData.de_xuat?.bai_dang?.ten_tai_san || 'tài sản';
+
+          this.negotiationGateway.sendNotificationToUser(partnerId, {
+            type: 'TRANSACTION_UPDATED',
+            title: 'Giao dịch hoàn tất! 🎉',
+            message: `Giao dịch bàn giao "${assetTitle}" đã hoàn tất thành công. Đừng quên để lại đánh giá uy tín nhé!`,
+            link: '/transactions',
+            payload: { transactionId: id },
+          });
+
+          this.negotiationGateway.sendNotificationToUser(userId, {
+            type: 'TRANSACTION_UPDATED',
+            title: 'Giao dịch hoàn tất! 🎉',
+            message: `Giao dịch bàn giao "${assetTitle}" đã hoàn tất thành công. Đừng quên để lại đánh giá uy tín nhé!`,
+            link: '/transactions',
+            payload: { transactionId: id },
+          });
+        } catch (err) {
+          console.error('Lỗi gửi push notification hoàn tất giao dịch:', err);
+        }
+
         return {
           message: 'Cả hai bên đã xác nhận! Giao dịch hoàn tất thành công.',
           giao_dich: updatedGiaoDich,
@@ -181,6 +209,23 @@ export class TransactionsService {
             trang_thai: 'CHO_BEN_CON_LAI_XAC_NHAN',
           },
         });
+
+        // Send push notification to the partner waiting for confirmation
+        try {
+          const partnerId = isOwner ? txData.nguoi_tiep_nhan_id : txData.nguoi_so_huu_id;
+          const actorName = isOwner ? (txData.nguoi_so_huu?.ho_so?.ho_ten || 'Chủ tài sản') : (txData.nguoi_tiep_nhan?.ho_so?.ho_ten || 'Người nhận');
+          const assetTitle = txData.de_xuat?.bai_dang?.ten_tai_san || 'tài sản';
+
+          this.negotiationGateway.sendNotificationToUser(partnerId, {
+            type: 'TRANSACTION_UPDATED',
+            title: 'Xác nhận bàn giao mới',
+            message: `${actorName} vừa xác nhận bàn giao tài sản "${assetTitle}". Vui lòng kiểm tra và xác nhận phần của bạn.`,
+            link: '/transactions',
+            payload: { transactionId: id },
+          });
+        } catch (err) {
+          console.error('Lỗi gửi push notification chờ xác nhận giao dịch:', err);
+        }
 
         return {
           message: 'Đã lưu xác nhận của bạn. Đang chờ bên còn lại xác nhận.',
@@ -203,6 +248,7 @@ export class TransactionsService {
     }
 
     const cleanReason = lyDo.trim();
+    const isOwner = txData.nguoi_so_huu_id === userId;
 
     return this.prisma.$transaction(async (tx) => {
       // 1. Update Transaction status
@@ -243,6 +289,23 @@ export class TransactionsService {
             trang_thai: newTrangThai,
           },
         });
+      }
+
+      // Send push notification to partner
+      try {
+        const partnerId = isOwner ? txData.nguoi_tiep_nhan_id : txData.nguoi_so_huu_id;
+        const actorName = isOwner ? (txData.nguoi_so_huu?.ho_so?.ho_ten || 'Đối tác') : (txData.nguoi_tiep_nhan?.ho_so?.ho_ten || 'Đối tác');
+        const assetTitle = txData.de_xuat?.bai_dang?.ten_tai_san || 'tài sản';
+
+        this.negotiationGateway.sendNotificationToUser(partnerId, {
+          type: 'TRANSACTION_UPDATED',
+          title: 'Giao dịch đã bị hủy',
+          message: `${actorName} đã hủy giao dịch bài đăng "${assetTitle}". Lý do: "${cleanReason}".`,
+          link: '/transactions',
+          payload: { transactionId: id },
+        });
+      } catch (err) {
+        console.error('Lỗi gửi push notification hủy giao dịch:', err);
       }
 
       return {

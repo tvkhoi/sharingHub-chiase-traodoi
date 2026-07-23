@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { NotificationDropdown } from '../notifications/NotificationDropdown';
 import {
   Sun,
   Moon,
@@ -114,6 +115,9 @@ export const Navbar: React.FC = () => {
           >
             {theme === 'dark' ? <Sun className="w-5 h-5 text-brand-amber animate-pulse" /> : <Moon className="w-5 h-5 text-indigo-600" />}
           </button>
+
+          {/* Real-time Notification Bell Dropdown */}
+          <NotificationDropdown />
 
           {user ? (
             <div className="flex items-center gap-3">

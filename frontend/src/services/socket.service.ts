@@ -40,6 +40,17 @@ class SocketService {
     socket.on('new_message', callback);
   }
 
+  joinUserRoom(userId: string) {
+    const socket = this.connect();
+    socket.emit('join_user', { userId });
+  }
+
+  onPushNotification(callback: (notification: any) => void) {
+    const socket = this.connect();
+    socket.off('push_notification');
+    socket.on('push_notification', callback);
+  }
+
   leaveRoom() {
     if (this.socket) {
       this.socket.off('new_message');

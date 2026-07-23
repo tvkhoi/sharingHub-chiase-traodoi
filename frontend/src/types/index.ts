@@ -10,6 +10,18 @@ export type TransactionStatus = 'CHO_BAN_GIAO' | 'DANG_GIAO' | 'HOAN_TAT' | 'DA_
 export type ReportType = 'BAI_DANG' | 'NGUOI_DUNG';
 export type ReportStatus = 'CHO_KIEM_DUYET' | 'DA_XU_LY' | 'TU_CHOI';
 export type ActionType = 'KHONG_VI_PHAM' | 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN';
+export type NotificationType = 'NEW_PROPOSAL' | 'PROPOSAL_ACCEPTED' | 'PROPOSAL_REJECTED' | 'TRANSACTION_UPDATED' | 'ASSET_MODERATED';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link?: string;
+  read: boolean;
+  createdAt: string;
+  payload?: any;
+}
 
 export interface UserProfile {
   ho_ten: string;
