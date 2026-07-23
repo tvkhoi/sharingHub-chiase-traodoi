@@ -10,10 +10,12 @@ import toast from 'react-hot-toast';
 import { Repeat, CheckCircle2, Clock, Truck, Star, XCircle, AlertCircle } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
+let cachedTransactions: Transaction[] = [];
+
 export const TransactionsPage: React.FC = () => {
   const { user } = useAuth();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [transactions, setTransactions] = useState<Transaction[]>(cachedTransactions);
+  const [loading, setLoading] = useState<boolean>(cachedTransactions.length === 0);
 
   // Pagination state
   const [page, setPage] = useState<number>(1);
@@ -44,18 +46,17 @@ export const TransactionsPage: React.FC = () => {
   }, [page, limit]);
 
   const fetchTransactions = async (silent = false) => {
-    if (!silent) setLoading(true);
+    if (!silent && transactions.length === 0) setLoading(true);
     try {
       const data = await transactionsService.getTransactions({ page, limit });
-      if (Array.isArray(data)) {
-        setTransactions(data);
-      } else {
-        setTransactions(data.items || []);
-        const meta = data.meta || data.pagination;
-        if (meta) {
-          setTotalItems(meta.total);
-          setTotalPages(meta.totalPages);
-        }
+      const list = Array.isArray(data) ? data : data.items || [];
+      setTransactions(list);
+      cachedTransactions = list;
+
+      const meta = data.meta || data.pagination;
+      if (meta) {
+        setTotalItems(meta.total);
+        setTotalPages(meta.totalPages);
       }
     } catch (err) {
       console.error('Lỗi lấy danh sách giao dịch:', err);

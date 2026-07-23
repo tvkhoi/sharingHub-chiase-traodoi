@@ -24,37 +24,42 @@ import { Link } from 'react-router-dom';
 
 type AdminTab = 'stats' | 'users' | 'categories' | 'assets' | 'reports';
 
+let cachedAdminStats: SystemStats | null = null;
+let cachedAdminUsers: User[] = [];
+let cachedAdminCategories: AssetCategory[] = [];
+let cachedAdminAssetsList: Asset[] = [];
+
 export const AdminDashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
 
   // Stats state
-  const [stats, setStats] = useState<SystemStats | null>(null);
-  const [loadingStats, setLoadingStats] = useState<boolean>(true);
+  const [stats, setStats] = useState<SystemStats | null>(cachedAdminStats);
+  const [loadingStats, setLoadingStats] = useState<boolean>(!cachedAdminStats);
 
   // Users state
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>(cachedAdminUsers);
   const [usersPage, setUsersPage] = useState<number>(1);
   const [usersTotalPages, setUsersTotalPages] = useState<number>(1);
   const [usersSearch, setUsersSearch] = useState<string>('');
   const [userRoleFilter, setUserRoleFilter] = useState<string>('');
   const [userStatusFilter, setUserStatusFilter] = useState<string>('');
-  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(cachedAdminUsers.length === 0);
 
   // Categories state
-  const [categories, setCategories] = useState<AssetCategory[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
+  const [categories, setCategories] = useState<AssetCategory[]>(cachedAdminCategories);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(cachedAdminCategories.length === 0);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState<boolean>(false);
   const [editingCategory, setEditingCategory] = useState<AssetCategory | null>(null);
   const [catName, setCatName] = useState<string>('');
   const [catDesc, setCatDesc] = useState<string>('');
 
   // Assets state
-  const [adminAssets, setAdminAssets] = useState<Asset[]>([]);
+  const [adminAssets, setAdminAssets] = useState<Asset[]>(cachedAdminAssetsList);
   const [assetsPage, setAssetsPage] = useState<number>(1);
   const [assetsTotalPages, setAssetsTotalPages] = useState<number>(1);
   const [assetsSearch, setAssetsSearch] = useState<string>('');
   const [assetStatusFilter, setAssetStatusFilter] = useState<string>('');
-  const [loadingAdminAssets, setLoadingAdminAssets] = useState<boolean>(false);
+  const [loadingAdminAssets, setLoadingAdminAssets] = useState<boolean>(cachedAdminAssetsList.length === 0);
 
   useEffect(() => {
     fetchStats();
@@ -67,10 +72,11 @@ export const AdminDashboardPage: React.FC = () => {
   }, [activeTab, usersPage, userRoleFilter, userStatusFilter, assetsPage, assetStatusFilter]);
 
   const fetchStats = async () => {
-    setLoadingStats(true);
+    if (!stats) setLoadingStats(true);
     try {
       const data = await adminService.getSystemStats();
       setStats(data);
+      cachedAdminStats = data;
     } catch (err) {
       console.error('Lỗi lấy thống kê hệ thống:', err);
     } finally {
@@ -79,7 +85,7 @@ export const AdminDashboardPage: React.FC = () => {
   };
 
   const fetchUsers = async () => {
-    setLoadingUsers(true);
+    if (users.length === 0) setLoadingUsers(true);
     try {
       const res = await adminService.getUsers({
         page: usersPage,
@@ -89,6 +95,7 @@ export const AdminDashboardPage: React.FC = () => {
         trang_thai: userStatusFilter || undefined,
       });
       setUsers(res.items || []);
+      cachedAdminUsers = res.items || [];
       setUsersTotalPages(res.meta?.totalPages || 1);
     } catch (err) {
       console.error('Lỗi lấy danh sách người dùng:', err);
@@ -119,10 +126,11 @@ export const AdminDashboardPage: React.FC = () => {
   };
 
   const fetchCategories = async () => {
-    setLoadingCategories(true);
+    if (categories.length === 0) setLoadingCategories(true);
     try {
       const data = await assetsService.getCategories();
       setCategories(data);
+      cachedAdminCategories = data;
     } catch (err) {
       console.error('Lỗi lấy danh mục:', err);
     } finally {
@@ -170,7 +178,7 @@ export const AdminDashboardPage: React.FC = () => {
   };
 
   const fetchAdminAssets = async () => {
-    setLoadingAdminAssets(true);
+    if (adminAssets.length === 0) setLoadingAdminAssets(true);
     try {
       const res = await adminService.getAssetsAdmin({
         page: assetsPage,
@@ -179,6 +187,7 @@ export const AdminDashboardPage: React.FC = () => {
         trang_thai: assetStatusFilter || undefined,
       });
       setAdminAssets(res.items || []);
+      cachedAdminAssetsList = res.items || [];
       setAssetsTotalPages(res.meta?.totalPages || 1);
     } catch (err) {
       console.error('Lỗi lấy bài đăng tài sản:', err);

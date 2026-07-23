@@ -11,11 +11,14 @@ import { MessageSquare, Send, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { createPortal } from 'react-dom';
 import { getImageUrl, DEFAULT_ASSET_IMAGE } from '../utils/image';
 
+let cachedReceivedProposals: Proposal[] = [];
+let cachedSentProposals: Proposal[] = [];
+
 export const ProposalsPage: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [proposals, setProposals] = useState<Proposal[]>(cachedReceivedProposals);
+  const [loading, setLoading] = useState<boolean>(cachedReceivedProposals.length === 0);
 
   // Pagination state
   const [page, setPage] = useState<number>(1);
@@ -45,6 +48,9 @@ export const ProposalsPage: React.FC = () => {
     if (tab !== activeTab) {
       setActiveTab(tab);
       setPage(1);
+      const cache = tab === 'received' ? cachedReceivedProposals : cachedSentProposals;
+      setProposals(cache);
+      if (cache.length === 0) setLoading(true);
     }
   };
 
@@ -78,7 +84,7 @@ export const ProposalsPage: React.FC = () => {
   }, [selectedProposal]);
 
   const fetchProposals = async (silent = false) => {
-    if (!silent) setLoading(true);
+    if (!silent && proposals.length === 0) setLoading(true);
     try {
       let data: any;
       if (activeTab === 'received') {
@@ -87,15 +93,15 @@ export const ProposalsPage: React.FC = () => {
         data = await proposalsService.getSentProposals({ page, limit });
       }
 
-      if (Array.isArray(data)) {
-        setProposals(data);
-      } else {
-        setProposals(data.items || []);
-        const meta = data.meta || data.pagination;
-        if (meta) {
-          setTotalItems(meta.total);
-          setTotalPages(meta.totalPages);
-        }
+      const list = Array.isArray(data) ? data : data.items || [];
+      setProposals(list);
+      if (activeTab === 'received') cachedReceivedProposals = list;
+      else cachedSentProposals = list;
+
+      const meta = data.meta || data.pagination;
+      if (meta) {
+        setTotalItems(meta.total);
+        setTotalPages(meta.totalPages);
       }
     } catch (err) {
       console.error('Lỗi lấy danh sách đề xuất:', err);

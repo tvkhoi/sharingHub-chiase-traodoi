@@ -6,18 +6,24 @@ import { Pagination } from '../components/common/Pagination';
 import { useLanguage } from '../context/LanguageContext';
 import { Search, Filter, Layers, Gift, ArrowLeftRight, RefreshCw } from 'lucide-react';
 
+// Module-level SWR Cache to eliminate skeleton flicker on route switches
+let cachedHomePageAssets: Asset[] = [];
+let cachedHomePageCategories: AssetCategory[] = [];
+let cachedHomePageTotalItems = 0;
+let cachedHomePageTotalPages = 1;
+
 export const HomePage: React.FC = () => {
   const { t } = useLanguage();
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [categories, setCategories] = useState<AssetCategory[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [assets, setAssets] = useState<Asset[]>(cachedHomePageAssets);
+  const [categories, setCategories] = useState<AssetCategory[]>(cachedHomePageCategories);
+  const [loading, setLoading] = useState<boolean>(cachedHomePageAssets.length === 0);
   const [search, setSearch] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [shareType, setShareType] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(8);
-  const [totalItems, setTotalItems] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(cachedHomePageTotalItems);
+  const [totalPages, setTotalPages] = useState<number>(cachedHomePageTotalPages);
 
   useEffect(() => {
     fetchCategories();
@@ -31,13 +37,14 @@ export const HomePage: React.FC = () => {
     try {
       const data = await assetsService.getCategories();
       setCategories(data);
+      cachedHomePageCategories = data;
     } catch (err) {
       console.error('Lỗi lấy danh mục:', err);
     }
   };
 
   const fetchAssets = async () => {
-    setLoading(true);
+    if (assets.length === 0) setLoading(true);
     try {
       const data = await assetsService.getAssets({
         danh_muc_id: selectedCategory || undefined,
@@ -47,10 +54,15 @@ export const HomePage: React.FC = () => {
         limit,
       });
       setAssets(data.items || []);
+      cachedHomePageAssets = data.items || [];
       const meta = data.meta || data.pagination;
       if (meta) {
-        setTotalItems(meta.total ?? (meta as any).totalItems ?? 0);
-        setTotalPages(meta.totalPages || 1);
+        const total = meta.total ?? (meta as any).totalItems ?? 0;
+        const totalP = meta.totalPages || 1;
+        setTotalItems(total);
+        setTotalPages(totalP);
+        cachedHomePageTotalItems = total;
+        cachedHomePageTotalPages = totalP;
       }
     } catch (err) {
       console.error('Lỗi lấy danh sách tài sản:', err);
