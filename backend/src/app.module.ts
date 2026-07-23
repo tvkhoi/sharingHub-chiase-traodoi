@@ -11,6 +11,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
@@ -28,6 +29,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     ReviewsModule,
     ReportsModule,
     UploadModule,
+    AdminModule,
   ],
   providers: [
     {

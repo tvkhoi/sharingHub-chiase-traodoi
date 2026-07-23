@@ -114,4 +114,31 @@ export class AssetsController {
   ) {
     return this.assetsService.remove(id, userId);
   }
+
+  @ApiOperation({ summary: 'Admin thêm danh mục mới' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('admin/categories')
+  async createCategory(@Body() body: { ten_danh_muc: string; mo_ta?: string; bieu_tuong?: string }) {
+    return this.assetsService.createCategory(body);
+  }
+
+  @ApiOperation({ summary: 'Admin chỉnh sửa danh mục' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('admin/categories/:id')
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() body: { ten_danh_muc?: string; mo_ta?: string; bieu_tuong?: string; trang_thai?: string },
+  ) {
+    return this.assetsService.updateCategory(id, body);
+  }
+
+  @ApiOperation({ summary: 'Admin xóa danh mục' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete('admin/categories/:id')
+  async deleteCategory(@Param('id') id: string) {
+    return this.assetsService.deleteCategory(id);
+  }
 }

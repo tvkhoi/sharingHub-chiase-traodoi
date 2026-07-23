@@ -95,9 +95,9 @@ export const Navbar: React.FC = () => {
 
               {user.vai_tro === 'QUAN_TRI_VIEN' && (
                 <Link
-                  to="/admin/reports"
+                  to="/admin"
                   className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-all ${
-                    isActive('/admin/reports') ? 'bg-rose-500/20 text-brand-rose border border-rose-500/30' : 'text-brand-rose hover:bg-rose-500/10'
+                    location.pathname.startsWith('/admin') ? 'bg-rose-500/20 text-brand-rose border border-rose-500/30' : 'text-brand-rose hover:bg-rose-500/10'
                   }`}
                 >
                   <ShieldAlert className="w-4 h-4" />

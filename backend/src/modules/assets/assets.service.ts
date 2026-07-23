@@ -250,8 +250,38 @@ export class AssetsService {
 
   async getCategories() {
     return this.prisma.danhMucTaiSan.findMany({
-      where: { trang_thai: 'HOAT_DONG' },
       orderBy: { ten_danh_muc: 'asc' },
+    });
+  }
+
+  async createCategory(data: { ten_danh_muc: string; mo_ta?: string }) {
+    return this.prisma.danhMucTaiSan.create({
+      data: {
+        ten_danh_muc: data.ten_danh_muc,
+        mo_ta: data.mo_ta || null,
+        trang_thai: 'HOAT_DONG',
+      },
+    });
+  }
+
+  async updateCategory(id: string, data: { ten_danh_muc?: string; mo_ta?: string; trang_thai?: string }) {
+    return this.prisma.danhMucTaiSan.update({
+      where: { danh_muc_id: id },
+      data,
+    });
+  }
+
+  async deleteCategory(id: string) {
+    const assetsCount = await this.prisma.baiDangTaiSan.count({
+      where: { danh_muc_id: id },
+    });
+
+    if (assetsCount > 0) {
+      throw new BadRequestException('Không thể xóa danh mục đang chứa bài đăng tài sản');
+    }
+
+    return this.prisma.danhMucTaiSan.delete({
+      where: { danh_muc_id: id },
     });
   }
 }
