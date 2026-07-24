@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ConfirmModal } from '../../components/common/ConfirmModal';
+import { useLanguage } from '../../context/LanguageContext';
 
 type AdminTab = 'stats' | 'users' | 'categories' | 'assets' | 'reports';
 
@@ -32,6 +33,7 @@ let cachedAdminCategories: AssetCategory[] = [];
 let cachedAdminAssetsList: Asset[] = [];
 
 export const AdminDashboardPage: React.FC = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>('stats');
 
   // Custom Confirm Modal state
@@ -463,7 +465,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <Search className="absolute left-3.5 top-3 w-4 h-4 text-muted" />
                 <input
                   type="text"
-                  placeholder="Tìm theo tên, email..."
+                  placeholder={t('common.searchUserPlaceholder')}
                   value={usersSearch}
                   onChange={(e) => setUsersSearch(e.target.value)}
                   className="form-input pl-9 py-2 text-xs"
@@ -475,9 +477,9 @@ export const AdminDashboardPage: React.FC = () => {
                 onChange={(e) => { setUserRoleFilter(e.target.value); setUsersPage(1); }}
                 className="form-select py-2 text-xs"
               >
-                <option value="">Tất cả vai trò</option>
-                <option value="THANH_VIEN">Thành viên</option>
-                <option value="QUAN_TRI_VIEN">Quản trị viên</option>
+                <option value="">{t('common.allRoles')}</option>
+                <option value="THANH_VIEN">{t('common.member')}</option>
+                <option value="QUAN_TRI_VIEN">{t('common.administrator')}</option>
               </select>
 
               <select
@@ -485,12 +487,12 @@ export const AdminDashboardPage: React.FC = () => {
                 onChange={(e) => { setUserStatusFilter(e.target.value); setUsersPage(1); }}
                 className="form-select py-2 text-xs"
               >
-                <option value="">Tất cả trạng thái</option>
-                <option value="HOAT_DONG">Hoạt động</option>
-                <option value="BI_KHOA">Bị khóa</option>
+                <option value="">{t('common.allStatuses')}</option>
+                <option value="HOAT_DONG">{t('common.active')}</option>
+                <option value="BI_KHOA">{t('common.locked')}</option>
               </select>
 
-              <button type="submit" className="btn btn-primary text-xs py-2 px-3">Tìm</button>
+              <button type="submit" className="btn btn-primary text-xs py-2 px-3">{t('common.searchBtn')}</button>
             </form>
           </div>
 
@@ -726,7 +728,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <Search className="absolute left-3.5 top-3 w-4 h-4 text-muted" />
                 <input
                   type="text"
-                  placeholder="Tìm tên tài sản, mô tả..."
+                  placeholder={t('common.searchPlaceholder')}
                   value={assetsSearch}
                   onChange={(e) => setAssetsSearch(e.target.value)}
                   className="form-input pl-9 py-2 text-xs"
@@ -738,13 +740,12 @@ export const AdminDashboardPage: React.FC = () => {
                 onChange={(e) => { setAssetStatusFilter(e.target.value); setAssetsPage(1); }}
                 className="form-select py-2 text-xs"
               >
-                <option value="">Tất cả trạng thái</option>
-                <option value="KHA_DUNG">Khả dụng</option>
-                <option value="DA_KHOA_SO">Đã bị khóa</option>
-                <option value="DA_KET_THUC">Đã kết thúc</option>
+                <option value="">{t('common.allStatuses')}</option>
+                <option value="KHA_DUNG">{t('common.available')}</option>
+                <option value="DA_KHOA_SO">{t('common.locked')}</option>
               </select>
 
-              <button type="submit" className="btn btn-primary text-xs py-2 px-3">Tìm</button>
+              <button type="submit" className="btn btn-primary text-xs py-2 px-3">{t('common.searchBtn')}</button>
             </form>
           </div>
           {loadingAdminAssets ? (

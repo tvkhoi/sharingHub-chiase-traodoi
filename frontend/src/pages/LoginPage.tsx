@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { authService } from '../services/auth.service';
 import toast from 'react-hot-toast';
 import { LogIn, Mail, Lock, Layers, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
+  const { t } = useLanguage();
   const [taiKhoan, setTaiKhoan] = useState<string>('');
   const [matKhau, setMatKhau] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -94,23 +96,23 @@ export const LoginPage: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/30 mx-auto mb-4">
             <Layers className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-primary">Đăng Nhập Tài Khoản</h2>
-          <p className="text-sm text-secondary mt-1">Truy cập hệ thống chia sẻ & trao đổi tài sản ShareHub</p>
+          <h2 className="text-2xl font-bold text-primary">{t('auth.loginTitle')}</h2>
+          <p className="text-sm text-secondary mt-1">{t('auth.loginSubtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="form-group">
             <div className="flex items-center justify-between">
-              <label className="form-label">Email hoặc Số điện thoại *</label>
+              <label className="form-label">{t('auth.accountLabel')} *</label>
               {touched.taiKhoan && !errors.taiKhoan && taiKhoan.trim() && (
-                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Hợp lệ</span>
+                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /></span>
               )}
             </div>
             <div className="relative">
               <Mail className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
               <input
                 type="text"
-                placeholder="Nhập email hoặc SĐT..."
+                placeholder={t('auth.accountLabel')}
                 value={taiKhoan}
                 onChange={(e) => handleChange('taiKhoan', e.target.value)}
                 onBlur={(e) => handleBlur('taiKhoan', e.target.value)}
@@ -133,16 +135,16 @@ export const LoginPage: React.FC = () => {
 
           <div className="form-group">
             <div className="flex items-center justify-between">
-              <label className="form-label">Mật khẩu *</label>
+              <label className="form-label">{t('auth.passwordLabel')} *</label>
               {touched.matKhau && !errors.matKhau && matKhau && (
-                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Hợp lệ</span>
+                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /></span>
               )}
             </div>
             <div className="relative">
               <Lock className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Nhập mật khẩu..."
+                placeholder={t('auth.passwordLabel')}
                 value={matKhau}
                 onChange={(e) => handleChange('matKhau', e.target.value)}
                 onBlur={(e) => handleBlur('matKhau', e.target.value)}
@@ -159,7 +161,6 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3.5 top-3 text-muted hover:text-primary transition-colors"
-                title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -174,26 +175,25 @@ export const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary w-full py-3 text-base font-semibold mt-2"
+            className="btn btn-primary w-full py-3 text-base font-bold shadow-lg shadow-indigo-500/20"
           >
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Đang xử lý...
               </span>
             ) : (
               <span className="flex items-center gap-2">
                 <LogIn className="w-5 h-5" />
-                Đăng Nhập
+                {t('nav.login')}
               </span>
             )}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-secondary">
-          Chưa có tài khoản?{' '}
+          {t('auth.noAccount')}{' '}
           <Link to="/register" className="font-semibold text-brand-primary hover:underline">
-            Đăng ký ngay
+            {t('auth.registerNow')}
           </Link>
         </div>
       </div>
