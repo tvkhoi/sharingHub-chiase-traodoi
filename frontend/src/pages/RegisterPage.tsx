@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth.service';
 import toast from 'react-hot-toast';
-import { UserPlus, Mail, Lock, User as UserIcon, Phone, MapPin, Layers, Eye, EyeOff, KeyRound, AlertCircle, CheckCircle2, Send } from 'lucide-react';
+import { UserPlus, Mail, Lock, User as UserIcon, Phone, MapPin, Layers, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -15,12 +15,7 @@ export const RegisterPage: React.FC = () => {
   const [soDienThoai, setSoDienThoai] = useState<string>('');
   const [diaChi, setDiaChi] = useState<string>('');
 
-  // Inline OTP State
-  const [otpInput, setOtpInput] = useState<string>('');
-  const [otpSent, setOtpSent] = useState<boolean>(false);
-  const [sendingOtp, setSendingOtp] = useState<boolean>(false);
   const [registering, setRegistering] = useState<boolean>(false);
-  const [resendTimer, setResendTimer] = useState<number>(0);
 
   // Realtime Inline Validation State
   type FieldName = 'hoTen' | 'email' | 'soDienThoai' | 'matKhau' | 'xacNhanMatKhau';
@@ -41,19 +36,6 @@ export const RegisterPage: React.FC = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  const startResendTimer = () => {
-    setResendTimer(60);
-    const interval = setInterval(() => {
-      setResendTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
 
   const validateField = (field: FieldName, value: string, currentValues?: { matKhau?: string }) => {
     let err = '';
@@ -127,29 +109,6 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleSendOtpClick = async () => {
-    setTouched((prev) => ({ ...prev, email: true }));
-    const errEmail = validateField('email', email);
-
-    if (errEmail) {
-      toast.error('Vui lòng nhập địa chỉ Email hợp lệ trước khi lấy mã OTP');
-      return;
-    }
-
-    setSendingOtp(true);
-    startResendTimer();
-    try {
-      const res = await authService.sendOtp(email.trim());
-      toast.success(res.message || 'Mã xác thực OTP đã được gửi!');
-      setOtpSent(true);
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Không thể gửi mã OTP. Vui lòng thử lại sau!';
-      toast.error(msg);
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({
@@ -171,11 +130,6 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (!otpInput || otpInput.trim().length !== 6) {
-      toast.error('Vui lòng nhập đầy đủ mã OTP 6 số từ Email!');
-      return;
-    }
-
     setRegistering(true);
     try {
       const res = await authService.register({
@@ -185,14 +139,13 @@ export const RegisterPage: React.FC = () => {
         ho_ten: hoTen.trim(),
         so_dien_thoai: soDienThoai.trim(),
         dia_chi: diaChi.trim() || undefined,
-        otp: otpInput.trim(),
       });
 
       login(res.access_token, res.user);
-      toast.success('Xác thực Email & Đăng ký tài khoản thành công!');
+      toast.success('Đăng ký tài khoản thành công!');
       navigate('/');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Mã OTP không hợp lệ hoặc đã hết hạn!';
+      const msg = err.response?.data?.message || 'Đăng ký tài khoản thất bại. Vui lòng thử lại!';
       toast.error(msg);
     } finally {
       setRegistering(false);
@@ -312,53 +265,7 @@ export const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Trường nhập Mã OTP với nút Gửi Mã bên cạnh */}
-          <div className="form-group">
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="form-label mb-0">Mã xác thực OTP Email *</label>
-              {otpSent && (
-                <span className="text-xs text-brand-emerald font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã gửi mã về Email
-                </span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <KeyRound className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
-                <input
-                  type="text"
-                  maxLength={6}
-                  placeholder="Nhập 6 số OTP..."
-                  value={otpInput}
-                  onChange={(e) => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))}
-                  className={`form-input pl-11 font-mono text-base font-bold transition-all ${
-                    otpInput ? 'tracking-[0.3em] uppercase' : 'tracking-normal normal-case'
-                  }`}
-                  required
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleSendOtpClick}
-                disabled={sendingOtp || resendTimer > 0}
-                className="btn btn-outline whitespace-nowrap px-4 text-xs font-bold border-indigo-500/40 text-indigo-400 hover:bg-indigo-500/10 shrink-0"
-              >
-                {sendingOtp ? (
-                  <span className="flex items-center gap-1">
-                    <span className="w-3.5 h-3.5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                    Đang gửi...
-                  </span>
-                ) : resendTimer > 0 ? (
-                  `Gửi lại (${resendTimer}s)`
-                ) : (
-                  <span className="flex items-center gap-1">
-                    <Send className="w-3.5 h-3.5" />
-                    Gửi Mã OTP
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
+
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Mật khẩu */}
@@ -411,7 +318,7 @@ export const RegisterPage: React.FC = () => {
                 )}
               </div>
               <div className="relative">
-                <KeyRound className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
+                <Lock className="absolute left-3.5 top-3 w-5 h-5 text-muted" />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Nhập lại mật khẩu..."

@@ -3,146 +3,52 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { ResetPasswordDto } from './dto/forgot-password.dto';
-import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger('AuthService');
-  private otpStore = new Map<string, { otp: string; expiresAt: number }>();
-  private forgotPasswordOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private emailService: EmailService,
   ) {}
 
-  async sendOtp(email: string) {
-    if (!email || !email.trim()) {
-      throw new BadRequestException('Vui lòng cung cấp địa chỉ email');
-    }
-    const cleanEmail = email.trim().toLowerCase();
-
-    // Validate email format
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(cleanEmail)) {
-      throw new BadRequestException('Email không đúng định dạng hợp lệ (Ví dụ: name@example.com)');
-    }
-
-    // Check existing email
-    const existingUser = await this.prisma.nguoiDung.findUnique({
-      where: { email: cleanEmail },
-    });
-    if (existingUser) {
-      throw new BadRequestException('Email này đã được sử dụng. Vui lòng sử dụng thông tin khác.');
-    }
-
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
-
-    this.otpStore.set(cleanEmail, { otp, expiresAt });
-
-    // Thử gửi email xác thực qua EmailService
-    const emailSent = await this.emailService.sendOtpEmail(cleanEmail, otp);
-
-    if (!emailSent) {
-      // Trường hợp máy chủ không thể gửi mail (ví dụ bị chặn cổng SMTP trên Cloud),
-      // hiển thị mã thử nghiệm trực tiếp để tránh gián đoạn luồng trải nghiệm người dùng
-      this.logger.warn(`Email sending failed. Fallback dev OTP generated for ${cleanEmail}: ${otp}`);
-      return {
-        message: `Mã xác thực OTP đã tạo thành công. Mã test của bạn là: ${otp}`,
-        otpDev: otp,
-      };
-    }
-
-    return {
-      message: `Mã OTP xác thực 6 số đã được gửi đến ${cleanEmail}. Vui lòng kiểm tra hộp thư (bao gồm thư mục Thư rác/Spam).`,
-    };
-  }
-
-  async verifyOtp(email: string, otp: string) {
-    if (!email || !otp) {
-      throw new BadRequestException('Vui lòng cung cấp đầy đủ Email và mã OTP');
-    }
-    const cleanEmail = email.trim().toLowerCase();
-    const record = this.otpStore.get(cleanEmail);
-
-    if (!record) {
-      throw new BadRequestException('Chưa gửi mã OTP hoặc mã OTP không hợp lệ');
-    }
-
-    if (Date.now() > record.expiresAt) {
-      this.otpStore.delete(cleanEmail);
-      throw new BadRequestException('Mã OTP đã hết hạn. Vui lòng lấy lại mã mới');
-    }
-
-    if (record.otp !== otp.trim()) {
-      throw new BadRequestException('Mã OTP nhập vào không chính xác');
-    }
-
-    return { message: 'Xác thực Email thành công!', verified: true };
-  }
-
   async register(dto: RegisterDto) {
-    // 0. Mandatory OTP Code Verification for Email
-    if (!dto.otp || !dto.otp.trim()) {
-      throw new BadRequestException('Mã OTP xác thực Email là bắt buộc. Vui lòng lấy mã OTP từ Email!');
-    }
-
-    const cleanEmail = dto.email.trim().toLowerCase();
-    const record = this.otpStore.get(cleanEmail);
-
-    if (!record) {
-      throw new BadRequestException('Email chưa nhận mã OTP hoặc mã không tồn tại. Vui lòng ấn Gửi mã OTP!');
-    }
-
-    if (Date.now() > record.expiresAt) {
-      this.otpStore.delete(cleanEmail);
-      throw new BadRequestException('Mã OTP xác thực Email đã hết hạn. Vui lòng lấy mã OTP mới!');
-    }
-
-    if (record.otp !== dto.otp.trim()) {
-      throw new BadRequestException('Mã OTP xác thực Email không chính xác. Vui lòng kiểm tra lại!');
-    }
-
-    // OTP Code is verified! Remove OTP from store so it cannot be reused
-    this.otpStore.delete(cleanEmail);
-
-    // 1. Validate password confirmation if provided (5e.1)
+    // 1. Validate password confirmation if provided
     if (dto.xac_nhan_mat_khau && dto.mat_khau !== dto.xac_nhan_mat_khau) {
       throw new BadRequestException('Mật khẩu và xác nhận mật khẩu không trùng khớp. Vui lòng nhập lại.');
     }
 
-    // 1. Check duplicate email (5e)
+    // 2. Check duplicate email
+    const cleanEmail = dto.email.trim().toLowerCase();
     const existingEmail = await this.prisma.nguoiDung.findUnique({
-      where: { email: dto.email },
+      where: { email: cleanEmail },
     });
     if (existingEmail) {
       throw new BadRequestException('Email này đã được sử dụng. Vui lòng sử dụng thông tin khác.');
     }
 
-    // 2. Check duplicate phone if provided (5e)
+    // 3. Check duplicate phone if provided
     if (dto.so_dien_thoai) {
+      const cleanPhone = dto.so_dien_thoai.trim();
       const existingPhone = await this.prisma.nguoiDung.findUnique({
-        where: { so_dien_thoai: dto.so_dien_thoai },
+        where: { so_dien_thoai: cleanPhone },
       });
       if (existingPhone) {
         throw new BadRequestException('Số điện thoại này đã được sử dụng. Vui lòng sử dụng thông tin khác.');
       }
     }
 
-    // 3. Hash password
+    // 4. Hash password
     const matKhauHash = await bcrypt.hash(dto.mat_khau, 10);
 
-    // 4. Transaction: Create user + HoSoThanhVien + HoSoUyTin (8.1)
+    // 5. Transaction: Create user + HoSoThanhVien + HoSoUyTin
     const result = await this.prisma.$transaction(async (tx) => {
       const user = await tx.nguoiDung.create({
         data: {
-          email: dto.email,
-          so_dien_thoai: dto.so_dien_thoai || null,
+          email: cleanEmail,
+          so_dien_thoai: dto.so_dien_thoai?.trim() || null,
           mat_khau_hash: matKhauHash,
           vai_tro: 'THANH_VIEN',
           trang_thai: 'HOAT_DONG',
@@ -152,8 +58,8 @@ export class AuthService {
       await tx.hoSoThanhVien.create({
         data: {
           nguoi_dung_id: user.nguoi_dung_id,
-          ho_ten: dto.ho_ten,
-          dia_chi: dto.dia_chi || null,
+          ho_ten: dto.ho_ten.trim(),
+          dia_chi: dto.dia_chi?.trim() || null,
         },
       });
 
@@ -183,11 +89,12 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
+    const cleanAccount = dto.tai_khoan.trim().toLowerCase();
     const user = await this.prisma.nguoiDung.findFirst({
       where: {
         OR: [
-          { email: dto.tai_khoan },
-          { so_dien_thoai: dto.tai_khoan },
+          { email: cleanAccount },
+          { so_dien_thoai: dto.tai_khoan.trim() },
         ],
       },
       include: {
@@ -244,91 +151,6 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  async forgotPasswordSendOtp(email: string) {
-    if (!email || !email.trim()) {
-      throw new BadRequestException('Vui lòng cung cấp địa chỉ email');
-    }
-    const cleanEmail = email.trim().toLowerCase();
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(cleanEmail)) {
-      throw new BadRequestException('Email không đúng định dạng hợp lệ (Ví dụ: name@example.com)');
-    }
-
-    const existingUser = await this.prisma.nguoiDung.findUnique({
-      where: { email: cleanEmail },
-    });
-    if (!existingUser) {
-      throw new BadRequestException('Email này chưa được đăng ký tài khoản trên hệ thống.');
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
-
-    this.forgotPasswordOtpStore.set(cleanEmail, { otp, expiresAt });
-
-    const emailSent = await this.emailService.sendForgotPasswordOtpEmail(cleanEmail, otp);
-
-    if (!emailSent) {
-      this.logger.warn(`Email sending failed for forgot password to ${cleanEmail}`);
-    }
-
-    return {
-      message: `Mã OTP xác nhận đặt lại mật khẩu đã được gửi đến Gmail ${cleanEmail}. Vui lòng kiểm tra hộp thư (bao gồm thư mục Thư rác/Spam).`,
-    };
-  }
-
-  async forgotPasswordReset(dto: ResetPasswordDto) {
-    if (!dto.email || !dto.otp || !dto.mat_khau_moi) {
-      throw new BadRequestException('Vui lòng cung cấp đầy đủ Email, mã OTP và Mật khẩu mới');
-    }
-
-    if (dto.mat_khau_moi.length < 6) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 6 ký tự');
-    }
-
-    if (dto.xac_nhan_mat_khau_moi && dto.mat_khau_moi !== dto.xac_nhan_mat_khau_moi) {
-      throw new BadRequestException('Mật khẩu mới và mật khẩu xác nhận không trùng khớp');
-    }
-
-    const cleanEmail = dto.email.trim().toLowerCase();
-    const record = this.forgotPasswordOtpStore.get(cleanEmail);
-
-    if (!record) {
-      throw new BadRequestException('Chưa yêu cầu gửi mã OTP hoặc mã đã hết hạn. Vui lòng bấm Gửi lại mã!');
-    }
-
-    if (Date.now() > record.expiresAt) {
-      this.forgotPasswordOtpStore.delete(cleanEmail);
-      throw new BadRequestException('Mã OTP khôi phục mật khẩu đã hết hạn. Vui lòng lấy mã OTP mới!');
-    }
-
-    if (record.otp !== dto.otp.trim()) {
-      throw new BadRequestException('Mã OTP nhập vào không chính xác. Vui lòng kiểm tra lại!');
-    }
-
-    const user = await this.prisma.nguoiDung.findUnique({
-      where: { email: cleanEmail },
-    });
-
-    if (!user) {
-      throw new BadRequestException('Tài khoản người dùng không tồn tại trong hệ thống.');
-    }
-
-    const matKhauHash = await bcrypt.hash(dto.mat_khau_moi, 10);
-
-    await this.prisma.nguoiDung.update({
-      where: { nguoi_dung_id: user.nguoi_dung_id },
-      data: { mat_khau_hash: matKhauHash },
-    });
-
-    this.forgotPasswordOtpStore.delete(cleanEmail);
-
-    return {
-      message: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay với mật khẩu mới.',
-    };
   }
 
   private generateToken(userId: string, email: string, role: string) {

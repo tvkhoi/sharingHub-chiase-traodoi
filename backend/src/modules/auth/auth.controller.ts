@@ -3,7 +3,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { ForgotPasswordSendOtpDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
@@ -11,43 +10,6 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
-  @ApiOperation({
-    summary: 'Gửi mã OTP xác thực Email thực tế qua Nodemailer SMTP',
-    description: 'Tạo mã OTP 6 số ngẫu nhiên có hiệu lực 5 phút và gửi email thực tế đến hộp thư người dùng.',
-  })
-  @Post('send-otp')
-  async sendOtp(@Body('email') email: string) {
-    return this.authService.sendOtp(email);
-  }
-
-  @ApiOperation({
-    summary: 'Gửi mã OTP khôi phục mật khẩu qua Email',
-    description: 'Tạo mã OTP 6 số ngẫu nhiên cho tài khoản đã tồn tại và gửi qua Gmail.',
-  })
-  @Post('forgot-password/send-otp')
-  async forgotPasswordSendOtp(@Body() dto: ForgotPasswordSendOtpDto) {
-    return this.authService.forgotPasswordSendOtp(dto.email);
-  }
-
-  @ApiOperation({
-    summary: 'Xác thực OTP và đặt lại mật khẩu mới',
-    description: 'Xác minh mã OTP 6 số và cập nhật mật khẩu mới cho tài khoản.',
-  })
-  @HttpCode(HttpStatus.OK)
-  @Post('forgot-password/reset')
-  async forgotPasswordReset(@Body() dto: ResetPasswordDto) {
-    return this.authService.forgotPasswordReset(dto);
-  }
-
-  @ApiOperation({
-    summary: 'Kiểm tra mã OTP xác thực Email',
-    description: 'Đối soát mã OTP 6 số người dùng nhập với mã đã gửi.',
-  })
-  @Post('verify-otp')
-  async verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
-    return this.authService.verifyOtp(email, otp);
-  }
 
   @ApiOperation({
     summary: 'Đăng ký tài khoản người dùng mới (UC5.1)',

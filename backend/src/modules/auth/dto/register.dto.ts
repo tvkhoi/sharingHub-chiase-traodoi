@@ -52,11 +52,11 @@ export class RegisterDto {
   @IsOptional()
   dia_chi?: string;
 
-  @ApiProperty({
-    description: 'Mã OTP 6 số xác thực Email chính chủ',
+  @ApiPropertyOptional({
+    description: 'Mã OTP xác thực (tùy chọn)',
     example: '123456',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Mã OTP xác thực Email là bắt buộc' })
-  otp: string;
+  @IsOptional()
+  otp?: string;
 }
