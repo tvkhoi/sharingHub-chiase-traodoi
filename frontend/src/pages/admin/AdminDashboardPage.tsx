@@ -139,14 +139,15 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  const fetchUsers = async (targetPage?: number) => {
+  const fetchUsers = async (targetPage?: number, customSearch?: string) => {
     setLoadingUsers(true);
     const p = targetPage ?? usersPage;
+    const s = customSearch !== undefined ? customSearch : usersSearch;
     try {
       const res = await adminService.getUsers({
         page: p,
         limit: 10,
-        search: usersSearch || undefined,
+        search: s || undefined,
         vai_tro: userRoleFilter || undefined,
         trang_thai: userStatusFilter || undefined,
       });
@@ -163,7 +164,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleSearchUsers = (e: React.FormEvent) => {
     e.preventDefault();
     setUsersPage(1);
-    fetchUsers(1);
+    fetchUsers(1, usersSearch);
   };
 
   const handleToggleUserStatus = (user: User) => {

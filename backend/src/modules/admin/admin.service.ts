@@ -85,7 +85,7 @@ export class AdminService {
       where.OR = [
         { email: { contains: keyword, mode: 'insensitive' } },
         { so_dien_thoai: { contains: keyword, mode: 'insensitive' } },
-        { ho_so: { isNot: null, ho_ten: { contains: keyword, mode: 'insensitive' } } },
+        { ho_so: { ho_ten: { contains: keyword, mode: 'insensitive' } } },
       ];
     }
 
