@@ -151,4 +151,18 @@ export const en: Translations = {
     hasAccount: 'Already have an account?',
     loginNow: 'Log in now',
   },
+  footer: {
+    desc: "Vietnam's leading community platform for trading and gifting pre-owned items in a civilized, safe, and sustainable way.",
+    explore: 'Explore',
+    support: 'Support & Legal',
+    electronics: 'Electronics',
+    books: 'Books & Textbooks',
+    furniture: 'Home Furniture',
+    safeTrading: 'Safe Trading',
+    userGuide: 'User Guide',
+    privacyPolicy: 'Privacy Policy',
+    termsOfService: 'Terms of Service',
+    reportIssue: 'Report Issue',
+    copyright: '© 2026 ShareHub - Community Asset Sharing & Exchange Platform. All rights reserved.',
+  },
 };

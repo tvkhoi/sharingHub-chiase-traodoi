@@ -149,6 +149,20 @@ export const vi = {
     hasAccount: 'Đã có tài khoản?',
     loginNow: 'Đăng nhập ngay',
   },
+  footer: {
+    desc: 'Nền tảng cộng đồng hàng đầu Việt Nam cho việc trao đổi và cho tặng đồ cũ một cách văn minh, an toàn và bền vững.',
+    explore: 'Khám phá',
+    support: 'Hỗ trợ & Pháp lý',
+    electronics: 'Đồ điện tử',
+    books: 'Sách & Giáo trình',
+    furniture: 'Nội thất gia đình',
+    safeTrading: 'Giao dịch an toàn',
+    userGuide: 'Hướng dẫn sử dụng',
+    privacyPolicy: 'Chính sách bảo mật',
+    termsOfService: 'Điều khoản dịch vụ',
+    reportIssue: 'Liên hệ báo lỗi',
+    copyright: '© 2026 ShareHub - Nền tảng Chia sẻ & Trao đổi Tài sản Cộng đồng. All rights reserved.',
+  },
 };
 
 export type Translations = typeof vi;

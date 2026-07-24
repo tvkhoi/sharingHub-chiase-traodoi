@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
+import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -58,9 +59,7 @@ export const App: React.FC = () => {
                 <Route path="/admin/reports" element={<AdminReportsPage />} />
               </Routes>
             </main>
-            <footer className="py-6 border-t border-color text-center text-xs text-muted">
-              © 2026 ShareHub - Nền Tảng Chia Sẻ & Trao Đổi Tài Sản Cộng Đồng. All rights reserved.
-            </footer>
+            <Footer />
           </div>
 
           <Toaster
