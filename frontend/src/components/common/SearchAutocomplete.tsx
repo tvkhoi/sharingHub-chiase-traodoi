@@ -27,7 +27,7 @@ interface SearchAutocompleteProps {
   className?: string;
 }
 
-const TRENDING_TAGS = ['Bàn học', 'Sách giáo khoa', 'Máy chiếu', 'Laptop cũ', 'Quần áo', 'Bán phím'];
+const DEFAULT_TRENDING_TAGS = ['Bàn học', 'Sách giáo khoa', 'Máy chiếu', 'Laptop cũ', 'Quần áo', 'Bàn phím'];
 const RECENT_KEY = 'sharehub_recent_searches';
 
 export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
@@ -248,14 +248,17 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
                 </div>
               )}
 
-              {/* Trending Tags */}
+              {/* Trending Tags & Active Categories */}
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
                   <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                  Từ khóa tìm kiếm phổ biến
+                  Từ khóa & Danh mục phổ biến
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {TRENDING_TAGS.map((tag, i) => (
+                  {(categories.length > 0
+                    ? Array.from(new Set([...categories.map((c) => c.ten_danh_muc), ...DEFAULT_TRENDING_TAGS])).slice(0, 7)
+                    : DEFAULT_TRENDING_TAGS
+                  ).map((tag, i) => (
                     <button
                       key={i}
                       onClick={() => {
