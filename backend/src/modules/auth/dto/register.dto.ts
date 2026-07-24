@@ -51,12 +51,4 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   dia_chi?: string;
-
-  @ApiPropertyOptional({
-    description: 'Mã OTP xác thực (tùy chọn)',
-    example: '123456',
-  })
-  @IsString()
-  @IsOptional()
-  otp?: string;
 }
