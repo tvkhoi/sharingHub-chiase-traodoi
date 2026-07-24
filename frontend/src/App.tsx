@@ -17,6 +17,10 @@ import { TransactionsPage } from './pages/TransactionsPage';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { UserGuidePage } from './pages/legal/UserGuidePage';
+import { PrivacyPolicyPage } from './pages/legal/PrivacyPolicyPage';
+import { TermsOfServicePage } from './pages/legal/TermsOfServicePage';
+import { ReportIssuePage } from './pages/legal/ReportIssuePage';
 
 import { socketService } from './services/socket.service';
 
@@ -57,6 +61,10 @@ export const App: React.FC = () => {
                 <Route path="/profile/:id" element={<UserProfilePage />} />
                 <Route path="/admin" element={<AdminDashboardPage />} />
                 <Route path="/admin/reports" element={<AdminReportsPage />} />
+                <Route path="/guide" element={<UserGuidePage />} />
+                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms" element={<TermsOfServicePage />} />
+                <Route path="/report-issue" element={<ReportIssuePage />} />
               </Routes>
             </main>
             <Footer />
