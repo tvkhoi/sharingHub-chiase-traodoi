@@ -322,12 +322,12 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Admin Header Banner */}
       <div className="glass-card p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 border border-rose-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
         <div>
-          <span className="badge badge-rose mb-2">👑 Quản Trị Hệ Thống (Admin Control Panel)</span>
+          <span className="badge badge-rose mb-2">{t('admin.badge')}</span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Trung Tâm Quản Lý & Điều Hành ShareHub
+            {t('admin.bannerTitle')}
           </h1>
           <p className="text-sm text-gray-300 mt-1">
-            Giám sát số liệu, quản lý thành viên, danh mục tài sản và xử lý khiếu nại cộng đồng
+            {t('admin.bannerSubtitle')}
           </p>
         </div>
       </div>
@@ -341,7 +341,7 @@ export const AdminDashboardPage: React.FC = () => {
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          Thống kê tổng quan
+          {t('admin.overviewTab')}
         </button>
 
         <button
@@ -351,7 +351,7 @@ export const AdminDashboardPage: React.FC = () => {
           }`}
         >
           <Users className="w-4 h-4" />
-          Quản lý người dùng
+          {t('admin.usersTab')}
         </button>
 
         <button
@@ -361,7 +361,7 @@ export const AdminDashboardPage: React.FC = () => {
           }`}
         >
           <Layers className="w-4 h-4" />
-          Quản lý danh mục
+          {t('admin.categoriesTab')}
         </button>
 
         <button
@@ -371,7 +371,7 @@ export const AdminDashboardPage: React.FC = () => {
           }`}
         >
           <Package className="w-4 h-4" />
-          Kiểm duyệt bài đăng
+          {t('admin.assetsTab')}
         </button>
 
         <button
@@ -381,7 +381,7 @@ export const AdminDashboardPage: React.FC = () => {
           }`}
         >
           <ShieldAlert className="w-4 h-4" />
-          Báo cáo vi phạm
+          {t('admin.reportsTab')}
         </button>
       </div>
 
@@ -398,52 +398,52 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="glass-card p-6 rounded-2xl text-left border-l-4 border-indigo-500">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted font-bold uppercase">Người dùng</span>
+                  <span className="text-xs text-muted font-bold uppercase">{t('admin.totalUsers')}</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[11px] font-bold text-brand-emerald bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                      {stats.users.online ?? 0} online
+                      {stats.users.online ?? 0} {t('common.online')}
                     </span>
                     <Users className="w-6 h-6 text-brand-primary" />
                   </div>
                 </div>
                 <div className="text-3xl font-extrabold text-primary">{stats.users.total}</div>
                 <div className="text-xs text-muted mt-1 flex items-center justify-between gap-2">
-                  <span>Hoạt động: <strong className="text-brand-emerald">{stats.users.active}</strong></span>
-                  <span>Bị khóa: <strong className="text-brand-rose">{stats.users.locked}</strong></span>
+                  <span>{t('common.active')}: <strong className="text-brand-emerald">{stats.users.active}</strong></span>
+                  <span>{t('common.locked')}: <strong className="text-brand-rose">{stats.users.locked}</strong></span>
                 </div>
               </div>
 
               <div className="glass-card p-6 rounded-2xl text-left border-l-4 border-emerald-500">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted font-bold uppercase">Bài đăng tài sản</span>
+                  <span className="text-xs text-muted font-bold uppercase">{t('admin.totalAssets')}</span>
                   <Package className="w-6 h-6 text-brand-emerald" />
                 </div>
                 <div className="text-3xl font-extrabold text-primary">{stats.assets.total}</div>
                 <div className="text-xs text-muted mt-1">
-                  Khả dụng: <strong className="text-brand-emerald">{stats.assets.available}</strong> bài đăng
+                  {t('admin.available')}: <strong className="text-brand-emerald">{stats.assets.available}</strong>
                 </div>
               </div>
 
               <div className="glass-card p-6 rounded-2xl text-left border-l-4 border-amber-500">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted font-bold uppercase">Giao dịch</span>
+                  <span className="text-xs text-muted font-bold uppercase">{t('admin.totalTransactions')}</span>
                   <Repeat className="w-6 h-6 text-brand-amber" />
                 </div>
                 <div className="text-3xl font-extrabold text-primary">{stats.transactions.total}</div>
                 <div className="text-xs text-muted mt-1">
-                  Đã hoàn tất: <strong className="text-brand-amber">{stats.transactions.completed}</strong> giao dịch
+                  {t('admin.completed')}: <strong className="text-brand-amber">{stats.transactions.completed}</strong>
                 </div>
               </div>
 
               <div className="glass-card p-6 rounded-2xl text-left border-l-4 border-rose-500">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted font-bold uppercase">Báo cáo vi phạm</span>
+                  <span className="text-xs text-muted font-bold uppercase">{t('admin.totalReports')}</span>
                   <ShieldAlert className="w-6 h-6 text-brand-rose" />
                 </div>
                 <div className="text-3xl font-extrabold text-primary">{stats.reports.total}</div>
                 <div className="text-xs text-muted mt-1">
-                  Chờ kiểm duyệt: <strong className="text-brand-rose">{stats.reports.pending}</strong> báo cáo
+                  {t('admin.pending')}: <strong className="text-brand-rose">{stats.reports.pending}</strong>
                 </div>
               </div>
             </div>
@@ -457,7 +457,7 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <h2 className="text-xl font-bold text-primary flex items-center gap-2">
               <Users className="w-5 h-5 text-brand-primary" />
-              Danh Sách Quản Lý Tài Khoản Thành Viên
+              {t('admin.usersTitle')}
             </h2>
 
             <form onSubmit={handleSearchUsers} className="flex flex-wrap items-center gap-3 w-full md:w-auto">
@@ -498,20 +498,20 @@ export const AdminDashboardPage: React.FC = () => {
 
           {/* Users Table */}
           {loadingUsers ? (
-            <div className="py-12 text-center text-muted">Đang tải danh sách người dùng...</div>
+            <div className="py-12 text-center text-muted">...</div>
           ) : users.length === 0 ? (
-            <div className="py-12 text-center text-muted">Không tìm thấy tài khoản nào phù hợp</div>
+            <div className="py-12 text-center text-muted">{t('common.noAssetsFound')}</div>
           ) : (
             <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
               <table className="w-full text-left border-collapse text-sm min-w-[720px]">
                 <thead>
                   <tr className="border-b border-color text-xs text-muted uppercase tracking-wider whitespace-nowrap">
-                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Thành viên</th>
-                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Email</th>
-                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Vai trò</th>
-                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Điểm uy tín</th>
-                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Trạng thái</th>
-                    <th className="py-3.5 px-4 text-left whitespace-nowrap">Thao tác</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">{t('admin.name')}</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">{t('admin.email')}</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">{t('admin.role')}</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">{t('admin.reputationScore')}</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">{t('common.status')}</th>
+                    <th className="py-3.5 px-4 text-left whitespace-nowrap">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-color">
