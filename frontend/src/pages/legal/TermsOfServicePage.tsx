@@ -1,7 +1,10 @@
 import React from 'react';
 import { FileText, CheckCircle2, AlertOctagon, Scale } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const TermsOfServicePage: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 animate-fade-in space-y-8">
       {/* Banner */}
@@ -10,13 +13,13 @@ export const TermsOfServicePage: React.FC = () => {
           <div className="p-2.5 rounded-2xl bg-indigo-500/20 text-indigo-400">
             <FileText className="w-6 h-6" />
           </div>
-          <span className="badge badge-indigo">Quy Định Nền Tảng</span>
+          <span className="badge badge-indigo">{t('terms.badge')}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-          Điều Khoản Dịch Vụ & Quy Định Cộng Đồng
+          {t('terms.title')}
         </h1>
         <p className="text-sm text-gray-300 mt-2 leading-relaxed">
-          Các quy tắc ứng xử văn minh và trách nhiệm pháp lý khi tham gia trao đổi tài sản trên ShareHub.
+          {t('terms.subtitle')}
         </p>
       </div>
 
@@ -24,33 +27,29 @@ export const TermsOfServicePage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            1. Quy Định Về Bài Đăng Tài Sản
+            {t('terms.sec1Title')}
           </h2>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Thành viên chỉ được đăng bài với các tài sản thuộc quyền sở hữu hợp pháp của mình.</li>
-            <li>Hình ảnh tải lên phải là hình ảnh chụp thực tế của đồ dùng, không dùng hình ảnh giả mạo.</li>
-            <li>Nghiêm cấm đăng các mặt hàng cấm theo quy định pháp luật Việt Nam (vũ khí, chất cấm, hàng giả hàng nhái...).</li>
+            <li>{t('terms.sec1Desc1')}</li>
+            <li>{t('terms.sec1Desc2')}</li>
+            <li>{t('terms.sec1Desc3')}</li>
           </ul>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <Scale className="w-4 h-4 text-indigo-400" />
-            2. Trách Nhiệm Trong Giao Dịch
+            {t('terms.sec2Title')}
           </h2>
-          <p>
-            ShareHub là nền tảng kết nối trực tiếp giữa chủ tài sản và người nhận/trao đổi. Hai bên có trách nhiệm tự kiểm tra tình trạng tài sản khi bàn giao và tuân thủ thỏa thuận thương lượng.
-          </p>
+          <p>{t('terms.sec2Desc')}</p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <AlertOctagon className="w-4 h-4 text-rose-400" />
-            3. Xử Lý Vi Phạm
+            {t('terms.sec3Title')}
           </h2>
-          <p>
-            Các hành vi gian lận, đăng bài sai sự thật, hoặc không bàn giao tài sản sau khi đã đồng ý thỏa thuận sẽ bị Ban quản trị tạm khóa hoặc khóa vĩnh viễn tài khoản.
-          </p>
+          <p>{t('terms.sec3Desc')}</p>
         </section>
       </div>
     </div>

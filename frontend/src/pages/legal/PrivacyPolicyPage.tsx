@@ -1,7 +1,10 @@
 import React from 'react';
 import { ShieldCheck, Lock, Eye, Server, UserCheck } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const PrivacyPolicyPage: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 animate-fade-in space-y-8">
       {/* Banner */}
@@ -10,13 +13,13 @@ export const PrivacyPolicyPage: React.FC = () => {
           <div className="p-2.5 rounded-2xl bg-teal-500/20 text-teal-400">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <span className="badge badge-emerald">Chính Sách Bảo Mật</span>
+          <span className="badge badge-emerald">{t('privacy.badge')}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-          Chính Sách Bảo Mật Thông Tin ShareHub
+          {t('privacy.title')}
         </h1>
         <p className="text-sm text-gray-300 mt-2 leading-relaxed">
-          Cam kết bảo vệ dữ liệu cá nhân, thông tin liên hệ và quyền riêng tư của thành viên.
+          {t('privacy.subtitle')}
         </p>
       </div>
 
@@ -24,46 +27,33 @@ export const PrivacyPolicyPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <Lock className="w-4 h-4 text-emerald-400" />
-            1. Thu Thập Thông Tin Cá Nhân
+            {t('privacy.sec1Title')}
           </h2>
-          <p>
-            ShareHub chỉ thu thập các thông tin cần thiết phục vụ cho việc khởi tạo tài khoản và giao dịch giữa các thành viên, bao gồm: Họ tên, Email, Số điện thoại và Địa chỉ khu vực giao dịch.
-          </p>
+          <p>{t('privacy.sec1Desc')}</p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <Eye className="w-4 h-4 text-indigo-400" />
-            2. Mục Đích Sử Dụng Thông Tin
+            {t('privacy.sec2Title')}
           </h2>
-          <p>
-            Thông tin của bạn được sử dụng để:
-          </p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Xác thực danh tính thành viên và duy trì điểm uy tín cộng đồng.</li>
-            <li>Hiển thị thông tin liên hệ khi hai bên đồng ý thương lượng mượn/trao đổi tài sản.</li>
-            <li>Gửi thông báo hệ thống liên quan đến tiến trình giao dịch.</li>
-          </ul>
+          <p>{t('privacy.sec2Desc')}</p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <Server className="w-4 h-4 text-teal-400" />
-            3. Cam Kết Không Chia Sẻ Cho Bên Thứ Ba
+            {t('privacy.sec3Title')}
           </h2>
-          <p>
-            ShareHub tuyệt đối không bán, trao đổi hoặc chia sẻ thông tin cá nhân của bạn cho bất kỳ bên thứ ba nào vì mục đích quảng cáo hoặc thương mại.
-          </p>
+          <p>{t('privacy.sec3Desc')}</p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-primary flex items-center gap-2">
             <UserCheck className="w-4 h-4 text-amber-400" />
-            4. Quyền Hạn Của Thành Viên
+            {t('privacy.sec4Title')}
           </h2>
-          <p>
-            Bạn có toàn quyền chỉnh sửa thông tin cá nhân hoặc yêu cầu xóa tài khoản bất kỳ lúc nào thông qua phần Cài đặt Hồ sơ cá nhân.
-          </p>
+          <p>{t('privacy.sec4Desc')}</p>
         </section>
       </div>
     </div>
