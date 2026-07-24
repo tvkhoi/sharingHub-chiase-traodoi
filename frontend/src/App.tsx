@@ -22,6 +22,18 @@ import { socketService } from './services/socket.service';
 export const App: React.FC = () => {
   React.useEffect(() => {
     socketService.connect();
+
+    const handleUnload = () => {
+      socketService.disconnect();
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+    };
   }, []);
 
   return (
