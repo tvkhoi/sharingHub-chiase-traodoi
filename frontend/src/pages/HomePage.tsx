@@ -4,7 +4,9 @@ import type { Asset, AssetCategory } from '../types';
 import { AssetCard } from '../components/assets/AssetCard';
 import { Pagination } from '../components/common/Pagination';
 import { useLanguage } from '../context/LanguageContext';
-import { Search, Filter, Layers, Gift, ArrowLeftRight, RefreshCw } from 'lucide-react';
+import { Filter, Layers, Gift, ArrowLeftRight, RefreshCw } from 'lucide-react';
+
+import { SearchAutocomplete } from '../components/common/SearchAutocomplete';
 
 // Module-level SWR Cache to eliminate skeleton flicker on route switches
 let cachedHomePageAssets: Asset[] = [];
@@ -43,13 +45,14 @@ export const HomePage: React.FC = () => {
     }
   };
 
-  const fetchAssets = async () => {
+  const fetchAssets = async (customSearch?: string) => {
     if (assets.length === 0) setLoading(true);
+    const s = customSearch !== undefined ? customSearch : search;
     try {
       const data = await assetsService.getAssets({
         danh_muc_id: selectedCategory || undefined,
         hinh_thuc_chia_se: shareType || undefined,
-        search: search || undefined,
+        search: s || undefined,
         page,
         limit,
       });
@@ -71,16 +74,17 @@ export const HomePage: React.FC = () => {
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchSubmit = (query?: string) => {
+    const val = query !== undefined ? query : search;
+    setSearch(val);
     setPage(1);
-    fetchAssets();
+    fetchAssets(val);
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Hero Banner Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 border border-indigo-500/30 p-8 sm:p-12 mb-10 shadow-2xl">
+      <section className="relative overflow-visible rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 border border-indigo-500/30 p-8 sm:p-12 mb-10 shadow-2xl z-20">
         <div className="relative z-10 max-w-2xl">
           <span className="badge badge-emerald mb-4">🌱 {t('hero.badge')}</span>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
@@ -93,20 +97,28 @@ export const HomePage: React.FC = () => {
             {t('hero.subtitle')}
           </p>
 
-          {/* Search Form */}
-          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder={t('common.searchPlaceholder')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="form-input pl-12 py-3 bg-slate-950/80 border-indigo-400/40 text-white placeholder-gray-400 focus:border-indigo-400 shadow-inner"
-              />
-            </div>
-            <button type="submit" className="btn btn-primary py-3 px-6 text-base font-semibold">
-              {t('common.search')}
+          {/* Smart Search Form with Autocomplete Dropdown */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearchSubmit(search);
+            }}
+            className="flex flex-col sm:flex-row gap-3 relative z-30"
+          >
+            <SearchAutocomplete
+              searchValue={search}
+              onSearchChange={setSearch}
+              onSearchSubmit={handleSearchSubmit}
+              categories={categories}
+              onSelectCategory={(catId) => {
+                setSelectedCategory(catId);
+                setPage(1);
+              }}
+              placeholder={t('common.searchPlaceholder')}
+            />
+
+            <button type="submit" className="btn btn-primary py-3 px-6 text-base font-semibold shrink-0">
+              {t('common.searchBtn')}
             </button>
           </form>
         </div>
@@ -168,7 +180,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           <button
-            onClick={fetchAssets}
+            onClick={() => fetchAssets()}
             className="p-2.5 btn btn-outline rounded-xl"
             title="Làm mới bảng tin"
           >
