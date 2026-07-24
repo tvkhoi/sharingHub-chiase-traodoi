@@ -213,7 +213,7 @@ export const TransactionsPage: React.FC = () => {
                             className="inline-flex items-center gap-1.5 font-bold text-brand-primary hover:underline hover:text-indigo-400"
                             title="Xem thông tin & điểm uy tín của đối tác"
                           >
-                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden flex-shrink-0">
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 flex items-center justify-center text-[10px] font-extrabold text-white overflow-hidden flex-shrink-0 shadow-sm">
                               {partner.ho_so?.anh_dai_dien ? (
                                 <img src={partner.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
                               ) : (

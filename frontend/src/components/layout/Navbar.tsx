@@ -152,7 +152,7 @@ export const Navbar: React.FC = () => {
               </Link>
 
               <Link to={`/profile/${user.nguoi_dung_id}`} className="flex items-center gap-2 hover:opacity-85 transition-opacity">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 flex items-center justify-center font-extrabold text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/30">
                   {user.ho_so?.anh_dai_dien ? (
                     <img src={user.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full rounded-full object-cover" />
                   ) : (

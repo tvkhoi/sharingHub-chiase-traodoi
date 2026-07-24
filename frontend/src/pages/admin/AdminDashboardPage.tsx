@@ -519,7 +519,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <tr key={u.nguoi_dung_id} className="hover:bg-card-hover transition-colors whitespace-nowrap">
                       <td className="py-3.5 px-4 text-left whitespace-nowrap">
                         <div className="flex items-center gap-3 whitespace-nowrap">
-                          <div className="w-9 h-9 rounded-full bg-indigo-600/20 text-brand-primary flex items-center justify-center font-bold text-sm overflow-hidden shrink-0 border border-indigo-500/30">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 flex items-center justify-center font-extrabold text-white text-sm overflow-hidden shrink-0 border border-emerald-400/30 shadow-sm">
                             {u.ho_so?.anh_dai_dien ? (
                               <img src={u.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (

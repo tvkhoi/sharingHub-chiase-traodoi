@@ -219,7 +219,7 @@ export const AssetDetailPage: React.FC = () => {
                   className="flex items-center gap-3 hover:opacity-85 transition-opacity group"
                   title="Xem hồ sơ & uy tín của chủ sở hữu"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md overflow-hidden flex-shrink-0 group-hover:ring-2 group-hover:ring-indigo-400">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 flex items-center justify-center font-extrabold text-white shadow-md shadow-emerald-500/20 overflow-hidden flex-shrink-0 group-hover:ring-2 group-hover:ring-emerald-400">
                     {asset.chu_so_huu.ho_so?.anh_dai_dien ? (
                       <img src={asset.chu_so_huu.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (

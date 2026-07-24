@@ -80,7 +80,7 @@ export const UserProfilePage: React.FC = () => {
       {/* Profile Header Card */}
       <div className="glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-center gap-6">
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl overflow-hidden shrink-0 border-4 border-indigo-500/20">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl shadow-emerald-500/20 overflow-hidden shrink-0 border-4 border-emerald-500/30">
             {profileUser.ho_so?.anh_dai_dien ? (
               <img src={profileUser.ho_so.anh_dai_dien} alt="Avatar" className="w-full h-full object-cover" />
             ) : (

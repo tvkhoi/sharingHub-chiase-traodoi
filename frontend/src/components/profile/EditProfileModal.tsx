@@ -119,7 +119,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           {/* Avatar Upload Section */}
           <div className="flex flex-col items-center justify-center py-2 gap-3 text-center">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl overflow-hidden border-2 border-indigo-500/30">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl shadow-emerald-500/20 overflow-hidden border-2 border-emerald-500/30">
                 {anhDaiDien ? (
                   <img src={anhDaiDien} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
