@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { socketService } from './socket.service';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -30,6 +31,7 @@ api.interceptors.response.use(
       if (!window.location.pathname.includes('/login')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        socketService.disconnect();
       }
     }
     return Promise.reject(error);
