@@ -34,6 +34,15 @@ export class AssetsController {
   }
 
   @ApiOperation({
+    summary: 'Lấy danh sách từ khóa tìm kiếm phổ biến hệ thống',
+    description: 'Trả về các từ khóa được toàn bộ người dùng tìm kiếm nhiều nhất lưu trong bộ nhớ RAM.',
+  })
+  @Get('assets/trending-searches')
+  async getTrendingSearches() {
+    return { trending: this.assetsService.getTrendingSearches() };
+  }
+
+  @ApiOperation({
     summary: 'Đăng tải bài đăng tài sản mới (UC1.1)',
     description: 'Tạo bài đăng chia sẻ hoặc trao đổi tài sản mới (chuẩn RESTful JSON). Yêu cầu truyền danh sách đường dẫn URL hình ảnh thu được sau khi gọi API tải lên tệp tin /api/v1/upload/multiple.',
   })

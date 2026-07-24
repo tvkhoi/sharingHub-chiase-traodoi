@@ -7,7 +7,23 @@ import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class AssetsService {
+  // In-Memory RAM Search Frequency Tracker (No Database Tables Needed)
+  private searchFrequencyMap = new Map<string, number>();
+
   constructor(private prisma: PrismaService) {}
+
+  getTrendingSearches(): string[] {
+    const entries = Array.from(this.searchFrequencyMap.entries());
+    entries.sort((a, b) => b[1] - a[1]);
+    const topTerms = entries.slice(0, 8).map((e) => e[0]);
+
+    // Capitalize first letter of each term
+    const formatted = topTerms.map((t) => t.charAt(0).toUpperCase() + t.slice(1));
+
+    // Default fallbacks if system search count is low
+    const defaults = ['Bàn học', 'Sách giáo khoa', 'Máy chiếu', 'Laptop cũ', 'Quần áo', 'Bàn phím'];
+    return Array.from(new Set([...formatted, ...defaults])).slice(0, 8);
+  }
 
   async create(userId: string, dto: CreateAssetDto) {
     // 1. Check Category existence
@@ -80,6 +96,12 @@ export class AssetsService {
     }
 
     if (query.search) {
+      const term = query.search.trim().toLowerCase();
+      if (term && term.length >= 2) {
+        const count = this.searchFrequencyMap.get(term) || 0;
+        this.searchFrequencyMap.set(term, count + 1);
+      }
+
       where.OR = [
         { ten_tai_san: { contains: query.search, mode: 'insensitive' } },
         { mo_ta_hien_trang: { contains: query.search, mode: 'insensitive' } },

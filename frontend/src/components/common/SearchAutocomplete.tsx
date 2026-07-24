@@ -45,11 +45,12 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
   const [suggestions, setSuggestions] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [systemTrending, setSystemTrending] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Load Recent Searches from LocalStorage
+  // Load Recent Searches & System Trending Searches
   useEffect(() => {
     try {
       const saved = localStorage.getItem(RECENT_KEY);
@@ -59,6 +60,13 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
     } catch (e) {
       console.error('Lỗi tải lịch sử tìm kiếm:', e);
     }
+
+    // Fetch system-wide trending search keywords from RAM tracker
+    assetsService.getTrendingSearches().then((terms) => {
+      if (terms && terms.length > 0) {
+        setSystemTrending(terms);
+      }
+    });
   }, []);
 
   const saveRecentSearch = (term: string) => {
@@ -252,11 +260,13 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">
                   <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                  Từ khóa & Danh mục phổ biến
+                  Từ khóa tìm kiếm hot hệ thống
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {(categories.length > 0
-                    ? Array.from(new Set([...categories.map((c) => c.ten_danh_muc), ...DEFAULT_TRENDING_TAGS])).slice(0, 7)
+                  {(systemTrending.length > 0
+                    ? systemTrending
+                    : categories.length > 0
+                    ? Array.from(new Set([...categories.map((c) => c.ten_danh_muc), ...DEFAULT_TRENDING_TAGS])).slice(0, 8)
                     : DEFAULT_TRENDING_TAGS
                   ).map((tag, i) => (
                     <button

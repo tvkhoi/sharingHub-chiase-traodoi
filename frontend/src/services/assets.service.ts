@@ -27,6 +27,15 @@ export const assetsService = {
     return res.data;
   },
 
+  async getTrendingSearches(): Promise<string[]> {
+    try {
+      const res = await api.get<{ trending: string[] }>('/assets/trending-searches');
+      return res.data.trending || [];
+    } catch {
+      return ['Bàn học', 'Sách giáo khoa', 'Máy chiếu', 'Laptop cũ', 'Quần áo', 'Bàn phím'];
+    }
+  },
+
   async getAssets(params?: QueryAssetParams): Promise<PaginatedResponse<Asset>> {
     const res = await api.get<PaginatedResponse<Asset>>('/assets', { params });
     return res.data;
