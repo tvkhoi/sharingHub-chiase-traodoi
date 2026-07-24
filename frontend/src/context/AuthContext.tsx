@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User } from '../types';
 import { authService } from '../services/auth.service';
+import { socketService } from '../services/socket.service';
 
 interface AuthContextType {
   user: User | null;
@@ -47,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
+    socketService.connect();
   };
 
   const logout = () => {
@@ -54,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
+    socketService.disconnect();
   };
 
   const updateUser = (updatedUser: User) => {
