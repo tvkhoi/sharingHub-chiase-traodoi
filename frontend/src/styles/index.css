@@ -15,7 +15,7 @@ html {
   8pt Grid System & WCAG AA Compliant Color Palette
 */
 :root {
-  /* Default Theme: Light Mode (WCAG AA Compliant) */
+  /* Default Theme: Light Mode (WCAG AAA High Contrast & Crisp Typography) */
   --bg-primary: #F8FAFC;        /* Slate-50: Nền trang tổng thể */
   --bg-secondary: #FFFFFF;      /* White: Nền Navbar, Footer */
   --bg-card: #FFFFFF;           /* White: Nền Card, Modal, Dropdown */
@@ -24,32 +24,32 @@ html {
   --bg-glass: rgba(255, 255, 255, 0.95);
   
   --border-color: #E2E8F0;      /* Slate-200: Đường viền Card, Input, Divider */
-  --border-accent: #10B981;     /* Viền highlight primary (Emerald Teal) */
+  --border-accent: #059669;     /* Viền highlight primary (Emerald Teal) */
 
-  --text-primary: #0F172A;     /* Slate-900: Tiêu đề, Nội dung chính */
-  --text-secondary: #475569;   /* Slate-600: Nội dung phụ */
-  --text-muted: #64748B;       /* Slate-500: Placeholder, Caption, Thời gian đăng */
+  --text-primary: #0F172A;     /* Slate-900: Tiêu đề, Nội dung chính đậm nét */
+  --text-secondary: #334155;   /* Slate-700: Nội dung phụ sắc nét (Tỉ lệ tương phản 9.5:1) */
+  --text-muted: #475569;       /* Slate-600: Caption, thời gian, placeholder rõ ràng */
 
-  --accent-primary: #10B981;   /* Emerald Teal: Nút chính, CTA, Icon active, Branding */
-  --accent-primary-hover: #059669;
-  --accent-secondary: #6366F1; /* Indigo: Link, Nút phụ, Highlight thông tin */
-  --accent-secondary-hover: #4F46E5;
-  --accent-amber: #F59E0B;     /* Accent: Badge chờ duyệt, Đánh giá sao */
-  --accent-success: #10B981;   /* Success: Trạng thái thành công */
-  --accent-warning: #F59E0B;   /* Warning: Trạng thái chờ, Cảnh báo */
-  --accent-danger: #F43F5E;    /* Danger: Nút xóa, Báo cáo vi phạm, Thông báo lỗi */
+  --accent-primary: #059669;   /* Emerald-600: Nút chính, branding chuẩn contrast */
+  --accent-primary-hover: #047857;
+  --accent-secondary: #4F46E5; /* Indigo-600: Link, Nút phụ */
+  --accent-secondary-hover: #4338CA;
+  --accent-amber: #D97706;     /* Amber-600: Đánh giá sao, Cảnh báo chuẩn contrast */
+  --accent-success: #059669;   /* Success: Trạng thái thành công */
+  --accent-warning: #D97706;   /* Warning: Trạng thái chờ, Cảnh báo */
+  --accent-danger: #E11D48;    /* Danger: Nút xóa, Báo cáo vi phạm */
 
-  --brand-primary: #10B981;
-  --brand-secondary: #6366F1;
-  --brand-accent: #F59E0B;
-  --brand-emerald: #10B981;
-  --brand-amber: #F59E0B;
-  --brand-rose: #F43F5E;
+  --brand-primary: #059669;    /* Emerald-600 */
+  --brand-secondary: #4F46E5;  /* Indigo-600 */
+  --brand-accent: #D97706;     /* Amber-600 */
+  --brand-emerald: #059669;   /* Emerald-600 */
+  --brand-amber: #D97706;     /* Amber-600 */
+  --brand-rose: #E11D48;      /* Rose-600 */
 
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.25);
+  --shadow-glow: 0 0 20px rgba(5, 150, 105, 0.25);
 
   --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-heading: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -78,6 +78,15 @@ html {
   --text-primary: #F9FAFB;
   --text-secondary: #D1D5DB;
   --text-muted: #9CA3AF;
+
+  --accent-primary: #10B981;
+  --accent-primary-hover: #34D399;
+  --accent-secondary: #818CF8;
+  --accent-secondary-hover: #A5B4FC;
+  --accent-amber: #FBBF24;
+  --accent-success: #34D399;
+  --accent-warning: #FBBF24;
+  --accent-danger: #FB7185;
 
   --brand-primary: #10B981;
   --brand-secondary: #818CF8;

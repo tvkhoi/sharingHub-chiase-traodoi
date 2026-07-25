@@ -122,21 +122,21 @@ export const NotificationDropdown: React.FC = () => {
   function getNotificationIcon(type: string) {
     switch (type) {
       case 'NEW_PROPOSAL':
-        return <MessageSquare className="w-4 h-4 text-indigo-400" />;
+        return <MessageSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
       case 'PROPOSAL_ACCEPTED':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
+        return <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
       case 'PROPOSAL_REJECTED':
-        return <XCircle className="w-4 h-4 text-rose-400" />;
+        return <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />;
       case 'TRANSACTION_UPDATED':
-        return <Repeat className="w-4 h-4 text-amber-400" />;
+        return <Repeat className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
       case 'ASSET_MODERATED':
-        return <ShieldAlert className="w-4 h-4 text-rose-500" />;
+        return <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-500" />;
       case 'NEW_REVIEW':
-        return <Star className="w-4 h-4 text-amber-400 fill-amber-400" />;
+        return <Star className="w-4 h-4 text-amber-500 fill-amber-500 dark:text-amber-400 dark:fill-amber-400" />;
       case 'NEW_MESSAGE':
-        return <MessageSquare className="w-4 h-4 text-emerald-400" />;
+        return <MessageSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
       default:
-        return <Bell className="w-4 h-4 text-indigo-400" />;
+        return <Bell className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
     }
   }
 
