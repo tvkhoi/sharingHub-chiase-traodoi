@@ -1,22 +1,40 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Send, CheckCircle2, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { reportsService } from '../../services/reports.service';
 
 export const ReportIssuePage: React.FC = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [tieuDe, setTieuDe] = useState('');
   const [noiDung, setNoiDung] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tieuDe.trim() || !noiDung.trim()) {
       toast.error('Vui lòng điền đầy đủ tiêu đề và nội dung báo lỗi');
       return;
     }
-    setSubmitted(true);
-    toast.success('Đã gửi phản hồi báo lỗi thành công!');
+
+    setLoading(true);
+    try {
+      if (user) {
+        await reportsService.createReport({
+          ly_do_bao_cao: tieuDe.trim(),
+          mo_ta_chi_tiet: noiDung.trim(),
+        });
+      }
+      setSubmitted(true);
+      toast.success('Đã gửi phản hồi báo lỗi tới Ban Quản Trị thành công!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi gửi báo cáo');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,8 +100,20 @@ export const ReportIssuePage: React.FC = () => {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary w-full py-3.5 text-base font-bold flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-500/20">
-              <Send className="w-5 h-5" /> {t('reportIssue.submitBtn')}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary w-full py-3.5 text-base font-bold flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-500/20"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Đang gửi phản hồi...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" /> {t('reportIssue.submitBtn')}
+                </>
+              )}
             </button>
           </form>
         )}

@@ -13,10 +13,6 @@ export class ReportsService {
   ) {}
 
   async createReport(userId: string, dto: CreateReportDto) {
-    if (!dto.bai_dang_bi_bao_cao_id && !dto.nguoi_dung_bi_bao_cao_id) {
-      throw new BadRequestException('Vui lòng cung cấp mã bài đăng hoặc mã người dùng bị báo cáo');
-    }
-
     if (dto.bai_dang_bi_bao_cao_id) {
       const asset = await this.prisma.baiDangTaiSan.findUnique({
         where: { bai_dang_id: dto.bai_dang_bi_bao_cao_id },
@@ -31,7 +27,11 @@ export class ReportsService {
       if (!user) throw new NotFoundException('Người dùng cần báo cáo không tồn tại');
     }
 
-    const loaiBaoCao = dto.bai_dang_bi_bao_cao_id ? 'BAI_DANG' : 'NGUOI_DUNG';
+    const loaiBaoCao = dto.bai_dang_bi_bao_cao_id
+      ? 'BAI_DANG'
+      : dto.nguoi_dung_bi_bao_cao_id
+      ? 'NGUOI_DUNG'
+      : 'HE_THONG';
 
     return this.prisma.baoCaoViPham.create({
       data: {
