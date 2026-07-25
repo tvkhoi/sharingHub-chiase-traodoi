@@ -247,14 +247,14 @@ export const Navbar: React.FC = () => {
 
                 {user.vai_tro === 'QUAN_TRI_VIEN' && (
                   <Link
-                    to="/admin/reports"
+                    to="/admin"
                     onClick={closeMobileMenu}
                     className={`px-4 py-3 rounded-xl text-base font-semibold flex items-center gap-3 transition-all ${
-                      isActive('/admin/reports') ? 'bg-rose-500/20 text-brand-rose' : 'text-brand-rose hover:bg-rose-500/10'
+                      location.pathname.startsWith('/admin') ? 'bg-rose-500/20 text-brand-rose' : 'text-brand-rose hover:bg-rose-500/10'
                     }`}
                   >
                     <ShieldAlert className="w-5 h-5" />
-                    Kiểm duyệt Admin
+                    {t('nav.admin')}
                   </Link>
                 )}
 
