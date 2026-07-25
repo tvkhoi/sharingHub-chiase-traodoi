@@ -40,7 +40,7 @@ export const ReportIssuePage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 animate-fade-in space-y-8">
       {/* Banner */}
-      <div className="glass-card p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 border border-rose-500/30">
+      <div className="p-6 sm:p-8 rounded-3xl bg-slate-950 bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 border border-rose-500/30">
         <div className="flex items-center gap-3 mb-3">
           <div className="p-3 rounded-2xl bg-rose-500/20 text-rose-400">
             <AlertTriangle className="w-7 h-7" />
@@ -50,7 +50,7 @@ export const ReportIssuePage: React.FC = () => {
         <h1 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
           {t('reportIssue.title')}
         </h1>
-        <p className="text-base sm:text-lg text-gray-300 mt-2.5 leading-relaxed">
+        <p className="text-base sm:text-lg text-slate-300 mt-2.5 leading-relaxed">
           {t('reportIssue.subtitle')}
         </p>
       </div>

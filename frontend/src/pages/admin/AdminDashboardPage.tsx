@@ -320,13 +320,13 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in space-y-6">
       {/* Admin Header Banner */}
-      <div className="glass-card p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 border border-rose-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
+      <div className="p-6 sm:p-8 rounded-3xl bg-slate-950 bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 border border-rose-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
         <div>
           <span className="badge badge-rose mb-2">{t('admin.badge')}</span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
             {t('admin.bannerTitle')}
           </h1>
-          <p className="text-sm text-gray-300 mt-1">
+          <p className="text-sm text-slate-300 mt-1">
             {t('admin.bannerSubtitle')}
           </p>
         </div>
