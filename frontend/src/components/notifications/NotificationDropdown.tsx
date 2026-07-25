@@ -160,7 +160,7 @@ export const NotificationDropdown: React.FC = () => {
 
       {/* Notification Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 glass-panel rounded-2xl shadow-2xl border border-color z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-auto sm:right-0 sm:mt-3 w-auto sm:w-96 glass-panel rounded-2xl shadow-2xl border border-color z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
           <div className="p-3.5 border-b border-color flex items-center justify-between bg-card">
             <div className="flex items-center gap-2">
@@ -196,7 +196,7 @@ export const NotificationDropdown: React.FC = () => {
           </div>
 
           {/* List */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-slate-700/20">
+          <div className="max-h-[70vh] sm:max-h-80 overflow-y-auto divide-y divide-slate-700/20">
             {notifications.length === 0 ? (
               <div className="p-8 text-center text-muted text-xs">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
