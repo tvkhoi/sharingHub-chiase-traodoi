@@ -21,6 +21,7 @@ import { UserGuidePage } from './pages/legal/UserGuidePage';
 import { PrivacyPolicyPage } from './pages/legal/PrivacyPolicyPage';
 import { TermsOfServicePage } from './pages/legal/TermsOfServicePage';
 import { ReportIssuePage } from './pages/legal/ReportIssuePage';
+import { ScrollToTop } from './components/common/ScrollToTop';
 
 import { socketService } from './services/socket.service';
 
@@ -46,7 +47,8 @@ export const App: React.FC = () => {
       <ThemeProvider>
         <AuthProvider>
           <Router>
-          <div className="min-h-screen flex flex-col bg-[var(--bg-primary)]">
+            <ScrollToTop />
+            <div className="min-h-screen flex flex-col bg-[var(--bg-primary)]">
             <Navbar />
             <main className="flex-1">
               <Routes>
