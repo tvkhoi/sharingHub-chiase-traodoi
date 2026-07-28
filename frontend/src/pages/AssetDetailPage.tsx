@@ -67,13 +67,18 @@ export const AssetDetailPage: React.FC = () => {
     e.preventDefault();
     if (!asset || !user) return;
 
+    if (!taiSanDoiUng.trim()) {
+      toast.error('Vui lòng nhập tài sản / giá trị đối ứng đề xuất');
+      return;
+    }
+
     setSubmittingProposal(true);
     try {
       await proposalsService.createProposal({
         bai_dang_id: asset.bai_dang_id,
         so_luong_yeu_cau: Number(soLuongYeuCau),
         loi_nhan: loiNhan || undefined,
-        tai_san_doi_ung: asset.hinh_thuc_chia_se === 'TRAO_DOI' ? taiSanDoiUng : undefined,
+        tai_san_doi_ung: taiSanDoiUng.trim(),
       });
 
       toast.success('Gửi đề xuất nhận/trao đổi tài sản thành công!');
@@ -330,18 +335,19 @@ export const AssetDetailPage: React.FC = () => {
                 />
               </div>
 
-              {asset.hinh_thuc_chia_se === 'TRAO_DOI' && (
-                <div className="form-group">
-                  <label className="form-label">Tài sản / Giá trị đối ứng đề xuất</label>
-                  <input
-                    type="text"
-                    placeholder="Ví dụ: Đổi lấy Tai nghe Sony WH-1000XM4 hoặc Bù 500k..."
-                    value={taiSanDoiUng}
-                    onChange={(e) => setTaiSanDoiUng(e.target.value)}
-                    className="form-input"
-                  />
-                </div>
-              )}
+              <div className="form-group">
+                <label className="form-label flex items-center justify-between">
+                  <span>Tài sản / Giá trị đối ứng đề xuất <span className="text-rose-500 font-bold">*</span></span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ví dụ: Đổi lấy Tai nghe Sony WH-1000XM4 hoặc Bù 500k..."
+                  value={taiSanDoiUng}
+                  onChange={(e) => setTaiSanDoiUng(e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
 
               <div className="form-group">
                 <label className="form-label">Lời nhắn gửi chủ tài sản</label>

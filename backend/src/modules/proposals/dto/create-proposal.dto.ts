@@ -28,13 +28,13 @@ export class CreateProposalDto {
   @IsOptional()
   loi_nhan?: string;
 
-  @ApiPropertyOptional({
-    description: 'Mô tả tài sản đối ứng mang ra trao đổi (nếu có)',
+  @ApiProperty({
+    description: 'Mô tả tài sản / giá trị đối ứng đề xuất',
     example: 'Tai nghe Bluetooth Sony CH510 màu đen',
   })
-  @IsString()
-  @IsOptional()
-  tai_san_doi_ung?: string;
+  @IsString({ message: 'Tài sản đối ứng phải là chuỗi ký tự' })
+  @IsNotEmpty({ message: 'Tài sản / Giá trị đối ứng đề xuất không được để trống' })
+  tai_san_doi_ung: string;
 
   @ApiPropertyOptional({
     description: 'Số tiền đối ứng bù thêm (nếu có)',

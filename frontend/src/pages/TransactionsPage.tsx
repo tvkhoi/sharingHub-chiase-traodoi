@@ -65,14 +65,20 @@ export const TransactionsPage: React.FC = () => {
     }
   };
 
+  // Confirming transaction loading state
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+
   const handleConfirm = async (txId: string) => {
+    setConfirmingId(txId);
     try {
       const res = await transactionsService.confirmTransaction(txId);
       toast.success(res.message || 'Xác nhận bước giao dịch thành công!');
-      fetchTransactions();
+      await fetchTransactions(true);
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Xác nhận thất bại!';
       toast.error(msg);
+    } finally {
+      setConfirmingId(null);
     }
   };
 
@@ -149,6 +155,8 @@ export const TransactionsPage: React.FC = () => {
             const isOwner = user?.nguoi_dung_id === tx.nguoi_so_huu_id;
             const isCompleted = tx.trang_thai === 'HOAN_TAT';
             const isCancelled = tx.trang_thai === 'DA_HUY';
+            const hasConfirmed = isOwner ? tx.xac_nhan_nguoi_so_huu : tx.xac_nhan_nguoi_tiep_nhan;
+            const isConfirming = confirmingId === tx.giao_dich_id;
 
             return (
               <div key={tx.giao_dich_id} className={`glass-card p-6 rounded-3xl border shadow-lg ${isCancelled ? 'border-rose-500/30 bg-rose-500/5' : 'border-color'}`}>
@@ -249,17 +257,38 @@ export const TransactionsPage: React.FC = () => {
                       <>
                         <button
                           onClick={() => handleConfirm(tx.giao_dich_id)}
-                          className="btn btn-emerald text-sm w-full sm:w-auto justify-center"
+                          disabled={hasConfirmed || isConfirming}
+                          className={`btn text-sm w-full sm:w-auto justify-center transition-all ${
+                            hasConfirmed
+                              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 cursor-not-allowed opacity-80'
+                              : 'btn-emerald'
+                          }`}
                         >
-                          {isOwner ? 'Xác nhận Đã Bàn Giao' : 'Xác nhận Đã Nhận Đồ'}
+                          {isConfirming ? (
+                            <span className="flex items-center gap-2">
+                              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Đang xử lý...
+                            </span>
+                          ) : hasConfirmed ? (
+                            <span className="flex items-center gap-1.5 font-bold">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                              {isOwner ? 'Đã Xác Nhận Bàn Giao' : 'Đã Xác Nhận Nhận Đồ'}
+                            </span>
+                          ) : (
+                            isOwner ? 'Xác nhận Đã Bàn Giao' : 'Xác nhận Đã Nhận Đồ'
+                          )}
                         </button>
-                        <button
-                          onClick={() => setCancelTx(tx)}
-                          className="btn btn-rose text-sm w-full sm:w-auto justify-center"
-                        >
-                          <XCircle className="w-4 h-4 shrink-0" />
-                          Hủy Giao Dịch
-                        </button>
+
+                        {!hasConfirmed && (
+                          <button
+                            onClick={() => setCancelTx(tx)}
+                            disabled={isConfirming}
+                            className="btn btn-rose text-sm w-full sm:w-auto justify-center"
+                          >
+                            <XCircle className="w-4 h-4 shrink-0" />
+                            Hủy Giao Dịch
+                          </button>
+                        )}
                       </>
                     )}
 

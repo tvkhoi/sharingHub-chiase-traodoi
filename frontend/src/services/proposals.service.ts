@@ -5,7 +5,7 @@ export interface CreateProposalPayload {
   bai_dang_id: string;
   so_luong_yeu_cau: number;
   loi_nhan?: string;
-  tai_san_doi_ung?: string;
+  tai_san_doi_ung: string;
   tien_doi_ung?: number;
 }
 
