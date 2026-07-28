@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assetsService } from '../services/assets.service';
 import { uploadService } from '../services/upload.service';
@@ -8,6 +8,7 @@ import { UploadCloud, X, PlusCircle, ArrowLeft } from 'lucide-react';
 
 export const CreateAssetPage: React.FC = () => {
   const navigate = useNavigate();
+  const tenTaiSanInputRef = useRef<HTMLInputElement>(null);
   const [categories, setCategories] = useState<AssetCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -49,7 +50,13 @@ export const CreateAssetPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!tenTaiSan || !moTaHienTrang || !diaDiem || !danhMucId) {
+    if (!tenTaiSan.trim()) {
+      toast.error('Tên tài sản không được để trống hoặc chỉ chứa khoảng trắng');
+      tenTaiSanInputRef.current?.focus();
+      return;
+    }
+
+    if (!moTaHienTrang.trim() || !diaDiem.trim() || !danhMucId) {
       toast.error('Vui lòng điền đầy đủ các thông tin bắt buộc (*)');
       return;
     }
@@ -209,6 +216,7 @@ export const CreateAssetPage: React.FC = () => {
             <div className="form-group">
               <label className="form-label">Tên tài sản *</label>
               <input
+                ref={tenTaiSanInputRef}
                 type="text"
                 placeholder="Ví dụ: Laptop Dell XPS 13, Sách giáo trình..."
                 value={tenTaiSan}

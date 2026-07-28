@@ -217,16 +217,22 @@ export class AssetsService {
     }
 
     return this.prisma.$transaction(async (tx) => {
+      const newSoLuongTong = dto.so_luong_tong !== undefined ? dto.so_luong_tong : asset.so_luong_tong;
+      const newSoLuongKhaDung = Math.max(0, newSoLuongTong - asset.so_luong_giu_cho - asset.so_luong_da_phan_phoi);
+      const newTrangThai = (newSoLuongKhaDung > 0 && asset.trang_thai === 'DA_KHOA_SO') ? 'KHA_DUNG' : asset.trang_thai;
+
       const updated = await tx.baiDangTaiSan.update({
         where: { bai_dang_id: id },
         data: {
           danh_muc_id: dto.danh_muc_id || asset.danh_muc_id,
-          ten_tai_san: dto.ten_tai_san || asset.ten_tai_san,
-          mo_ta_hien_trang: dto.mo_ta_hien_trang || asset.mo_ta_hien_trang,
-          so_luong_tong: dto.so_luong_tong || asset.so_luong_tong,
+          ten_tai_san: dto.ten_tai_san ? dto.ten_tai_san.trim() : asset.ten_tai_san,
+          mo_ta_hien_trang: dto.mo_ta_hien_trang ? dto.mo_ta_hien_trang.trim() : asset.mo_ta_hien_trang,
+          so_luong_tong: newSoLuongTong,
+          so_luong_kha_dung: newSoLuongKhaDung,
+          trang_thai: newTrangThai,
           hinh_thuc_chia_se: dto.hinh_thuc_chia_se || asset.hinh_thuc_chia_se,
           hinh_thuc_trao_doi: dto.hinh_thuc_trao_doi || asset.hinh_thuc_trao_doi,
-          dia_diem: dto.dia_diem || asset.dia_diem,
+          dia_diem: dto.dia_diem ? dto.dia_diem.trim() : asset.dia_diem,
         },
       });
 

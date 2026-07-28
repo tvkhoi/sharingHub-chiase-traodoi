@@ -61,12 +61,24 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       return;
     }
 
+    const phoneTrimmed = soDienThoai.trim();
+    if (!phoneTrimmed) {
+      toast.error('Số điện thoại không được để trống');
+      return;
+    }
+
+    const phoneRegex = /^(0|\+84)(3|5|7|8|9)[0-9]{8}$/;
+    if (!phoneRegex.test(phoneTrimmed)) {
+      toast.error('Số điện thoại không đúng định dạng hợp lệ (Ví dụ: 0912345678)');
+      return;
+    }
+
     try {
       setSubmitting(true);
       const res: any = await authService.updateProfile({
         ho_ten: hoTen.trim(),
         anh_dai_dien: anhDaiDien.trim() || undefined,
-        so_dien_thoai: soDienThoai.trim() || undefined,
+        so_dien_thoai: phoneTrimmed,
         dia_chi: diaChi.trim() || undefined,
         mo_ta_ca_nhan: moTaCaNhan.trim() || undefined,
       });

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({
@@ -40,5 +40,7 @@ export class UpdateProfileDto {
   })
   @IsString()
   @IsOptional()
+  @IsNotEmpty({ message: 'Số điện thoại không được để trống' })
+  @Matches(/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/, { message: 'Số điện thoại không đúng định dạng hợp lệ (Ví dụ: 0912345678)' })
   so_dien_thoai?: string;
 }

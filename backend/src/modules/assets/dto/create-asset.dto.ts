@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Matches, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateAssetDto {
@@ -17,6 +17,7 @@ export class CreateAssetDto {
   })
   @IsString()
   @IsNotEmpty({ message: 'Tên tài sản không được để trống' })
+  @Matches(/\S+/, { message: 'Tên tài sản không được để trống hoặc chỉ chứa khoảng trắng' })
   ten_tai_san: string;
 
   @ApiProperty({
