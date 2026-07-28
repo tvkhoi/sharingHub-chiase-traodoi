@@ -133,7 +133,7 @@ export const AdminReportsPage: React.FC = () => {
                     <td className="p-4 whitespace-nowrap">
                       {report.bai_dang_bi_bao_cao ? (
                         <Link
-                          to={`/asset/${report.bai_dang_bi_bao_cao.bai_dang_id}`}
+                          to={`/assets/${report.bai_dang_bi_bao_cao.bai_dang_id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-brand-primary font-medium hover:underline truncate max-w-[220px] inline-flex items-center gap-1"
@@ -234,7 +234,7 @@ export const AdminReportsPage: React.FC = () => {
 
                   {selectedReport.bai_dang_bi_bao_cao ? (
                     <Link
-                      to={`/asset/${selectedReport.bai_dang_bi_bao_cao.bai_dang_id}`}
+                      to={`/assets/${selectedReport.bai_dang_bi_bao_cao.bai_dang_id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1 text-brand-primary border-brand-primary/40 hover:bg-brand-primary/10"
