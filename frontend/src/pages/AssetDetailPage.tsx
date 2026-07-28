@@ -74,6 +74,18 @@ export const AssetDetailPage: React.FC = () => {
     }
   };
 
+  const openReportModal = () => {
+    setLyDoBaoCao('');
+    setMoTaReport('');
+    setShowReportModal(true);
+  };
+
+  const closeReportModal = () => {
+    setShowReportModal(false);
+    setLyDoBaoCao('');
+    setMoTaReport('');
+  };
+
   const handleSendReport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!asset || !user || !lyDoBaoCao) return;
@@ -87,7 +99,7 @@ export const AssetDetailPage: React.FC = () => {
       });
 
       toast.success('Báo cáo vi phạm đã được gửi đến Ban Quản Trị!');
-      setShowReportModal(false);
+      closeReportModal();
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Gửi báo cáo thất bại!';
       toast.error(msg);
@@ -272,7 +284,7 @@ export const AssetDetailPage: React.FC = () => {
                 </button>
 
                 <button
-                  onClick={() => setShowReportModal(true)}
+                  onClick={openReportModal}
                   className="btn btn-outline py-3 px-4 text-brand-rose hover:bg-rose-500/10"
                   title="Báo cáo bài đăng vi phạm"
                 >
@@ -385,7 +397,7 @@ export const AssetDetailPage: React.FC = () => {
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowReportModal(false)}
+                  onClick={closeReportModal}
                   className="btn btn-outline flex-1"
                 >
                   Hủy bỏ

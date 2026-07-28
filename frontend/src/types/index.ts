@@ -149,6 +149,7 @@ export interface PenaltyAction {
   loai_bien_phap: ActionType;
   noi_dung_xu_ly: string;
   thoi_gian_xu_ly: string;
+  quan_tri_vien?: Partial<User>;
 }
 
 export interface Report {

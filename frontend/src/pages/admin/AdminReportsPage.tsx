@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { reportsService } from '../../services/reports.service';
 import type { Report } from '../../types';
 import { Pagination } from '../../components/common/Pagination';
 import toast from 'react-hot-toast';
-import { ShieldAlert, CheckCircle, Eye } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Eye, ExternalLink, User, Package, FileText, Image as ImageIcon } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 export const AdminReportsPage: React.FC = () => {
@@ -112,19 +113,48 @@ export const AdminReportsPage: React.FC = () => {
                       {new Date(report.ngay_bao_cao).toLocaleDateString('vi-VN')}
                     </td>
                     <td className="p-4 font-semibold text-primary whitespace-nowrap">
-                      <span className="truncate max-w-[160px] block">
-                        {report.nguoi_bao_cao?.ho_so?.ho_ten || 'Thành viên'}
-                      </span>
+                      {report.nguoi_bao_cao?.nguoi_dung_id ? (
+                        <Link
+                          to={`/profile/${report.nguoi_bao_cao.nguoi_dung_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:text-indigo-400 hover:underline truncate max-w-[160px] inline-flex items-center gap-1"
+                          title="Xem trang cá nhân người báo cáo"
+                        >
+                          <span>{report.nguoi_bao_cao?.ho_so?.ho_ten || 'Thành viên'}</span>
+                          <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
+                        </Link>
+                      ) : (
+                        <span className="truncate max-w-[160px] block">
+                          {report.nguoi_bao_cao?.ho_so?.ho_ten || 'Thành viên'}
+                        </span>
+                      )}
                     </td>
                     <td className="p-4 whitespace-nowrap">
                       {report.bai_dang_bi_bao_cao ? (
-                        <span className="text-brand-primary font-medium truncate max-w-[200px] block" title={report.bai_dang_bi_bao_cao.ten_tai_san}>
-                          [Bài đăng] {report.bai_dang_bi_bao_cao.ten_tai_san}
-                        </span>
+                        <Link
+                          to={`/asset/${report.bai_dang_bi_bao_cao.bai_dang_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-primary font-medium hover:underline truncate max-w-[220px] inline-flex items-center gap-1"
+                          title={`Xem bài đăng: ${report.bai_dang_bi_bao_cao.ten_tai_san}`}
+                        >
+                          <span>[Bài đăng] {report.bai_dang_bi_bao_cao.ten_tai_san}</span>
+                          <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
+                        </Link>
+                      ) : report.nguoi_dung_bi_bao_cao ? (
+                        <Link
+                          to={`/profile/${report.nguoi_dung_bi_bao_cao.nguoi_dung_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-amber font-medium hover:underline truncate max-w-[200px] inline-flex items-center gap-1"
+                          title="Xem trang cá nhân người bị báo cáo"
+                        >
+                          <span>[Tài khoản] {report.nguoi_dung_bi_bao_cao?.ho_so?.ho_ten || 'Thành viên'}</span>
+                          <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
+                        </Link>
                       ) : (
-                        <span className="text-brand-amber font-medium truncate max-w-[200px] block">
-                          [Tài khoản] {report.nguoi_dung_bi_bao_cao?.ho_so?.ho_ten}
-                        </span>
+                        <span className="text-secondary font-medium">[Hệ thống]</span>
                       )}
                     </td>
                     <td className="p-4 text-brand-rose font-semibold whitespace-nowrap">
@@ -148,7 +178,7 @@ export const AdminReportsPage: React.FC = () => {
                         onClick={() => setSelectedReport(report)}
                         className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-1.5 whitespace-nowrap"
                       >
-                        <Eye className="w-3.5 h-3.5" /> Kiểm duyệt
+                        <Eye className="w-3.5 h-3.5" /> Xem & Kiểm duyệt
                       </button>
                     </td>
                   </tr>
@@ -174,44 +204,188 @@ export const AdminReportsPage: React.FC = () => {
         className="mt-8"
       />
 
-      {/* Modal: Process Report Action */}
+      {/* Modal: Process Report Action & Details */}
       {selectedReport && createPortal(
-        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-panel max-w-lg w-full p-5 sm:p-6 rounded-3xl border border-color shadow-2xl animate-fade-in">
-            <h2 className="text-lg sm:text-xl font-bold text-primary mb-1">Quyết Định Kiểm Duyệt Vi Phạm</h2>
-            <p className="text-xs text-brand-rose mb-4">Mã Báo cáo: #{selectedReport.bao_cao_id.substring(0, 8)}</p>
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="glass-panel max-w-2xl w-full p-6 rounded-3xl border border-color shadow-2xl animate-fade-in my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-color">
+              <div>
+                <h2 className="text-xl font-bold text-primary">Chi Tiết & Kiểm Duyệt Báo Cáo</h2>
+                <p className="text-xs text-brand-rose mt-0.5">Mã Báo cáo: #{selectedReport.bao_cao_id}</p>
+              </div>
+              <span className="text-xs text-muted">
+                {new Date(selectedReport.ngay_bao_cao).toLocaleString('vi-VN')}
+              </span>
+            </div>
 
-            <form onSubmit={handleProcessSubmit} className="space-y-4">
-              <div className="form-group">
-                <label className="form-label">Quyết định xử lý *</label>
-                <select
-                  value={trangThaiXuLy}
-                  onChange={(e) => setTrangThaiXuLy(e.target.value as 'DA_XU_LY' | 'TU_CHOI')}
-                  className="form-select"
-                >
-                  <option value="DA_XU_LY">Phê duyệt báo cáo & Thi hành kỷ luật</option>
-                  <option value="TU_CHOI">Bác bỏ báo cáo (Không vi phạm)</option>
-                </select>
+            {/* Detailed Report Overview Section */}
+            <div className="space-y-4 mb-6 text-sm">
+              {/* Linked Target Info */}
+              <div className="p-4 rounded-2xl bg-card-hover border border-color space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-secondary uppercase tracking-wider flex items-center gap-1.5">
+                    {selectedReport.bai_dang_bi_bao_cao ? (
+                      <Package className="w-4 h-4 text-brand-primary" />
+                    ) : (
+                      <User className="w-4 h-4 text-brand-amber" />
+                    )}
+                    Đối Tượng Bị Báo Cáo
+                  </span>
+
+                  {selectedReport.bai_dang_bi_bao_cao ? (
+                    <Link
+                      to={`/asset/${selectedReport.bai_dang_bi_bao_cao.bai_dang_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1 text-brand-primary border-brand-primary/40 hover:bg-brand-primary/10"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Xem bài đăng gốc
+                    </Link>
+                  ) : selectedReport.nguoi_dung_bi_bao_cao ? (
+                    <Link
+                      to={`/profile/${selectedReport.nguoi_dung_bi_bao_cao.nguoi_dung_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1 text-brand-amber border-brand-amber/40 hover:bg-brand-amber/10"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Xem trang cá nhân
+                    </Link>
+                  ) : null}
+                </div>
+
+                {selectedReport.bai_dang_bi_bao_cao ? (
+                  <div className="space-y-1">
+                    <p className="font-bold text-primary text-base">
+                      {selectedReport.bai_dang_bi_bao_cao.ten_tai_san}
+                    </p>
+                    {selectedReport.bai_dang_bi_bao_cao.mo_ta_hien_trang && (
+                      <p className="text-xs text-secondary line-clamp-2">
+                        {selectedReport.bai_dang_bi_bao_cao.mo_ta_hien_trang}
+                      </p>
+                    )}
+                  </div>
+                ) : selectedReport.nguoi_dung_bi_bao_cao ? (
+                  <div className="space-y-1">
+                    <p className="font-bold text-primary text-base">
+                      {selectedReport.nguoi_dung_bi_bao_cao.ho_so?.ho_ten || 'Thành viên'}
+                    </p>
+                    <p className="text-xs text-secondary">
+                      Email: {selectedReport.nguoi_dung_bi_bao_cao.email || 'N/A'}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-secondary font-medium">Lỗi toàn hệ thống / Chung</p>
+                )}
               </div>
 
-              {trangThaiXuLy === 'DA_XU_LY' && (
-                <div className="form-group">
-                  <label className="form-label">Biện pháp xử lý *</label>
-                  <select
-                    value={loaiBienPhap}
-                    onChange={(e) => setLoaiBienPhap(e.target.value as 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN')}
-                    className="form-select"
+              {/* Reporter Info */}
+              <div className="p-3.5 rounded-2xl bg-card-hover border border-color flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-muted block mb-0.5">Người thực hiện báo cáo:</span>
+                  <span className="font-semibold text-primary">
+                    {selectedReport.nguoi_bao_cao?.ho_so?.ho_ten || 'Thành viên'} ({selectedReport.nguoi_bao_cao?.email || 'N/A'})
+                  </span>
+                </div>
+                {selectedReport.nguoi_bao_cao?.nguoi_dung_id && (
+                  <Link
+                    to={`/profile/${selectedReport.nguoi_bao_cao.nguoi_dung_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold"
                   >
-                    <option value="AN_BAI_DANG">Ẩn / Khóa bài đăng vi phạm</option>
-                    <option value="KHOA_TAI_KHOAN">Khóa tài khoản thành viên vi phạm</option>
-                  </select>
+                    Hồ sơ người báo cáo <ExternalLink className="w-3 h-3" />
+                  </Link>
+                )}
+              </div>
+
+              {/* Report Reason & Evidence */}
+              <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-2">
+                <div className="flex items-center gap-1.5 text-brand-rose font-bold text-xs uppercase tracking-wider">
+                  <FileText className="w-4 h-4" />
+                  Lý Do Vi Phạm & Bằng Chứng
+                </div>
+                <p className="font-semibold text-primary text-sm">
+                  {selectedReport.ly_do_vi_pham}
+                </p>
+                {selectedReport.mo_ta_chi_tiet && selectedReport.mo_ta_chi_tiet !== selectedReport.ly_do_vi_pham && (
+                  <div className="pt-1 text-xs text-secondary leading-relaxed bg-background/50 p-3 rounded-xl border border-color">
+                    <span className="font-semibold text-primary block mb-1">Mô tả chi tiết bằng chứng:</span>
+                    {selectedReport.mo_ta_chi_tiet}
+                  </div>
+                )}
+                {selectedReport.minh_chung && (
+                  <div className="pt-2">
+                    <span className="text-xs font-semibold text-secondary flex items-center gap-1 mb-1">
+                      <ImageIcon className="w-3.5 h-3.5" /> Hình ảnh / Minh chứng đính kèm:
+                    </span>
+                    <a
+                      href={selectedReport.minh_chung}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-brand-primary underline break-all inline-flex items-center gap-1"
+                    >
+                      {selectedReport.minh_chung} <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Action History if processed */}
+              {selectedReport.bien_phap && selectedReport.bien_phap.length > 0 && (
+                <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2">
+                  <div className="flex items-center gap-1.5 text-brand-emerald font-bold text-xs uppercase tracking-wider">
+                    <CheckCircle className="w-4 h-4" />
+                    Lịch Sử Xử Lý Trước Đó
+                  </div>
+                  {selectedReport.bien_phap.map((bp, idx) => (
+                    <div key={idx} className="text-xs text-secondary space-y-1">
+                      <p><span className="font-semibold text-primary">Biện pháp:</span> {bp.loai_bien_phap}</p>
+                      {bp.noi_dung_xu_ly && <p><span className="font-semibold text-primary">Ghi chú:</span> {bp.noi_dung_xu_ly}</p>}
+                      <p className="text-[11px] text-muted">
+                        Bởi Quản trị viên: {bp.quan_tri_vien?.ho_so?.ho_ten || bp.quan_tri_vien_id} - {new Date(bp.thoi_gian_xu_ly).toLocaleString('vi-VN')}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
+            </div>
+
+            {/* Decision Action Form */}
+            <form onSubmit={handleProcessSubmit} className="space-y-4 pt-3 border-t border-color">
+              <h3 className="text-base font-bold text-primary">Quyết Định Kiểm Duyệt</h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="form-group">
+                  <label className="form-label">Quyết định xử lý *</label>
+                  <select
+                    value={trangThaiXuLy}
+                    onChange={(e) => setTrangThaiXuLy(e.target.value as 'DA_XU_LY' | 'TU_CHOI')}
+                    className="form-select"
+                  >
+                    <option value="DA_XU_LY">Phê duyệt báo cáo & Thi hành kỷ luật</option>
+                    <option value="TU_CHOI">Bác bỏ báo cáo (Không vi phạm)</option>
+                  </select>
+                </div>
+
+                {trangThaiXuLy === 'DA_XU_LY' && (
+                  <div className="form-group">
+                    <label className="form-label">Biện pháp xử lý *</label>
+                    <select
+                      value={loaiBienPhap}
+                      onChange={(e) => setLoaiBienPhap(e.target.value as 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN')}
+                      className="form-select"
+                    >
+                      <option value="AN_BAI_DANG">Ẩn / Khóa bài đăng vi phạm</option>
+                      <option value="KHOA_TAI_KHOAN">Khóa tài khoản thành viên vi phạm</option>
+                    </select>
+                  </div>
+                )}
+              </div>
 
               <div className="form-group">
                 <label className="form-label">Ghi chú giải trình quyết định</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   placeholder="Ghi rõ căn cứ quyết định xử lý để lưu nhật ký hệ thống..."
                   value={noiDungXuLy}
                   onChange={(e) => setNoiDungXuLy(e.target.value)}
@@ -225,7 +399,7 @@ export const AdminReportsPage: React.FC = () => {
                   onClick={() => setSelectedReport(null)}
                   className="btn btn-outline w-full sm:flex-1 order-2 sm:order-1"
                 >
-                  Hủy bỏ
+                  Đóng
                 </button>
                 <button
                   type="submit"
