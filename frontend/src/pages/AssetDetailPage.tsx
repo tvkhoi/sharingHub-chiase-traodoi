@@ -137,7 +137,7 @@ export const AssetDetailPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       <button onClick={handleGoBack} className="btn btn-outline text-xs mb-6 inline-flex items-center gap-1.5">
         <ArrowLeft className="w-4 h-4" />
-        {location.state?.fromAdminReports || user?.vai_tro === 'QUAN_TRI_VIEN' ? 'Quay lại Trung tâm kiểm duyệt' : 'Quay lại'}
+        Quay lại
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
