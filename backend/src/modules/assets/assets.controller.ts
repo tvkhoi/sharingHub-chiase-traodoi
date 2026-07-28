@@ -17,6 +17,8 @@ import { UpdateAssetDto } from './dto/update-asset.dto';
 import { QueryAssetDto } from './dto/query-asset.dto';
 import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Assets')
@@ -126,7 +128,8 @@ export class AssetsController {
 
   @ApiOperation({ summary: 'Admin thêm danh mục mới' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('QUAN_TRI_VIEN')
   @Post('admin/categories')
   async createCategory(@Body() body: { ten_danh_muc: string; mo_ta?: string; bieu_tuong?: string }) {
     return this.assetsService.createCategory(body);
@@ -134,7 +137,8 @@ export class AssetsController {
 
   @ApiOperation({ summary: 'Admin chỉnh sửa danh mục' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('QUAN_TRI_VIEN')
   @Put('admin/categories/:id')
   async updateCategory(
     @Param('id') id: string,
@@ -145,7 +149,8 @@ export class AssetsController {
 
   @ApiOperation({ summary: 'Admin xóa danh mục' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('QUAN_TRI_VIEN')
   @Delete('admin/categories/:id')
   async deleteCategory(@Param('id') id: string) {
     return this.assetsService.deleteCategory(id);

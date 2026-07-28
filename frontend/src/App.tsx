@@ -22,6 +22,7 @@ import { PrivacyPolicyPage } from './pages/legal/PrivacyPolicyPage';
 import { TermsOfServicePage } from './pages/legal/TermsOfServicePage';
 import { ReportIssuePage } from './pages/legal/ReportIssuePage';
 import { ScrollToTop } from './components/common/ScrollToTop';
+import { ProtectedRoute } from './components/common/ProtectedRoute';
 
 import { socketService } from './services/socket.service';
 
@@ -55,14 +56,14 @@ export const App: React.FC = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/assets/create" element={<CreateAssetPage />} />
+                <Route path="/assets/create" element={<ProtectedRoute><CreateAssetPage /></ProtectedRoute>} />
                 <Route path="/assets/:id" element={<AssetDetailPage />} />
-                <Route path="/my-assets" element={<MyAssetsPage />} />
-                <Route path="/proposals" element={<ProposalsPage />} />
-                <Route path="/transactions" element={<TransactionsPage />} />
+                <Route path="/my-assets" element={<ProtectedRoute><MyAssetsPage /></ProtectedRoute>} />
+                <Route path="/proposals" element={<ProtectedRoute><ProposalsPage /></ProtectedRoute>} />
+                <Route path="/transactions" element={<ProtectedRoute><TransactionsPage /></ProtectedRoute>} />
                 <Route path="/profile/:id" element={<UserProfilePage />} />
-                <Route path="/admin" element={<AdminDashboardPage />} />
-                <Route path="/admin/reports" element={<AdminReportsPage />} />
+                <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboardPage /></ProtectedRoute>} />
+                <Route path="/admin/reports" element={<ProtectedRoute requireAdmin><AdminReportsPage /></ProtectedRoute>} />
                 <Route path="/guide" element={<UserGuidePage />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms" element={<TermsOfServicePage />} />
