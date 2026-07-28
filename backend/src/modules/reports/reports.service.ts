@@ -18,6 +18,16 @@ export class ReportsService {
         where: { bai_dang_id: dto.bai_dang_bi_bao_cao_id },
       });
       if (!asset) throw new NotFoundException('Bài đăng cần báo cáo không tồn tại');
+
+      const existingReport = await this.prisma.baoCaoViPham.findFirst({
+        where: {
+          nguoi_bao_cao_id: userId,
+          bai_dang_bi_bao_cao_id: dto.bai_dang_bi_bao_cao_id,
+        },
+      });
+      if (existingReport) {
+        throw new BadRequestException('Bạn đã gửi báo cáo cho bài viết này trước đó. Vui lòng chờ Quản trị viên xử lý.');
+      }
     }
 
     if (dto.nguoi_dung_bi_bao_cao_id) {
@@ -25,6 +35,16 @@ export class ReportsService {
         where: { nguoi_dung_id: dto.nguoi_dung_bi_bao_cao_id },
       });
       if (!user) throw new NotFoundException('Người dùng cần báo cáo không tồn tại');
+
+      const existingReport = await this.prisma.baoCaoViPham.findFirst({
+        where: {
+          nguoi_bao_cao_id: userId,
+          nguoi_dung_bi_bao_cao_id: dto.nguoi_dung_bi_bao_cao_id,
+        },
+      });
+      if (existingReport) {
+        throw new BadRequestException('Bạn đã gửi báo cáo cho người dùng này trước đó. Vui lòng chờ Quản trị viên xử lý.');
+      }
     }
 
     const loaiBaoCao = dto.bai_dang_bi_bao_cao_id
