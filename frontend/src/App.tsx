@@ -54,8 +54,8 @@ export const App: React.FC = () => {
             <main className="flex-1">
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<ProtectedRoute guestOnly><LoginPage /></ProtectedRoute>} />
+                <Route path="/register" element={<ProtectedRoute guestOnly><RegisterPage /></ProtectedRoute>} />
                 <Route path="/assets/create" element={<ProtectedRoute><CreateAssetPage /></ProtectedRoute>} />
                 <Route path="/assets/:id" element={<AssetDetailPage />} />
                 <Route path="/my-assets" element={<ProtectedRoute><MyAssetsPage /></ProtectedRoute>} />
