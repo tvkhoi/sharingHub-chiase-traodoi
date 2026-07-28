@@ -134,8 +134,7 @@ export const AdminReportsPage: React.FC = () => {
                       {report.bai_dang_bi_bao_cao ? (
                         <Link
                           to={`/assets/${report.bai_dang_bi_bao_cao.bai_dang_id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          state={{ fromAdminReports: true }}
                           className="text-brand-primary font-medium hover:underline truncate max-w-[220px] inline-flex items-center gap-1"
                           title={`Xem bài đăng: ${report.bai_dang_bi_bao_cao.ten_tai_san}`}
                         >
@@ -145,8 +144,7 @@ export const AdminReportsPage: React.FC = () => {
                       ) : report.nguoi_dung_bi_bao_cao ? (
                         <Link
                           to={`/profile/${report.nguoi_dung_bi_bao_cao.nguoi_dung_id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          state={{ fromAdminReports: true }}
                           className="text-brand-amber font-medium hover:underline truncate max-w-[200px] inline-flex items-center gap-1"
                           title="Xem trang cá nhân người bị báo cáo"
                         >
@@ -235,8 +233,7 @@ export const AdminReportsPage: React.FC = () => {
                   {selectedReport.bai_dang_bi_bao_cao ? (
                     <Link
                       to={`/assets/${selectedReport.bai_dang_bi_bao_cao.bai_dang_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      state={{ fromAdminReports: true }}
                       className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1 text-brand-primary border-brand-primary/40 hover:bg-brand-primary/10"
                     >
                       <ExternalLink className="w-3.5 h-3.5" /> Xem bài đăng gốc
@@ -244,8 +241,7 @@ export const AdminReportsPage: React.FC = () => {
                   ) : selectedReport.nguoi_dung_bi_bao_cao ? (
                     <Link
                       to={`/profile/${selectedReport.nguoi_dung_bi_bao_cao.nguoi_dung_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      state={{ fromAdminReports: true }}
                       className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1 text-brand-amber border-brand-amber/40 hover:bg-brand-amber/10"
                     >
                       <ExternalLink className="w-3.5 h-3.5" /> Xem trang cá nhân

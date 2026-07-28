@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { assetsService } from '../services/assets.service';
 import { proposalsService } from '../services/proposals.service';
 import { reportsService } from '../services/reports.service';
@@ -12,10 +12,23 @@ import { createPortal } from 'react-dom';
 export const AssetDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [asset, setAsset] = useState<Asset | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+
+  const handleGoBack = () => {
+    if (location.state?.fromAdminReports) {
+      navigate('/admin/reports');
+    } else if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else if (user?.vai_tro === 'QUAN_TRI_VIEN') {
+      navigate('/admin/reports');
+    } else {
+      navigate('/');
+    }
+  };
 
   // Proposal modal state
   const [showProposalModal, setShowProposalModal] = useState<boolean>(false);
@@ -122,9 +135,9 @@ export const AssetDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      <button onClick={() => navigate(-1)} className="btn btn-outline text-xs mb-6">
+      <button onClick={handleGoBack} className="btn btn-outline text-xs mb-6 inline-flex items-center gap-1.5">
         <ArrowLeft className="w-4 h-4" />
-        Quay lại
+        {location.state?.fromAdminReports || user?.vai_tro === 'QUAN_TRI_VIEN' ? 'Quay lại Trung tâm kiểm duyệt' : 'Quay lại'}
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
