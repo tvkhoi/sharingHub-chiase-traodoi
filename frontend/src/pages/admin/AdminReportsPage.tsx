@@ -20,9 +20,10 @@ export const AdminReportsPage: React.FC = () => {
   // Process Modal state
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [trangThaiXuLy, setTrangThaiXuLy] = useState<'DA_XU_LY' | 'TU_CHOI'>('DA_XU_LY');
-  const [loaiBienPhap, setLoaiBienPhap] = useState<'AN_BAI_DANG' | 'KHOA_TAI_KHOAN' | 'KHONG_VI_PHAM'>('AN_BAI_DANG');
+  const [loaiBienPhap, setLoaiBienPhap] = useState<'AN_BAI_DANG' | 'KHOA_TAI_KHOAN' | 'KHONG_VI_PHAM' | 'KHOI_PHUC_BAI_DANG'>('AN_BAI_DANG');
   const [noiDungXuLy, setNoiDungXuLy] = useState<string>('');
   const [submittingAction, setSubmittingAction] = useState<boolean>(false);
+  const [reportFilter, setReportFilter] = useState<'ALL' | 'REPORT' | 'APPEAL'>('ALL');
 
   useEffect(() => {
     fetchReports();
@@ -72,25 +73,76 @@ export const AdminReportsPage: React.FC = () => {
     }
   };
 
+  const handleSelectReport = (report: Report) => {
+    setSelectedReport(report);
+    if (report.loai_bao_cao === 'KHANG_CAO') {
+      setLoaiBienPhap('KHOI_PHUC_BAI_DANG');
+    } else {
+      setLoaiBienPhap('AN_BAI_DANG');
+    }
+  };
+
+  const filteredReports = reports.filter((r) => {
+    if (reportFilter === 'REPORT') return r.loai_bao_cao !== 'KHANG_CAO';
+    if (reportFilter === 'APPEAL') return r.loai_bao_cao === 'KHANG_CAO';
+    return true;
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-3">
-        <div className="w-12 h-12 shrink-0 rounded-2xl bg-rose-500/20 text-brand-rose flex items-center justify-center border border-rose-500/30">
-          <ShieldAlert className="w-6 h-6" />
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-center sm:items-start justify-between text-center sm:text-left gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 shrink-0 rounded-2xl bg-rose-500/20 text-brand-rose flex items-center justify-center border border-rose-500/30">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primary">Trung Tâm Kiểm Duyệt Vi Phạm & Kháng Cáo</h1>
+            <p className="text-sm text-secondary mt-1 sm:mt-0">Xử lý báo cáo vi phạm & giải trình đơn kháng cáo từ người dùng</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-primary">Trung Tâm Kiểm Duyệt Vi Phạm</h1>
-          <p className="text-sm text-secondary mt-1 sm:mt-0">Xử lý báo cáo nội dung bài đăng & tài khoản thành viên vi phạm quy định</p>
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-1.5 bg-card-hover p-1.5 rounded-2xl border border-color shrink-0">
+          <button
+            onClick={() => setReportFilter('ALL')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              reportFilter === 'ALL'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-secondary hover:text-primary'
+            }`}
+          >
+            Tất cả ({reports.length})
+          </button>
+          <button
+            onClick={() => setReportFilter('REPORT')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              reportFilter === 'REPORT'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-secondary hover:text-primary'
+            }`}
+          >
+            🚨 Báo cáo ({reports.filter((r) => r.loai_bao_cao !== 'KHANG_CAO').length})
+          </button>
+          <button
+            onClick={() => setReportFilter('APPEAL')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              reportFilter === 'APPEAL'
+                ? 'bg-amber-600 text-white shadow-md'
+                : 'text-secondary hover:text-primary'
+            }`}
+          >
+            📢 Kháng cáo ({reports.filter((r) => r.loai_bao_cao === 'KHANG_CAO').length})
+          </button>
         </div>
       </div>
 
       {loading ? (
         <div className="glass-card p-8 h-64 animate-pulse rounded-3xl" />
-      ) : reports.length === 0 ? (
+      ) : filteredReports.length === 0 ? (
         <div className="glass-card text-center py-16 px-4">
           <CheckCircle className="w-16 h-16 text-brand-emerald mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-bold text-primary mb-1">Không có báo cáo vi phạm nào</h3>
-          <p className="text-sm text-secondary">Tất cả bài đăng và tài khoản trên hệ thống đang hoạt động tuân thủ quy chuẩn.</p>
+          <h3 className="text-xl font-bold text-primary mb-1">Không có dữ liệu phù hợp</h3>
+          <p className="text-sm text-secondary">Không tìm thấy báo cáo hoặc đơn kháng cáo nào ở danh mục này.</p>
         </div>
       ) : (
         <div className="glass-panel overflow-hidden rounded-3xl border border-color shadow-2xl">
@@ -99,15 +151,15 @@ export const AdminReportsPage: React.FC = () => {
               <thead>
                 <tr className="border-b border-color bg-card-hover text-xs font-bold text-secondary uppercase tracking-wider whitespace-nowrap">
                   <th className="p-4 text-left whitespace-nowrap">Ngày gửi</th>
-                  <th className="p-4 text-left whitespace-nowrap">Người báo cáo</th>
-                  <th className="p-4 text-left whitespace-nowrap">Đối tượng vi phạm</th>
-                  <th className="p-4 text-left whitespace-nowrap">Lý do vi phạm</th>
+                  <th className="p-4 text-left whitespace-nowrap">Người gửi</th>
+                  <th className="p-4 text-left whitespace-nowrap">Đối tượng</th>
+                  <th className="p-4 text-left whitespace-nowrap">Phân loại & Lý do</th>
                   <th className="p-4 text-left whitespace-nowrap">Trạng thái</th>
                   <th className="p-4 text-left whitespace-nowrap">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-color text-sm">
-                {reports.map((report) => (
+                {filteredReports.map((report) => (
                   <tr key={report.bao_cao_id} className="hover:bg-card-hover transition-colors whitespace-nowrap">
                     <td className="p-4 text-muted text-xs whitespace-nowrap">
                       {new Date(report.ngay_bao_cao).toLocaleDateString('vi-VN')}
@@ -155,9 +207,14 @@ export const AdminReportsPage: React.FC = () => {
                         <span className="text-secondary font-medium">[Hệ thống]</span>
                       )}
                     </td>
-                    <td className="p-4 text-brand-rose font-semibold whitespace-nowrap">
+                    <td className="p-4 font-semibold whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
-                        <span className="truncate max-w-[200px] block" title={report.ly_do_vi_pham}>
+                        {report.loai_bao_cao === 'KHANG_CAO' && (
+                          <span className="badge badge-amber text-[10px] flex items-center gap-0.5" title="Đơn kháng cáo">
+                            📢 Kháng cáo
+                          </span>
+                        )}
+                        <span className="truncate max-w-[200px] block text-brand-rose" title={report.ly_do_vi_pham}>
                           {report.ly_do_vi_pham}
                         </span>
                         {report.minh_chung && (
@@ -180,7 +237,7 @@ export const AdminReportsPage: React.FC = () => {
                     </td>
                     <td className="p-4 text-left whitespace-nowrap">
                       <button
-                        onClick={() => setSelectedReport(report)}
+                        onClick={() => handleSelectReport(report)}
                         className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-1.5 whitespace-nowrap"
                       >
                         <Eye className="w-3.5 h-3.5" /> Xem & Kiểm duyệt
@@ -391,21 +448,31 @@ export const AdminReportsPage: React.FC = () => {
                     onChange={(e) => setTrangThaiXuLy(e.target.value as 'DA_XU_LY' | 'TU_CHOI')}
                     className="form-select"
                   >
-                    <option value="DA_XU_LY">Phê duyệt báo cáo & Thi hành kỷ luật</option>
-                    <option value="TU_CHOI">Bác bỏ báo cáo (Không vi phạm)</option>
+                    <option value="DA_XU_LY">Phê duyệt & Chấp nhận quyết định</option>
+                    <option value="TU_CHOI">Bác bỏ (Không chấp nhận)</option>
                   </select>
                 </div>
 
                 {trangThaiXuLy === 'DA_XU_LY' && (
                   <div className="form-group">
-                    <label className="form-label">Biện pháp xử lý *</label>
+                    <label className="form-label">Biện pháp thực thi *</label>
                     <select
                       value={loaiBienPhap}
-                      onChange={(e) => setLoaiBienPhap(e.target.value as 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN')}
+                      onChange={(e) => setLoaiBienPhap(e.target.value as any)}
                       className="form-select"
                     >
-                      <option value="AN_BAI_DANG">Ẩn / Khóa bài đăng vi phạm</option>
-                      <option value="KHOA_TAI_KHOAN">Khóa tài khoản thành viên vi phạm</option>
+                      {selectedReport?.loai_bao_cao === 'KHANG_CAO' ? (
+                        <>
+                          <option value="KHOI_PHUC_BAI_DANG">🟢 Phê duyệt kháng cáo (Mở lại bài đăng bị khóa)</option>
+                          <option value="AN_BAI_DANG">🔴 Giữ nguyên ẩn / khóa bài đăng</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="AN_BAI_DANG">🔴 Ẩn / Khóa bài đăng vi phạm</option>
+                          <option value="KHOA_TAI_KHOAN">🔴 Khóa tài khoản thành viên vi phạm</option>
+                          <option value="KHOI_PHUC_BAI_DANG">🟢 Khôi phục mở lại bài đăng</option>
+                        </>
+                      )}
                     </select>
                   </div>
                 )}

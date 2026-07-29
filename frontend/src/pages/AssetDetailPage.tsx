@@ -48,6 +48,14 @@ export const AssetDetailPage: React.FC = () => {
   const [uploadingEvidence, setUploadingEvidence] = useState<boolean>(false);
   const [submittingReport, setSubmittingReport] = useState<boolean>(false);
 
+  // Appeal modal state
+  const [showAppealModal, setShowAppealModal] = useState<boolean>(false);
+  const [lyDoKhangCao, setLyDoKhangCao] = useState<string>('');
+  const [moTaKhangCao, setMoTaKhangCao] = useState<string>('');
+  const [minhChungKhangCao, setMinhChungKhangCao] = useState<string>('');
+  const [uploadingAppealEvidence, setUploadingAppealEvidence] = useState<boolean>(false);
+  const [submittingAppeal, setSubmittingAppeal] = useState<boolean>(false);
+
   useEffect(() => {
     if (id) fetchAsset(id);
   }, [id]);
@@ -178,6 +186,54 @@ export const AssetDetailPage: React.FC = () => {
       toast.error(msg);
     } finally {
       setSubmittingReport(false);
+    }
+  };
+
+  const openAppealModal = () => {
+    setLyDoKhangCao(`Kháng cáo quyết định khóa/ẩn bài đăng "${asset?.ten_tai_san}"`);
+    setMoTaKhangCao('');
+    setMinhChungKhangCao('');
+    setShowAppealModal(true);
+  };
+
+  const handleUploadAppealEvidence = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAppealEvidence(true);
+    try {
+      const res = await uploadService.uploadSingle(file);
+      setMinhChungKhangCao(res.url);
+      toast.success('Đã tải ảnh minh chứng giải trình!');
+    } catch (err: any) {
+      toast.error('Tải ảnh thất bại, vui lòng thử lại');
+    } finally {
+      setUploadingAppealEvidence(false);
+    }
+  };
+
+  const handleSendAppeal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!asset || !user) return;
+    if (!moTaKhangCao.trim()) return toast.error('Vui lòng nhập nội dung giải trình kháng cáo');
+
+    setSubmittingAppeal(true);
+    try {
+      await reportsService.createReport({
+        bai_dang_bi_bao_cao_id: asset.bai_dang_id,
+        ly_do_bao_cao: lyDoKhangCao,
+        mo_ta_chi_tiet: moTaKhangCao.trim(),
+        minh_chung: minhChungKhangCao || undefined,
+        loai_bao_cao: 'KHANG_CAO',
+      });
+
+      toast.success('Đã gửi đơn kháng cáo thành công! Quản trị viên sẽ xem xét giải trình của bạn.');
+      setShowAppealModal(false);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Gửi kháng cáo thất bại!';
+      toast.error(msg);
+    } finally {
+      setSubmittingAppeal(false);
     }
   };
 
@@ -350,8 +406,24 @@ export const AssetDetailPage: React.FC = () => {
                 Đăng nhập để Đề xuất Nhận / Trao đổi
               </Link>
             ) : isOwner ? (
-              <div className="p-3 glass-panel rounded-xl text-center text-sm font-semibold text-brand-primary">
-                Đây là bài đăng tài sản do bạn khởi tạo
+              <div className="space-y-3">
+                <div className="p-3 glass-panel rounded-xl text-center text-sm font-semibold text-brand-primary">
+                  Đây là bài đăng tài sản do bạn khởi tạo
+                </div>
+                {(asset.trang_thai === 'DA_KET_THUC' || asset.trang_thai === 'TAM_AN' || asset.trang_thai === 'VO_HIEU') && (
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 space-y-2">
+                    <p className="text-xs font-semibold">
+                      ⚠️ Bài đăng này hiện đang bị ẩn hoặc tạm dừng do kiểm duyệt vi phạm. Nếu bạn cho rằng đây là sự nhầm lẫn, hãy gửi đơn kháng cáo giải trình.
+                    </p>
+                    <button
+                      onClick={openAppealModal}
+                      className="btn btn-amber text-xs font-bold w-full flex items-center justify-center gap-1.5 py-2.5"
+                    >
+                      <ShieldAlert className="w-4 h-4" />
+                      📢 Gửi đơn kháng cáo cho Quản trị viên
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex gap-3">
@@ -613,6 +685,121 @@ export const AssetDetailPage: React.FC = () => {
                   className="btn btn-danger flex-1"
                 >
                   {submittingReport ? 'Đang gửi...' : 'Gửi báo cáo'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal: Create Appeal */}
+      {showAppealModal && createPortal(
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass-panel max-w-lg w-full p-6 rounded-3xl border border-color shadow-2xl animate-fade-in space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-color">
+              <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-brand-amber" />
+                Gửi Đơn Kháng Cáo Bài Đăng
+              </h2>
+              <button
+                onClick={() => setShowAppealModal(false)}
+                className="p-1 rounded-lg text-muted hover:text-primary transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-secondary">
+              Bài đăng: <span className="font-semibold text-primary">{asset.ten_tai_san}</span>
+            </p>
+
+            <form onSubmit={handleSendAppeal} className="space-y-4">
+              <div className="form-group">
+                <label className="form-label">Tiêu đề kháng cáo *</label>
+                <input
+                  type="text"
+                  value={lyDoKhangCao}
+                  onChange={(e) => setLyDoKhangCao(e.target.value)}
+                  className="form-input text-sm"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Nội dung giải trình chi tiết *</label>
+                <textarea
+                  rows={4}
+                  placeholder="Giải trình lý do bạn cho rằng bài đăng của mình hợp lệ và không vi phạm quy định..."
+                  value={moTaKhangCao}
+                  onChange={(e) => setMoTaKhangCao(e.target.value)}
+                  className="form-textarea text-sm"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label flex items-center justify-between">
+                  <span>Ảnh minh chứng giải trình</span>
+                  <span className="text-[11px] text-muted font-normal">(Hình ảnh đính kèm)</span>
+                </label>
+
+                {minhChungKhangCao ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-color max-h-40 bg-card-hover group">
+                    <img src={minhChungKhangCao} alt="Bằng chứng kháng cáo" className="w-full h-36 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setMinhChungKhangCao('')}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-black/70 text-white hover:bg-rose-600 transition-colors shadow-lg"
+                      title="Xóa ảnh"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUploadAppealEvidence}
+                      id="appeal-evidence-upload"
+                      className="hidden"
+                      disabled={uploadingAppealEvidence}
+                    />
+                    <label
+                      htmlFor="appeal-evidence-upload"
+                      className="cursor-pointer border-2 border-dashed border-color hover:border-brand-amber/60 p-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-xs text-secondary hover:text-brand-amber transition-colors bg-card-hover/40"
+                    >
+                      {uploadingAppealEvidence ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-brand-amber" />
+                          <span>Đang tải ảnh giải trình lên...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-4 h-4 text-brand-amber" />
+                          <span>Tải ảnh minh chứng giải trình từ máy tính</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAppealModal(false)}
+                  className="btn btn-outline flex-1 text-xs"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingAppeal || uploadingAppealEvidence}
+                  className="btn btn-amber flex-1 text-xs font-bold"
+                >
+                  {submittingAppeal ? 'Đang gửi...' : 'Gửi đơn kháng cáo'}
                 </button>
               </div>
             </form>

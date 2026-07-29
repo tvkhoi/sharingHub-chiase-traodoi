@@ -93,7 +93,9 @@ export class ReportsService implements OnModuleInit {
       }
     }
 
-    const loaiBaoCao = dto.bai_dang_bi_bao_cao_id
+    const loaiBaoCao = dto.loai_bao_cao
+      ? dto.loai_bao_cao
+      : dto.bai_dang_bi_bao_cao_id
       ? 'BAI_DANG'
       : dto.nguoi_dung_bi_bao_cao_id
       ? 'NGUOI_DUNG'
@@ -268,6 +270,23 @@ export class ReportsService implements OnModuleInit {
           });
         } catch (err) {
           console.error('Lỗi gửi push notification khóa bài đăng:', err);
+        }
+      } else if (dto.loai_bien_phap === 'KHOI_PHUC_BAI_DANG' && report.bai_dang_bi_bao_cao_id) {
+        const updatedAsset = await tx.baiDangTaiSan.update({
+          where: { bai_dang_id: report.bai_dang_bi_bao_cao_id },
+          data: { trang_thai: 'KHA_DUNG' },
+        });
+
+        try {
+          this.negotiationGateway.sendNotificationToUser(updatedAsset.chu_so_huu_id, {
+            type: 'ASSET_MODERATED',
+            title: 'Bài đăng đã được khôi phục! 🎉',
+            message: `Kháng cáo thành công! Bài đăng "${updatedAsset.ten_tai_san}" của bạn đã được mở lại ở trạng thái Khả dụng.`,
+            link: `/assets/${updatedAsset.bai_dang_id}`,
+            payload: { assetId: updatedAsset.bai_dang_id },
+          });
+        } catch (err) {
+          console.error('Lỗi gửi push notification khôi phục bài đăng:', err);
         }
       } else if (dto.loai_bien_phap === 'KHOA_TAI_KHOAN') {
         const targetUserId =

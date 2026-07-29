@@ -7,12 +7,14 @@ export interface CreateReportPayload {
   ly_do_bao_cao: string;
   mo_ta_chi_tiet?: string;
   minh_chung?: string;
+  loai_bao_cao?: string;
 }
 
 export interface ProcessReportPayload {
   trang_thai_xu_ly: 'DA_XU_LY' | 'TU_CHOI';
-  loai_bien_phap?: 'KHONG_VI_PHAM' | 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN';
+  loai_bien_phap?: 'KHONG_VI_PHAM' | 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN' | 'KHOI_PHUC_BAI_DANG';
   noi_dung_xu_ly?: string;
+  ghi_chu_xu_ly?: string;
 }
 
 export const reportsService = {

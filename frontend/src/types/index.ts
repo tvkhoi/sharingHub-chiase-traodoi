@@ -4,12 +4,12 @@ export type UserRole = 'THANH_VIEN' | 'QUAN_TRI_VIEN';
 export type UserStatus = 'CHO_XAC_THUC' | 'HOAT_DONG' | 'BI_KHOA';
 export type ShareType = 'CHO_TANG' | 'TRAO_DOI';
 export type TradeType = 'TAI_SAN' | 'TIEN';
-export type AssetStatus = 'KHA_DUNG' | 'DANG_THUONG_LUONG' | 'DA_KHOA_SO' | 'DA_KET_THUC';
+export type AssetStatus = 'KHA_DUNG' | 'DANG_THUONG_LUONG' | 'DA_KHOA_SO' | 'DA_KET_THUC' | 'TAM_AN' | 'VO_HIEU';
 export type ProposalStatus = 'CHO_XU_LY' | 'DANG_THUONG_LUONG' | 'DA_CHAP_NHAN' | 'TU_CHOI' | 'DA_HUY';
 export type TransactionStatus = 'CHO_BAN_GIAO' | 'DANG_GIAO' | 'HOAN_TAT' | 'DA_HUY';
-export type ReportType = 'BAI_DANG' | 'NGUOI_DUNG';
+export type ReportType = 'BAI_DANG' | 'NGUOI_DUNG' | 'KHANG_CAO' | string;
 export type ReportStatus = 'CHO_KIEM_DUYET' | 'DA_XU_LY' | 'TU_CHOI';
-export type ActionType = 'KHONG_VI_PHAM' | 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN';
+export type ActionType = 'KHONG_VI_PHAM' | 'AN_BAI_DANG' | 'KHOA_TAI_KHOAN' | 'KHOI_PHUC_BAI_DANG' | string;
 export type NotificationType = 'NEW_PROPOSAL' | 'PROPOSAL_ACCEPTED' | 'PROPOSAL_REJECTED' | 'TRANSACTION_UPDATED' | 'ASSET_MODERATED' | 'NEW_REVIEW' | 'NEW_MESSAGE';
 
 export interface AppNotification {

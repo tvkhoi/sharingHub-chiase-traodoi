@@ -49,4 +49,12 @@ export class CreateReportDto {
   @IsString()
   @IsOptional()
   minh_chung?: string;
+
+  @ApiPropertyOptional({
+    description: 'Loại báo cáo hoặc kháng cáo (BAI_DANG, NGUOI_DUNG, KHANG_CAO...)',
+    example: 'KHANG_CAO',
+  })
+  @IsString()
+  @IsOptional()
+  loai_bao_cao?: string;
 }
