@@ -50,6 +50,7 @@ export interface User {
   ngay_tao?: string;
   ho_so?: UserProfile | null;
   uy_tin?: ReputationProfile | null;
+  ho_so_uy_tin?: ReputationProfile | null;
 }
 
 export interface AssetCategory {

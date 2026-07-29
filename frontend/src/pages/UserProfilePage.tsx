@@ -72,7 +72,7 @@ export const UserProfilePage: React.FC = () => {
   }
 
   const isOwner = currentUser?.nguoi_dung_id === profileUser.nguoi_dung_id;
-  const reputation = profileUser.uy_tin;
+  const reputation = profileUser.uy_tin || (profileUser as any).ho_so_uy_tin;
   const displayPhone = profileUser.so_dien_thoai || profileUser.ho_so?.so_dien_thoai;
 
   return (
