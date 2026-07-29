@@ -3,10 +3,11 @@ import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { assetsService } from '../services/assets.service';
 import { proposalsService } from '../services/proposals.service';
 import { reportsService } from '../services/reports.service';
+import { uploadService } from '../services/upload.service';
 import { useAuth } from '../context/AuthContext';
 import type { Asset } from '../types';
 import toast from 'react-hot-toast';
-import { MapPin, Box, Gift, ArrowLeftRight, Star, Send, ShieldAlert, ArrowLeft, Calendar } from 'lucide-react';
+import { MapPin, Box, Gift, ArrowLeftRight, Star, Send, ShieldAlert, ArrowLeft, Calendar, UploadCloud, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 export const AssetDetailPage: React.FC = () => {
@@ -41,6 +42,8 @@ export const AssetDetailPage: React.FC = () => {
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
   const [lyDoBaoCao, setLyDoBaoCao] = useState<string>('');
   const [moTaReport, setMoTaReport] = useState<string>('');
+  const [minhChungImage, setMinhChungImage] = useState<string>('');
+  const [uploadingEvidence, setUploadingEvidence] = useState<boolean>(false);
   const [submittingReport, setSubmittingReport] = useState<boolean>(false);
 
   useEffect(() => {
@@ -95,6 +98,7 @@ export const AssetDetailPage: React.FC = () => {
   const openReportModal = () => {
     setLyDoBaoCao('');
     setMoTaReport('');
+    setMinhChungImage('');
     setShowReportModal(true);
   };
 
@@ -102,6 +106,23 @@ export const AssetDetailPage: React.FC = () => {
     setShowReportModal(false);
     setLyDoBaoCao('');
     setMoTaReport('');
+    setMinhChungImage('');
+  };
+
+  const handleUploadEvidence = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingEvidence(true);
+    try {
+      const res = await uploadService.uploadSingle(file);
+      setMinhChungImage(res.url);
+      toast.success('Đã tải ảnh bằng chứng lên thành công!');
+    } catch (err: any) {
+      toast.error('Tải ảnh bằng chứng thất bại, vui lòng thử lại');
+    } finally {
+      setUploadingEvidence(false);
+    }
   };
 
   const handleSendReport = async (e: React.FormEvent) => {
@@ -112,8 +133,10 @@ export const AssetDetailPage: React.FC = () => {
     try {
       await reportsService.createReport({
         bai_dang_bi_bao_cao_id: asset.bai_dang_id,
+        nguoi_dung_bi_bao_cao_id: asset.chu_so_huu_id,
         ly_do_bao_cao: lyDoBaoCao,
         mo_ta_chi_tiet: moTaReport || undefined,
+        minh_chung: minhChungImage || undefined,
       });
 
       toast.success('Báo cáo vi phạm đã được gửi đến Ban Quản Trị!');
@@ -421,6 +444,54 @@ export const AssetDetailPage: React.FC = () => {
                 />
               </div>
 
+              <div className="form-group">
+                <label className="form-label flex items-center justify-between">
+                  <span>Hình ảnh / Minh chứng vi phạm</span>
+                  <span className="text-[11px] text-muted font-normal">(Ảnh chụp minh chứng)</span>
+                </label>
+
+                {minhChungImage ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-color max-h-40 bg-card-hover group">
+                    <img src={minhChungImage} alt="Bằng chứng vi phạm" className="w-full h-36 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setMinhChungImage('')}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-black/70 text-white hover:bg-rose-600 transition-colors shadow-lg"
+                      title="Xóa ảnh minh chứng"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUploadEvidence}
+                      id="report-evidence-upload"
+                      className="hidden"
+                      disabled={uploadingEvidence}
+                    />
+                    <label
+                      htmlFor="report-evidence-upload"
+                      className="cursor-pointer border-2 border-dashed border-color hover:border-brand-rose/60 p-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-xs text-secondary hover:text-brand-rose transition-colors bg-card-hover/40"
+                    >
+                      {uploadingEvidence ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-brand-rose" />
+                          <span>Đang tải ảnh bằng chứng lên...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-4 h-4 text-brand-rose" />
+                          <span>Tải ảnh minh chứng vi phạm từ máy tính</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
@@ -431,7 +502,7 @@ export const AssetDetailPage: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={submittingReport}
+                  disabled={submittingReport || uploadingEvidence}
                   className="btn btn-danger flex-1"
                 >
                   {submittingReport ? 'Đang gửi...' : 'Gửi báo cáo'}

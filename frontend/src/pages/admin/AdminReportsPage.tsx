@@ -310,18 +310,39 @@ export const AdminReportsPage: React.FC = () => {
                   </div>
                 )}
                 {selectedReport.minh_chung && (
-                  <div className="pt-2">
-                    <span className="text-xs font-semibold text-secondary flex items-center gap-1 mb-1">
-                      <ImageIcon className="w-3.5 h-3.5" /> Hình ảnh / Minh chứng đính kèm:
+                  <div className="pt-2 border-t border-color/40 mt-2">
+                    <span className="text-xs font-semibold text-secondary flex items-center gap-1 mb-2">
+                      <ImageIcon className="w-3.5 h-3.5 text-brand-primary" /> Hình ảnh / Minh chứng đính kèm:
                     </span>
-                    <a
-                      href={selectedReport.minh_chung}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-brand-primary underline break-all inline-flex items-center gap-1"
-                    >
-                      {selectedReport.minh_chung} <ExternalLink className="w-3 h-3" />
-                    </a>
+                    <div className="flex flex-col gap-2">
+                      <a
+                        href={selectedReport.minh_chung}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block rounded-xl overflow-hidden border border-color max-w-xs hover:opacity-90 transition-opacity group relative shadow-md"
+                        title="Bấm để xem ảnh gốc kích thước lớn"
+                      >
+                        <img
+                          src={selectedReport.minh_chung}
+                          alt="Bằng chứng vi phạm"
+                          className="max-h-48 w-auto object-cover rounded-xl"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity">
+                          <ExternalLink className="w-4 h-4 mr-1" /> Xem ảnh đầy đủ
+                        </div>
+                      </a>
+                      <a
+                        href={selectedReport.minh_chung}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-brand-primary underline break-all inline-flex items-center gap-1 font-mono"
+                      >
+                        {selectedReport.minh_chung} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>

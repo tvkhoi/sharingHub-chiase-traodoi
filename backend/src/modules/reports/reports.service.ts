@@ -53,11 +53,21 @@ export class ReportsService {
       ? 'NGUOI_DUNG'
       : 'HE_THONG';
 
+    let targetUserId = dto.nguoi_dung_bi_bao_cao_id || null;
+    if (dto.bai_dang_bi_bao_cao_id && !targetUserId) {
+      const asset = await this.prisma.baiDangTaiSan.findUnique({
+        where: { bai_dang_id: dto.bai_dang_bi_bao_cao_id },
+      });
+      if (asset) {
+        targetUserId = asset.chu_so_huu_id;
+      }
+    }
+
     return this.prisma.baoCaoViPham.create({
       data: {
         nguoi_bao_cao_id: userId,
         bai_dang_bi_bao_cao_id: dto.bai_dang_bi_bao_cao_id || null,
-        nguoi_dung_bi_bao_cao_id: dto.nguoi_dung_bi_bao_cao_id || null,
+        nguoi_dung_bi_bao_cao_id: targetUserId,
         loai_bao_cao: loaiBaoCao,
         ly_do_vi_pham: dto.ly_do_bao_cao,
         mo_ta_chi_tiet: dto.mo_ta_chi_tiet || dto.ly_do_bao_cao,
