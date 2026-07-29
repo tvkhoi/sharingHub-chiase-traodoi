@@ -326,7 +326,9 @@ export const ProposalsPage: React.FC = () => {
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => handleAcceptProposal(prop.de_xuat_id)}
-                      className="btn btn-emerald text-sm flex-1 sm:flex-none justify-center"
+                      disabled={(prop.bai_dang?.so_luong_kha_dung ?? 0) < prop.so_luong_yeu_cau}
+                      className="btn btn-emerald text-sm flex-1 sm:flex-none justify-center disabled:opacity-50 disabled:cursor-not-allowed border-0"
+                      title={(prop.bai_dang?.so_luong_kha_dung ?? 0) < prop.so_luong_yeu_cau ? 'Số lượng khả dụng không đủ để chấp nhận đề xuất này' : 'Chấp nhận đề xuất'}
                     >
                       Chấp nhận
                     </button>
