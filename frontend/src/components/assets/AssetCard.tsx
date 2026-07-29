@@ -86,7 +86,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
                   {asset.chu_so_huu?.ho_so?.ho_ten || 'Member'}
                 </span>
               )}
-              {asset.chu_so_huu?.uy_tin && (
+              {asset.chu_so_huu?.uy_tin && Number(asset.chu_so_huu.uy_tin.tong_so_danh_gia) > 0 && (
                 <span className="flex items-center gap-0.5 text-brand-amber font-bold ml-0.5 flex-shrink-0">
                   <Star className="w-3 h-3 fill-amber-400" />
                   {asset.chu_so_huu.uy_tin.diem_trung_binh}

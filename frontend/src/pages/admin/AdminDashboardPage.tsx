@@ -553,7 +553,9 @@ export const AdminDashboardPage: React.FC = () => {
                         </div>
                       </td>
                       <td className="py-3.5 px-4 text-left font-bold text-brand-amber whitespace-nowrap">
-                        ⭐ {u.uy_tin?.diem_trung_binh ?? '5.0'} / 5.0
+                        {u.uy_tin && Number(u.uy_tin.tong_so_danh_gia) > 0 
+                          ? `⭐ ${u.uy_tin.diem_trung_binh} / 5.0`
+                          : <span className="text-muted font-normal italic">Chưa có đánh giá</span>}
                       </td>
                       <td className="py-3.5 px-4 text-left whitespace-nowrap">
                         <div className="flex items-center justify-start whitespace-nowrap">

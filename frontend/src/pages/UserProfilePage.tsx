@@ -134,7 +134,9 @@ export const UserProfilePage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="glass-card p-6 rounded-2xl text-center">
             <Star className="w-8 h-8 text-brand-amber fill-amber-400 mx-auto mb-2" />
-            <div className="text-2xl font-extrabold text-brand-amber">{reputation.diem_trung_binh} / 5.0</div>
+            <div className="text-xl sm:text-2xl font-extrabold text-brand-amber">
+              {Number(reputation.tong_so_danh_gia) > 0 ? `${reputation.diem_trung_binh} / 5.0` : 'Chưa có đánh giá'}
+            </div>
             <span className="text-xs text-muted font-semibold">{t('profile.reputationScore')}</span>
           </div>
 

@@ -267,13 +267,21 @@ export const AssetDetailPage: React.FC = () => {
 
                 {asset.chu_so_huu.uy_tin && (
                   <div className="text-right">
-                    <div className="flex items-center justify-end gap-1 text-brand-amber font-extrabold text-sm">
-                      <Star className="w-4 h-4 fill-amber-400" />
-                      {asset.chu_so_huu.uy_tin.diem_trung_binh} / 5.0
-                    </div>
-                    <span className="text-xs text-muted">
-                      ({asset.chu_so_huu.uy_tin.tong_so_danh_gia} đánh giá)
-                    </span>
+                    {Number(asset.chu_so_huu.uy_tin.tong_so_danh_gia) > 0 ? (
+                      <>
+                        <div className="flex items-center justify-end gap-1 text-brand-amber font-extrabold text-sm">
+                          <Star className="w-4 h-4 fill-amber-400" />
+                          {asset.chu_so_huu.uy_tin.diem_trung_binh} / 5.0
+                        </div>
+                        <span className="text-xs text-muted">
+                          ({asset.chu_so_huu.uy_tin.tong_so_danh_gia} đánh giá)
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-xs font-semibold text-muted bg-slate-800/40 px-2 py-1 rounded-md border border-slate-700/50">
+                        Chưa có đánh giá
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
