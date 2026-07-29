@@ -17,7 +17,7 @@ import { EmailModule } from '../email/email.module';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET') || 'super-secret-key-asset-sharing-system-2026',
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d',
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '4h',
         },
       }),
     }),

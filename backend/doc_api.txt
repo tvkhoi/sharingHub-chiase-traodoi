@@ -1,0 +1,529 @@
+4.7.2. Đặc tả API
+(Xem đầy đủ đặc tả các API tại phụ lục D)
+4.7.2.1. /api/v1/auth/register
+Bảng 4.1. Đặc tả API /api/v1/auth/register
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng (Khách/Public).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Đăng ký tài khoản người dùng mới trong hệ thống. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.5 - YCKT-14) và BRD - Business Requirements Document (Mục 3.5 - Use Case UC5.1 Đăng ký tài khoản).
+Request Payload | Định dạng JSON ánh xạ vào RegisterDto (áp dụng @Valid). {   "email": "user1@gmail.com",   "so_dien_thoai": "0912345678",   "mat_khau": "123456",   "ho_ten": "Nguyễn Văn A" }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Đăng ký tài khoản thành công",   "user": {     "nguoi_dung_id": "774cab95-d36d-4028-b273-f971e30fdeec",     "email": "user1@gmail.com",     "so_dien_thoai": "0912345678",     "ho_ten": "Nguyễn Văn A",     "vai_tro": "THANH_VIEN",     "trang_thai": "HOAT_DONG"   } }
+--- TABLE END ---
+
+4.7.2.2. /api/v1/auth/login
+Bảng 4.2. Đặc tả API /api/v1/auth/login
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng (Khách/Public).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xác thực danh tính và đăng nhập hệ thống bằng Email/SĐT. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.5 - YCKT-15) và BRD - Business Requirements Document (Mục 3.5 - Use Case UC5.2 Đăng nhập).
+Request Payload | Định dạng JSON ánh xạ vào LoginDto (hỗ trợ tài khoản Email hoặc SĐT). {   "tai_khoan": "user1@gmail.com",   "mat_khau": "123456" }
+Response | HTTP Status Code: 200 OK. Body: {   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",   "user": {     "nguoi_dung_id": "774cab95-d36d-4028-b273-f971e30fdeec",     "email": "user1@gmail.com",     "ho_ten": "Nguyễn Văn A",     "vai_tro": "THANH_VIEN"   } }
+--- TABLE END ---
+
+4.7.2.3. /api/v1/auth/me
+Bảng 4.3. Đặc tả API /api/v1/auth/me
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn thông tin tài khoản và duy trì phiên đăng nhập bảo mật hiện tại. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.1 Module Authentication & Security).
+Request Payload | Không có Payload.
+Response | HTTP Status Code: 200 OK. Body: {   "nguoi_dung_id": "774cab95-d36d-4028-b273-f971e30fdeec",   "email": "user1@gmail.com",   "ho_ten": "Nguyễn Văn A",   "vai_tro": "THANH_VIEN",   "ho_so": { "dia_chi": "Quận 5, TP.HCM" },   "uy_tin": { "diem_uy_tin": 100, "diem_trung_binh": 4.9 } }
+--- TABLE END ---
+
+4.7.2.4. /api/v1/users/profile/:id
+Bảng 4.4. Đặc tả API /api/v1/users/profile/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng (Khách/Public).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn thông tin hồ sơ cá nhân công khai của thành viên. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.5 - YCKT-16) và BRD (Mục 3.5 - Use Case UC5.3 Xem hồ sơ).
+Request Payload | Path parameter id (UUID): Mã định danh người dùng.
+Response | HTTP Status Code: 200 OK. Body: {   "nguoi_dung_id": "774cab95-d36d-4028-b273-f971e30fdeec",   "ho_ten": "Nguyễn Văn A",   "ho_so": { "mo_ta_ca_nhan": "Yêu thích chia sẻ đồ dùng" } }
+--- TABLE END ---
+
+4.7.2.5. /api/v1/users/profile
+Bảng 4.5. Đặc tả API /api/v1/users/profile
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Cập nhật thông tin hồ sơ cá nhân (Họ tên, SĐT, địa chỉ, ảnh đại diện, tiểu sử). • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.5 - YCKT-16) và BRD (Mục 3.5 - Use Case UC5.3 Cập nhật hồ sơ).
+Request Payload | Định dạng JSON ánh xạ UpdateProfileDto. {   "ho_ten": "Nguyễn Văn A (Mới)",   "so_dien_thoai": "0987654321",   "dia_chi": "456 Nguyễn Trãi, Q5" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Cập nhật thông tin cá nhân thành công",   "data": { "nguoi_dung_id": "774cab95...", "ho_ten": "Nguyễn Văn A (Mới)" } }
+--- TABLE END ---
+
+4.7.2.6. /api/v1/users/reputation/:id
+Bảng 4.6. Đặc tả API /api/v1/users/reputation/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng (Khách/Public).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn hồ sơ chỉ số điểm uy tín và lượt đánh giá của thành viên. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.6 - YCKT-18) và BRD (Mục 3.6 - Use Case UC6.2 Hồ sơ uy tín).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "nguoi_dung_id": "774cab95...",   "diem_uy_tin": 105,   "tong_luot_danh_gia": 20,   "diem_trung_binh": 4.95 }
+--- TABLE END ---
+
+4.7.2.7. /api/v1/categories
+Bảng 4.7. Đặc tả API /api/v1/categories
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng (Khách/Public).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách các danh mục tài sản được phân loại trong hệ thống. • Nguồn gốc tài liệu: Tài liệu DATABASE DESIGN DOCUMENT (Bảng danh_muc_tai_san) và SyRS (Phần 3.1 Quản lý danh mục).
+Request Payload | Không có Payload.
+Response | HTTP Status Code: 200 OK. Body: [   { "danh_muc_id": "cat-01", "ten_danh_muc": "Đồ điện tử", "bieu_tuong": "laptop" },   { "danh_muc_id": "cat-02", "ten_danh_muc": "Sách & Giáo trình", "bieu_tuong": "book" } ]
+--- TABLE END ---
+
+4.7.2.8. /api/v1/assets/trending-searches
+Bảng 4.8. Đặc tả API /api/v1/assets/trending-searches
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Lấy danh sách xu hướng từ khóa tìm kiếm phổ biến. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.3 Search Optimization & Memory Cache).
+Request Payload | Không có Payload.
+Response | HTTP Status Code: 200 OK. Body: {   "trending": ["Laptop", "Sách giải tích", "Xe máy", "Tai nghe"] }
+--- TABLE END ---
+
+4.7.2.9. /api/v1/assets
+Bảng 4.9. Đặc tả API /api/v1/assets
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên hệ thống.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Đăng bài đăng tài sản chia sẻ (cho tặng) hoặc trao đổi mới. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.1 - YCKT-01) và BRD (Mục 3.1 - Use Case UC1.1 Đăng bài tài sản mới).
+Request Payload | Định dạng JSON ánh xạ CreateAssetDto. {   "danh_muc_id": "cat-01",   "ten_tai_san": "Laptop Dell XPS 13",   "mo_ta_hien_trang": "RAM 16GB, SSD 512GB",   "so_luong_tong": 1,   "hinh_thuc_chia_se": "TRAO_DOI",   "dia_diem": "Quận 5, TP.HCM",   "hinh_anh": ["http://localhost:3000/uploads/dell.jpg"] }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Đăng bài tài sản thành công",   "data": { "tai_san_id": "asset-123", "trang_thai": "KHA_DUNG" } }
+--- TABLE END ---
+
+4.7.2.10. /api/v1/assets
+Bảng 4.10. Đặc tả API /api/v1/assets
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Tìm kiếm từ khóa và lọc danh sách bài đăng tài sản có phân trang. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.2 - YCKT-05) và BRD (Mục 3.2 - Use Case UC2.1 Tìm kiếm và lọc bài đăng).
+Request Payload | Query Parameters (QueryAssetDto): search, danh_muc_id, hinh_thuc, page, limit.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "tai_san_id": "asset-123", "ten_tai_san": "Laptop Dell XPS 13" }],   "meta": { "total": 1, "page": 1, "lastPage": 1 } }
+--- TABLE END ---
+
+4.7.2.11. /api/v1/assets/my
+Bảng 4.11. Đặc tả API /api/v1/assets/my
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách các bài đăng tài sản do cá nhân người dùng khởi tạo. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.1 - YCKT-04) và BRD (Mục 3.1 - Use Case UC1.4 Xem danh sách bài đăng cá nhân).
+Request Payload | Query Parameters: page, limit.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "tai_san_id": "asset-123", "ten_tai_san": "Laptop Dell XPS 13" }],   "meta": { "total": 1 } }
+--- TABLE END ---
+
+4.7.2.12. /api/v1/assets/:id
+Bảng 4.12. Đặc tả API /api/v1/assets/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn chi tiết thông tin món đồ, hình ảnh và thông tin chủ bài đăng. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.2 - YCKT-06) và BRD (Mục 3.2 - Use Case UC2.2 Xem chi tiết bài đăng tài sản).
+Request Payload | Path parameter id (UUID): Mã bài đăng tài sản.
+Response | HTTP Status Code: 200 OK. Body: {   "tai_san_id": "asset-123",   "ten_tai_san": "Laptop Dell XPS 13",   "so_luong_tong": 1,   "hinh_anh": ["http://localhost:3000/uploads/dell.jpg"],   "nguoi_so_huu": { "ho_ten": "Nguyễn Văn A" } }
+--- TABLE END ---
+
+4.7.2.13. /api/v1/assets/:id
+Bảng 4.13. Đặc tả API /api/v1/assets/:id
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Chủ sở hữu bài đăng tài sản.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Cập nhật thông tin bài đăng tài sản thuộc quyền sở hữu của người dùng. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.1 - YCKT-02) và BRD (Mục 3.1 - Use Case UC1.2 Cập nhật bài đăng tài sản).
+Request Payload | Định dạng JSON ánh xạ UpdateAssetDto. {   "ten_tai_san": "Laptop Dell XPS 13 9305",   "mo_ta_hien_trang": "Cập nhật ngoại hình 98%" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Cập nhật thông tin bài đăng thành công",   "data": { "tai_san_id": "asset-123" } }
+--- TABLE END ---
+
+4.7.2.14. /api/v1/assets/:id
+Bảng 4.14. Đặc tả API /api/v1/assets/:id
+
+--- TABLE START ---
+HTTP Method | DELETE
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Chủ sở hữu bài đăng tài sản.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xóa hoặc hủy bài đăng tài sản khi chưa có giao dịch đang xử lý. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.1 - YCKT-03) và BRD (Mục 3.1 - Use Case UC1.3 Xóa bài đăng tài sản).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Xóa bài đăng tài sản thành công" }
+--- TABLE END ---
+
+4.7.2.15. /api/v1/proposals
+Bảng 4.15. Đặc tả API /api/v1/proposals
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên gửi đề xuất.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Khởi tạo đề xuất xin nhận hoặc trao đổi món đồ tài sản. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.2 - YCKT-07) và BRD (Mục 3.2 - Use Case UC2.3 Khởi tạo đề xuất).
+Request Payload | Định dạng JSON ánh xạ CreateProposalDto. {   "bai_dang_id": "asset-123",   "so_luong_yeu_cau": 1,   "loi_nhan": "Cho mình xin món đồ này nhé!",   "tai_san_doi_ung": null,   "tien_doi_ung": 0 }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Gửi đề xuất thành công",   "data": { "de_xuat_id": "prop-123", "trang_thai": "CHO_PHE_DUYET" } }
+--- TABLE END ---
+
+4.7.2.16. /api/v1/proposals/received
+Bảng 4.16. Đặc tả API /api/v1/proposals/received
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Chủ tài sản nhận đề xuất.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách đề xuất từ người khác gửi đến món đồ thuộc sở hữu cá nhân. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-08) và BRD (Mục 3.3 - Use Case UC3.1 Xem đề xuất nhận được).
+Request Payload | Query Parameters: page, limit.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "de_xuat_id": "prop-123", "loi_nhan": "Cho mình xin món đồ này nhé!" }] }
+--- TABLE END ---
+
+4.7.2.17. /api/v1/proposals/sent
+Bảng 4.17. Đặc tả API /api/v1/proposals/sent
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người đã gửi đề xuất.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách các đề xuất mà cá nhân đã gửi đi. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-08) và BRD (Mục 3.3 - Use Case UC3.1 Xem đề xuất đã gửi).
+Request Payload | Query Parameters: page, limit.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "de_xuat_id": "prop-123", "trang_thai": "CHO_PHE_DUYET" }] }
+--- TABLE END ---
+
+4.7.2.18. /api/v1/proposals/:id
+Bảng 4.18. Đặc tả API /api/v1/proposals/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên liên quan tới đề xuất.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xem thông tin chi tiết một đề xuất giao dịch cụ thể. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-08 Chi tiết đề xuất).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "de_xuat_id": "prop-123",   "trang_thai": "CHO_PHE_DUYET",   "loi_nhan": "Cho mình xin món đồ này nhé!" }
+--- TABLE END ---
+
+4.7.2.19. /api/v1/proposals/:id/accept
+Bảng 4.19. Đặc tả API /api/v1/proposals/:id/accept
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Chủ bài đăng tài sản.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Phê duyệt đề xuất và tự động chuyển sang bản ghi Giao dịch mới. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-09) và BRD (Mục 3.3 - Use Case UC3.2 Chấp nhận đề xuất).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Chấp nhận đề xuất thành công",   "transaction": { "giao_dich_id": "tx-123", "trang_thai": "DANG_GIAO_DICH" } }
+--- TABLE END ---
+
+4.7.2.20. /api/v1/proposals/:id/reject
+Bảng 4.20. Đặc tả API /api/v1/proposals/:id/reject
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Chủ bài đăng tài sản.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Từ chối đề xuất giao dịch không phù hợp. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-09) và BRD (Mục 3.3 - Use Case UC3.2 Từ chối đề xuất).
+Request Payload | JSON Body tùy chọn lý do từ chối. {   "ly_do_tu_choi": "Tài sản đã được hẹn cho người khác" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Từ chối đề xuất thành công" }
+--- TABLE END ---
+
+4.7.2.21. /api/v1/proposals/:id/cancel
+Bảng 4.21. Đặc tả API /api/v1/proposals/:id/cancel
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người gửi đề xuất.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Hủy bỏ đề xuất đã gửi khi chưa được chủ bài phê duyệt. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-08 Hủy đề xuất).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Hủy đề xuất thành công" }
+--- TABLE END ---
+
+4.7.2.22. /api/v1/proposals/:id/negotiate
+Bảng 4.22. Đặc tả API /api/v1/proposals/:id/negotiate
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên liên quan tới đề xuất.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Chuyển trạng thái đề xuất sang tiến trình thương lượng trực tiếp. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-10) và BRD (Mục 3.3 - Use Case UC3.3 Bắt đầu thương lượng).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Bắt đầu tiến trình thương lượng",   "trang_thai": "DANG_THUONG_LUONG" }
+--- TABLE END ---
+
+4.7.2.23. /api/v1/proposals/:proposalId/messages
+Bảng 4.23. Đặc tả API /api/v1/proposals/:proposalId/messages
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên tham gia thương lượng.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn lịch sử tin nhắn trao đổi trong tiến trình thương lượng. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-10) và BRD (Mục 3.3 - Use Case UC3.3 Lịch sử tin nhắn).
+Request Payload | Path parameter proposalId (UUID).
+Response | HTTP Status Code: 200 OK. Body: [   { "tin_nhan_id": "msg-01", "noi_dung": "Chào bạn, chiều nay 15h lấy đồ nhé?", "thoi_gian": "2026-07-28T15:00:00Z" } ]
+--- TABLE END ---
+
+4.7.2.24. /api/v1/proposals/:proposalId/messages
+Bảng 4.24. Đặc tả API /api/v1/proposals/:proposalId/messages
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên tham gia thương lượng.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Gửi tin nhắn thương lượng mới giữa 2 bên tham gia đề xuất. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.3 - YCKT-10) và BRD (Mục 3.3 - Use Case UC3.3 Gửi tin nhắn).
+Request Payload | Path parameter proposalId và JSON Body noi_dung. {   "noi_dung": "Dạ vâng ạ, 15h em đến địa chỉ 123 Nguyễn Trãi ạ!" }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Gửi tin nhắn thương lượng thành công",   "data": { "tin_nhan_id": "msg-02", "noi_dung": "Dạ vâng..." } }
+--- TABLE END ---
+
+4.7.2.25. /api/v1/transactions
+Bảng 4.25. Đặc tả API /api/v1/transactions
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách các bản ghi giao dịch cá nhân. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.4 - YCKT-13) và BRD (Mục 3.4 - Use Case UC4.3 Danh sách giao dịch).
+Request Payload | Query Parameters: page, limit.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "giao_dich_id": "tx-123", "trang_thai": "DANG_GIAO_DICH" }],   "meta": { "total": 1 } }
+--- TABLE END ---
+
+4.7.2.26. /api/v1/transactions/:id
+Bảng 4.26. Đặc tả API /api/v1/transactions/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng tham gia giao dịch.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xem chi tiết trạng thái xác nhận và thông tin địa điểm giao dịch. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.4 - YCKT-13) và BRD (Mục 3.4 - Use Case UC4.3 Chi tiết giao dịch).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "giao_dich_id": "tx-123",   "trang_thai": "DANG_GIAO_DICH",   "ben_so_huu_xac_nhan": true,   "ben_tiep_nhan_xac_nhan": false }
+--- TABLE END ---
+
+4.7.2.27. /api/v1/transactions/:id/confirm
+Bảng 4.27. Đặc tả API /api/v1/transactions/:id/confirm
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng tham gia giao dịch.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xác nhận hoàn tất giao dịch hai bên (Sở hữu & Tiếp nhận). • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.4 - YCKT-11) và BRD (Mục 3.4 - Use Case UC4.1 Xác nhận giao dịch).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Xác nhận hoàn thành giao dịch thành công",   "trang_thai_giao_dich": "HOAN_TAT" }
+--- TABLE END ---
+
+4.7.2.28. /api/v1/transactions/:id/cancel
+Bảng 4.28. Đặc tả API /api/v1/transactions/:id/cancel
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng tham gia giao dịch.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Hủy bỏ tiến trình giao dịch dở dang khi phát sinh sự cố. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.4 - YCKT-12) và BRD (Mục 3.4 - Use Case UC4.2 Hủy giao dịch).
+Request Payload | JSON Body ly_do hủy giao dịch. {   "ly_do": "Đột xuất bận công tác không lấy đồ được" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Hủy giao dịch thành công",   "trang_thai_giao_dich": "DA_HUY" }
+--- TABLE END ---
+
+4.7.2.29. /api/v1/reviews
+Bảng 4.29. Đặc tả API /api/v1/reviews
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Thành viên giao dịch đã HOAN_TAT.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Khởi tạo đánh giá chất lượng và điểm sao sau khi giao dịch hoàn tất. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.6 - YCKT-17) và BRD (Mục 3.6 - Use Case UC6.1 Đánh giá giao dịch).
+Request Payload | Định dạng JSON ánh xạ CreateReviewDto (diem_sao từ 1-5). {   "giao_dich_id": "tx-123",   "diem_sao": 5,   "nhan_xet": "Bạn chủ giao dịch rất nhiệt tình và uy tín!" }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Gửi đánh giá thành công",   "data": { "danh_gia_id": "rev-123", "diem_uy_tin_moi": 105 } }
+--- TABLE END ---
+
+4.7.2.30. /api/v1/reviews/user/:id
+Bảng 4.30. Đặc tả API /api/v1/reviews/user/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Không yêu cầu xác thực.
+Authorization | Mọi người dùng.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách đánh giá và nhận xét mà một thành viên nhận được. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.6 - YCKT-18) và BRD (Mục 3.6 - Use Case UC6.2 Danh sách đánh giá thành viên).
+Request Payload | Path parameter id (UUID): ID người dùng cần xem đánh giá.
+Response | HTTP Status Code: 200 OK. Body: [   { "danh_gia_id": "rev-123", "diem_sao": 5, "nhan_xet": "Rất uy tín!" } ]
+--- TABLE END ---
+
+4.7.2.31. /api/v1/reports
+Bảng 4.31. Đặc tả API /api/v1/reports
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Khởi tạo báo cáo vi phạm đối với bài đăng hoặc người dùng khác. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.7 - YCKT-19) và BRD (Mục 3.7 - Use Case UC7.1 Báo cáo vi phạm).
+Request Payload | Định dạng JSON ánh xạ CreateReportDto. {   "bai_dang_bi_bao_cao_id": "asset-123",   "ly_do_bao_cao": "Nội dung sai sự thật",   "mo_ta_chi_tiet": "Mô tả không khớp với đồ thật" }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Gửi báo cáo vi phạm thành công",   "data": { "bao_cao_id": "rp-123", "trang_thai": "CHO_XU_LY" } }
+--- TABLE END ---
+
+4.7.2.32. /api/v1/reports
+Bảng 4.32. Đặc tả API /api/v1/reports
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách báo cáo vi phạm dành cho Quản trị viên. • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.7 - YCKT-20) và BRD (Mục 3.7 - Use Case UC7.2 Danh sách báo cáo Admin).
+Request Payload | Query Parameters: page, limit.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "bao_cao_id": "rp-123", "ly_do_bao_cao": "Nội dung sai sự thật" }] }
+--- TABLE END ---
+
+4.7.2.33. /api/v1/reports/:id
+Bảng 4.33. Đặc tả API /api/v1/reports/:id
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xem chi tiết nội dung và bằng chứng báo cáo vi phạm (Admin). • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.7 - YCKT-21) và BRD (Mục 3.7 - Use Case UC7.3 Chi tiết báo cáo Admin).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "bao_cao_id": "rp-123",   "ly_do_bao_cao": "Nội dung sai sự thật",   "nguoi_bao_cao": { "ho_ten": "Nguyễn Văn B" } }
+--- TABLE END ---
+
+4.7.2.34. /api/v1/reports/:id/action
+Bảng 4.34. Đặc tả API /api/v1/reports/:id/action
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Thực thi biện pháp xử lý vi phạm (Khóa bài đăng/tài khoản) (Admin). • Nguồn gốc tài liệu: Tài liệu SyRS - System Requirements Specification (Mục 3.7 - YCKT-22) và BRD (Mục 3.7 - Use Case UC7.4 Xử lý báo cáo Admin).
+Request Payload | Định dạng JSON ánh xạ ProcessReportDto. {   "trang_thai_xu_ly": "DA_XU_LY",   "loai_bien_phap": "AN_BAI_DANG",   "ghi_chu_xu_ly": "Đã ẩn bài đăng vi phạm" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Xử lý báo cáo thành công",   "data": { "bao_cao_id": "rp-123", "trang_thai": "DA_XU_LY" } }
+--- TABLE END ---
+
+4.7.2.35. /api/v1/admin/stats
+Bảng 4.35. Đặc tả API /api/v1/admin/stats
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Thống kê số liệu tổng quan toàn bộ hệ thống. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.2 Module Admin Statistics).
+Request Payload | Không có Payload.
+Response | HTTP Status Code: 200 OK. Body: {   "totalUsers": 1250,   "totalAssets": 3400,   "totalTransactions": 890,   "totalReports": 15 }
+--- TABLE END ---
+
+4.7.2.36. /api/v1/admin/users
+Bảng 4.36. Đặc tả API /api/v1/admin/users
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách quản lý người dùng toàn hệ thống. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.2 Module Admin User Management).
+Request Payload | Query parameters: page, limit, search, vai_tro, trang_thai.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "nguoi_dung_id": "u-123", "ho_ten": "Nguyễn Văn A", "trang_thai": "HOAT_DONG" }],   "meta": { "total": 1250 } }
+--- TABLE END ---
+
+4.7.2.37. /api/v1/admin/users/:id/status
+Bảng 4.37. Đặc tả API /api/v1/admin/users/:id/status
+
+--- TABLE START ---
+HTTP Method | PATCH
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Cập nhật trạng thái khóa hoặc khôi phục hoạt động tài khoản. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.2 User Status Control).
+Request Payload | JSON Body trang_thai ('HOAT_DONG' hoặc 'BI_KHOA'). {   "trang_thai": "BI_KHOA" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Cập nhật trạng thái người dùng thành công",   "user": { "nguoi_dung_id": "u-123", "trang_thai": "BI_KHOA" } }
+--- TABLE END ---
+
+4.7.2.38. /api/v1/admin/assets
+Bảng 4.38. Đặc tả API /api/v1/admin/assets
+
+--- TABLE START ---
+HTTP Method | GET
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Truy vấn danh sách quản lý bài đăng tài sản toàn hệ thống. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.2 Asset Audit Control).
+Request Payload | Query parameters: page, limit, search, trang_thai.
+Response | HTTP Status Code: 200 OK. Body: {   "data": [{ "tai_san_id": "asset-123", "ten_tai_san": "Laptop Dell XPS" }] }
+--- TABLE END ---
+
+4.7.2.39. /api/v1/admin/assets/:id/status
+Bảng 4.39. Đặc tả API /api/v1/admin/assets/:id/status
+
+--- TABLE START ---
+HTTP Method | PATCH
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Cập nhật trạng thái bài đăng tài sản (Khóa sổ, kết thúc bài đăng vi phạm). • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.2 Asset Status Control).
+Request Payload | JSON Body trang_thai ('KHA_DUNG', 'DA_KHOA_SO', 'DA_KET_THUC'). {   "trang_thai": "DA_KHOA_SO" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Cập nhật trạng thái bài đăng thành công" }
+--- TABLE END ---
+
+4.7.2.40. /api/v1/admin/categories
+Bảng 4.40. Đặc tả API /api/v1/admin/categories
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Thêm mới danh mục tài sản hệ thống. • Nguồn gốc tài liệu: Tài liệu DATABASE DESIGN DOCUMENT (Bảng danh_muc_tai_san).
+Request Payload | JSON Body chứa ten_danh_muc, mo_ta, bieu_tuong. {   "ten_danh_muc": "Dụng cụ thể thao",   "mo_ta": "Cầu lông, bóng đá, vợt tennis...",   "bieu_tuong": "activity" }
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Tạo danh mục mới thành công",   "category": { "danh_muc_id": "cat-99", "ten_danh_muc": "Dụng cụ thể thao" } }
+--- TABLE END ---
+
+4.7.2.41. /api/v1/admin/categories/:id
+Bảng 4.41. Đặc tả API /api/v1/admin/categories/:id
+
+--- TABLE START ---
+HTTP Method | PUT
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Cập nhật thông tin danh mục tài sản. • Nguồn gốc tài liệu: Tài liệu DATABASE DESIGN DOCUMENT (Bảng danh_muc_tai_san).
+Request Payload | Path parameter id (UUID) và JSON Body cập nhật. {   "ten_danh_muc": "Dụng cụ thể dục thể thao" }
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Cập nhật danh mục thành công" }
+--- TABLE END ---
+
+4.7.2.42. /api/v1/admin/categories/:id
+Bảng 4.42. Đặc tả API /api/v1/admin/categories/:id
+
+--- TABLE START ---
+HTTP Method | DELETE
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Quản trị viên (QUAN_TRI_VIEN).
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Xóa danh mục tài sản không còn sử dụng. • Nguồn gốc tài liệu: Tài liệu DATABASE DESIGN DOCUMENT (Bảng danh_muc_tai_san).
+Request Payload | Path parameter id (UUID).
+Response | HTTP Status Code: 200 OK. Body: {   "message": "Xóa danh mục thành công" }
+--- TABLE END ---
+
+4.7.2.43. /api/v1/upload/single
+Bảng 4.43. Đặc tả API /api/v1/upload/single
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Tải lên 01 hình ảnh tĩnh (ảnh đại diện, ảnh bằng chứng). • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.5 File Upload Service).
+Request Payload | multipart/form-data. Form field: file (tệp hình ảnh <= 5MB).
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Tải lên tệp tin hình ảnh thành công",   "url": "http://localhost:3000/uploads/file-12345.jpg",   "filename": "file-12345.jpg" }
+--- TABLE END ---
+
+4.7.2.44. /api/v1/upload/multiple
+Bảng 4.44. Đặc tả API /api/v1/upload/multiple
+
+--- TABLE START ---
+HTTP Method | POST
+Authentication | Yêu cầu xác thực header (Authorization: Bearer <Token>).
+Authorization | Người dùng đã đăng nhập.
+Chức năng nghiệp vụ & Nguồn gốc | • Nghiệp vụ thực hiện: Tải lên danh sách nhiều tệp tin hình ảnh sản phẩm. • Nguồn gốc tài liệu: Tài liệu ARCHITECTURE DESIGN DOCUMENT (Mục 4.5 File Upload Service).
+Request Payload | multipart/form-data. Form field: files (Mảng tệp hình ảnh, tối đa 10 tệp).
+Response | HTTP Status Code: 201 CREATED. Body: {   "message": "Tải lên danh sách tệp tin hình ảnh thành công",   "urls": [     "http://localhost:3000/uploads/file-101.jpg",     "http://localhost:3000/uploads/file-102.jpg"   ],   "count": 2 }
+--- TABLE END ---

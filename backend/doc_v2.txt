@@ -1,0 +1,481 @@
+TÀI LIỆU ĐẶC TẢ PHƯƠNG THỨC (METHOD SPECIFICATION)
+(Hệ thống Hỗ trợ kết nối cộng đồng và Tái phân phối tài sản cá nhân - SharingHub)
+register() – Use Case UC5.1 - Đăng ký tài khoản người dùng mới
+Bảng 1. Đặc tả method register()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC5.1 - Đăng ký tài khoản người dùng mới
+Tầng Controller (Presentation) | Class: AuthController Method: register(@Body() dto: RegisterDto) Decorators: @Post('register') HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: AuthService Method: register(dto: RegisterDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDung.findUnique(), prisma.nguoiDung.create() Bảng tác động: nguoi_dung, nguoi_dung_ho_so, ho_so_uy_tin
+Input Arguments | ● dto (RegisterDto): Gồm email, so_dien_thoai, mat_khau, ho_ten.
+Return Value | Object: Thông điệp thành công và thông tin tài khoản người dùng vừa tạo (loại bỏ mat_khau_hash).
+Pre-conditions | ● Email chưa từng tồn tại trong CSDL. ● Số điện thoại (nếu có) đúng định dạng và chưa từng đăng ký. ● Mật khẩu >= 6 ký tự.
+Post-conditions | ● Bản ghi nguoi_dung tạo mới với vai_tro = 'THANH_VIEN', trang_thai = 'HOAT_DONG'. ● Tự động tạo bản ghi nguoi_dung_ho_so và ho_so_uy_tin (100 điểm ban đầu).
+Processing Steps (3 Tầng) | 1. [Controller] Tiếp nhận HTTP POST /auth/register, validate RegisterDto. 2. [Service] Kiểm tra email/SĐT trùng lặp trong CSDL. 3. [Service] Mã hóa băm mật khẩu bằng bcrypt (saltRounds=10). 4. [Data Access] Thực thi chèn bản ghi vào 3 bảng nguoi_dung, nguoi_dung_ho_so, ho_so_uy_tin. 5. [Controller] Phản hồi HTTP 201.
+--- TABLE END ---
+
+login() – Use Case UC5.2 - Xác thực và đăng nhập hệ thống
+Bảng 2. Đặc tả method login()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC5.2 - Xác thực và đăng nhập hệ thống
+Tầng Controller (Presentation) | Class: AuthController Method: login(@Body() dto: LoginDto) Decorators: @Post('login'), @HttpCode(200) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AuthService Method: login(dto: LoginDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDung.findFirst() Bảng tác động: nguoi_dung
+Input Arguments | ● dto (LoginDto): Gồm tai_khoan (Email/SĐT) và mat_khau.
+Return Value | Object: Trả về JWT access_token và thông tin định danh người dùng.
+Pre-conditions | ● Tài khoản Email/SĐT tồn tại trong CSDL. ● Mật khẩu khớp với chuỗi mã hóa băm bcrypt. ● Tài khoản không ở trạng thái BI_KHOA.
+Post-conditions | ● Chuỗi mã thông báo bảo mật JWT Access Token được ký thành công.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận thông tin đăng nhập từ Client. 2. [Data Access] Tìm kiếm người dùng theo Email/SĐT. 3. [Service] Kiểm tra tài khoản không bị khóa. 4. [Service] Đối soát mật khẩu băm bằng bcrypt.compare(). 5. [Service] Ký cấp JWT Token qua JwtService.sign(). 6. [Controller] Phản hồi HTTP Code 200 kèm access_token.
+--- TABLE END ---
+
+getMe() – Phân hệ Auth - Truy vấn thông tin cá nhân hiện tại
+Bảng 3. Đặc tả method getMe()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Phân hệ Auth - Truy vấn thông tin cá nhân hiện tại
+Tầng Controller (Presentation) | Class: AuthController Method: getMe(@CurrentUser() user: any) Decorators: @Get('me'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AuthService Method: validateUser(userId: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDung.findUnique() Bảng tác động: nguoi_dung, nguoi_dung_ho_so, ho_so_uy_tin
+Input Arguments | ● user: Đối tượng thông tin người dùng được trích xuất từ JWT Token.
+Return Value | Object: Thông tin chi tiết tài khoản, hồ sơ cá nhân và uy tín.
+Pre-conditions | ● Header chứa Jwt Access Token hợp lệ.
+Post-conditions | ● Không thay đổi dữ liệu CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] JwtAuthGuard giải mã Token từ Header. 2. [Service] Lấy thông tin user hiện tại. 3. [Data Access] Truy vấn hồ sơ cá nhân và chỉ số uy tín từ CSDL. 4. [Controller] Loại bỏ trường mat_khau_hash và trả về HTTP 200.
+--- TABLE END ---
+
+getProfile() – Use Case UC5.3 - Xem hồ sơ công khai thành viên
+Bảng 4. Đặc tả method getProfile()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC5.3 - Xem hồ sơ công khai thành viên
+Tầng Controller (Presentation) | Class: UsersController Method: getProfile(@Param('id') id: string) Decorators: @Get('profile/:id') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: UsersService Method: getProfile(id: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDung.findUnique() Bảng tác động: nguoi_dung, nguoi_dung_ho_so
+Input Arguments | ● id (UUID): Mã người dùng cần xem hồ sơ.
+Return Value | Object: Hồ sơ công khai của thành viên.
+Pre-conditions | ● Mã người dùng id tồn tại trong CSDL.
+Post-conditions | ● Không làm thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận id từ URL Path Parameter. 2. [Data Access] Tìm kiếm NguoiDung kèm NguoiDungHoSo. 3. [Service] Nếu không thấy, ném NotFoundException. 4. [Controller] Trả về HTTP Code 200.
+--- TABLE END ---
+
+updateProfile() – Use Case UC5.3 - Cập nhật thông tin hồ sơ cá nhân
+Bảng 5. Đặc tả method updateProfile()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC5.3 - Cập nhật thông tin hồ sơ cá nhân
+Tầng Controller (Presentation) | Class: UsersController Method: updateProfile(@CurrentUser('nguoi_dung_id') userId, @Body() dto: UpdateProfileDto) Decorators: @Put('profile'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: UsersService Method: updateProfile(userId: string, dto: UpdateProfileDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDungHoSo.upsert(), prisma.nguoiDung.update() Bảng tác động: nguoi_dung_ho_so, nguoi_dung
+Input Arguments | ● userId (UUID): Mã người dùng đăng nhập. ● dto (UpdateProfileDto): ho_ten, so_dien_thoai, anh_dai_dien, dia_chi, mo_ta_ca_nhan.
+Return Value | Object: Hồ sơ cá nhân sau khi cập nhật thành công.
+Pre-conditions | ● Người dùng đã đăng nhập. ● Số điện thoại (nếu sửa) phải đúng định dạng chuẩn.
+Post-conditions | ● Bản ghi nguoi_dung_ho_so được cập nhật thông tin mới.
+Processing Steps (3 Tầng) | 1. [Controller] Tiếp nhận dữ liệu cập nhật từ Client. 2. [Service] Kiểm tra tính hợp lệ dữ liệu SĐT/Họ tên. 3. [Data Access] Thực thi upsert thông tin vào nguoi_dung_ho_so và cập nhật ho_ten ở nguoi_dung. 4. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+getReputationProfile() – Use Case UC6.2 - Truy vấn điểm và hồ sơ uy tín thành viên
+Bảng 6. Đặc tả method getReputationProfile()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC6.2 - Truy vấn điểm và hồ sơ uy tín thành viên
+Tầng Controller (Presentation) | Class: UsersController Method: getReputation(@Param('id') id: string) Decorators: @Get('reputation/:id') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: UsersService Method: getReputationProfile(id: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.hoSoUyTin.findUnique() Bảng tác động: ho_so_uy_tin
+Input Arguments | ● id (UUID): Mã người dùng.
+Return Value | Object: Chỉ số điểm uy tín, tổng số lượt đánh giá và điểm trung bình.
+Pre-conditions | ● Mã người dùng tồn tại trong hệ thống.
+Post-conditions | ● Không thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận id từ URL. 2. [Data Access] Truy vấn bảng ho_so_uy_tin. 3. [Controller] Trả về dữ liệu điểm uy tín.
+--- TABLE END ---
+
+create() [Assets] – Use Case UC1.1 - Đăng bài đăng tài sản mới
+Bảng 7. Đặc tả method create() [Assets]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC1.1 - Đăng bài đăng tài sản mới
+Tầng Controller (Presentation) | Class: AssetsController Method: create(@CurrentUser('nguoi_dung_id') userId, @Body() dto: CreateAssetDto) Decorators: @Post('assets'), @UseGuards(JwtAuthGuard) HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: AssetsService Method: create(userId: string, dto: CreateAssetDto) Return Type: Promise<BaiDangTaiSan>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.danhMucTaiSan.findUnique(), prisma.baiDangTaiSan.create() Bảng tác động: bai_dang_tai_san, hinh_anh_tai_san
+Input Arguments | ● userId (UUID): Mã người đăng bài. ● dto (CreateAssetDto): ten_tai_san, danh_muc_id, mo_ta_hien_trang, so_luong_tong, hinh_thuc_chia_se, dia_diem, mảng hinh_anh.
+Return Value | BaiDangTaiSan: Bài đăng tài sản vừa tạo.
+Pre-conditions | ● Người dùng đã đăng nhập. ● Danh mục tài sản tồn tại. ● Mảng hinh_anh chứa ít nhất 1 URL.
+Post-conditions | ● Bản ghi bai_dang_tai_san mới tạo với trang_thai = 'KHA_DUNG'. ● Lưu danh sách ảnh vào hinh_anh_tai_san.
+Processing Steps (3 Tầng) | 1. [Controller] Giải mã JwtAuthGuard trích xuất userId. 2. [Service] Kiểm tra danh mục tồn tại. 3. [Data Access] Chèn bản ghi vào CSDL. 4. [Controller] Phản hồi HTTP Code 201.
+--- TABLE END ---
+
+findAll() [Assets] – Use Case UC2.1 - Tìm kiếm và lọc bài đăng tài sản
+Bảng 8. Đặc tả method findAll() [Assets]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC2.1 - Tìm kiếm và lọc bài đăng tài sản
+Tầng Controller (Presentation) | Class: AssetsController Method: findAll(@Query() query: QueryAssetDto) Decorators: @Get('assets') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AssetsService Method: findAll(query: QueryAssetDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.findMany(), prisma.baiDangTaiSan.count() Bảng tác động: bai_dang_tai_san
+Input Arguments | ● query (QueryAssetDto): search, danh_muc_id, hinh_thuc, trang_thai, page, limit.
+Return Value | Object: Mảng danh sách bài đăng và thông tin phân trang.
+Pre-conditions | ● Không yêu cầu xác thực.
+Post-conditions | ● Không thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Tiếp nhận Query Parameters từ URL. 2. [Service] Xây dựng câu điều kiện WHERE lọc dữ liệu. 3. [Data Access] Thực thi truy vấn phân trang (skip, take). 4. [Controller] Trả về HTTP Code 200.
+--- TABLE END ---
+
+findMyAssets() – Use Case UC1.4 - Xem danh sách bài đăng cá nhân
+Bảng 9. Đặc tả method findMyAssets()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC1.4 - Xem danh sách bài đăng cá nhân
+Tầng Controller (Presentation) | Class: AssetsController Method: findMyAssets(@CurrentUser('nguoi_dung_id') userId, @Query() query: QueryPaginationDto) Decorators: @Get('assets/my'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AssetsService Method: findMyAssets(userId: string, query: QueryPaginationDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.findMany() Bảng tác động: bai_dang_tai_san
+Input Arguments | ● userId (UUID): Mã cá nhân. ● query: page, limit.
+Return Value | Object: Bài đăng thuộc sở hữu cá nhân.
+Pre-conditions | ● Người dùng đã đăng nhập.
+Post-conditions | ● Không thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Trích xuất userId từ Token. 2. [Data Access] Truy vấn bài đăng có chu_so_huu_id === userId. 3. [Controller] Trả về danh sách.
+--- TABLE END ---
+
+findOne() [Assets] – Use Case UC2.2 - Xem chi tiết bài đăng tài sản
+Bảng 10. Đặc tả method findOne() [Assets]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC2.2 - Xem chi tiết bài đăng tài sản
+Tầng Controller (Presentation) | Class: AssetsController Method: findOne(@Param('id') id: string) Decorators: @Get('assets/:id') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AssetsService Method: findOne(id: string) Return Type: Promise<BaiDangTaiSan>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.findUnique() Bảng tác động: bai_dang_tai_san, hinh_anh_tai_san, nguoi_dung
+Input Arguments | ● id (UUID): Mã bài đăng.
+Return Value | BaiDangTaiSan: Thông tin chi tiết tài sản kèm hình ảnh và thông tin chủ sở hữu.
+Pre-conditions | ● Bài đăng id tồn tại trong CSDL.
+Post-conditions | ● Không làm thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận id từ URL. 2. [Data Access] Truy vấn bài đăng bao gồm quan hệ hinh_anh và chu_so_huu. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+update() [Assets] – Use Case UC1.2 - Cập nhật bài đăng tài sản
+Bảng 11. Đặc tả method update() [Assets]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC1.2 - Cập nhật bài đăng tài sản
+Tầng Controller (Presentation) | Class: AssetsController Method: update(@Param('id') id, @CurrentUser('nguoi_dung_id') userId, @Body() dto: UpdateAssetDto) Decorators: @Put('assets/:id'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AssetsService Method: update(id: string, userId: string, dto: UpdateAssetDto) Return Type: Promise<BaiDangTaiSan>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.update() Bảng tác động: bai_dang_tai_san
+Input Arguments | ● id (UUID): Mã bài đăng. ● userId (UUID): Người sửa. ● dto (UpdateAssetDto): Các thông tin chỉnh sửa.
+Return Value | BaiDangTaiSan: Bài đăng sau cập nhật.
+Pre-conditions | ● Bài đăng tồn tại. ● Người thực hiện phải là chủ sở hữu bài đăng.
+Post-conditions | ● Cập nhật thông tin bài đăng trong CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận thông tin sửa đổi. 2. [Service] Kiểm tra chủ sở hữu. Nếu sai ném ForbiddenException. 3. [Data Access] Cập nhật bản ghi bài đăng. 4. [Controller] Trả về HTTP Code 200.
+--- TABLE END ---
+
+remove() [Assets] – Use Case UC1.3 - Xóa bài đăng tài sản
+Bảng 12. Đặc tả method remove() [Assets]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC1.3 - Xóa bài đăng tài sản
+Tầng Controller (Presentation) | Class: AssetsController Method: remove(@Param('id') id, @CurrentUser('nguoi_dung_id') userId) Decorators: @Delete('assets/:id'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AssetsService Method: remove(id: string, userId: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.delete() Bảng tác động: bai_dang_tai_san
+Input Arguments | ● id (UUID): Mã bài đăng. ● userId (UUID): Chủ sở hữu.
+Return Value | Object: Thông báo xóa bài đăng thành công.
+Pre-conditions | ● Bài đăng tồn tại. ● Người xóa là chủ bài đăng. ● Bài đăng không có giao dịch dở dang.
+Post-conditions | ● Bản ghi bài đăng bị xóa khỏi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận id bài đăng cần xóa. 2. [Service] Kiểm tra quyền hạn chủ sở hữu. 3. [Data Access] Xóa bản ghi bài đăng. 4. [Controller] Trả về thông báo thành công.
+--- TABLE END ---
+
+create() [Proposals] – Use Case UC2.3 - Khởi tạo đề xuất nhận/trao đổi tài sản
+Bảng 13. Đặc tả method create() [Proposals]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC2.3 - Khởi tạo đề xuất nhận/trao đổi tài sản
+Tầng Controller (Presentation) | Class: ProposalsController Method: create(@CurrentUser('nguoi_dung_id') userId, @Body() dto: CreateProposalDto) Decorators: @Post('proposals'), @UseGuards(JwtAuthGuard) HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: ProposalsService Method: create(userId: string, dto: CreateProposalDto) Return Type: Promise<DeXuatGiaoDich>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.findUnique(), prisma.deXuatGiaoDich.create() Bảng tác động: de_xuat_giao_dich
+Input Arguments | ● userId (UUID): Mã người gửi đề xuất. ● dto: bai_dang_id, so_luong_yeu_cau, loi_nhan, tai_san_doi_ung, tien_doi_ung.
+Return Value | DeXuatGiaoDich: Bản ghi đề xuất vừa tạo.
+Pre-conditions | ● Bài đăng KHA_DUNG. ● Người gửi không phải chủ bài đăng. ● so_luong_yeu_cau <= so_luong_kha_dung.
+Post-conditions | ● Tạo bản ghi đề xuất với trang_thai = 'CHO_XU_LY'. ● Gửi thông báo WebSocket cho chủ bài.
+Processing Steps (3 Tầng) | 1. [Controller] Tiếp nhận request gửi đề xuất. 2. [Service] Kiểm tra các điều kiện nghiệp vụ. 3. [Data Access] Lưu bản ghi de_xuat_giao_dich. 4. [Service] Bắn thông báo WebSocket tới chủ bài đăng. 5. [Controller] Phản hồi HTTP Code 201.
+--- TABLE END ---
+
+getReceivedProposals() – Use Case UC3.1 - Xem danh sách đề xuất nhận được
+Bảng 14. Đặc tả method getReceivedProposals()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.1 - Xem danh sách đề xuất nhận được
+Tầng Controller (Presentation) | Class: ProposalsController Method: getReceived(@CurrentUser('nguoi_dung_id') userId, @Query() query: QueryPaginationDto) Decorators: @Get('proposals/received'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ProposalsService Method: getReceivedProposals(userId: string, query: QueryPaginationDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.deXuatGiaoDich.findMany() Bảng tác động: de_xuat_giao_dich, bai_dang_tai_san
+Input Arguments | ● userId (UUID): Mã chủ tài sản.
+Return Value | Object: Danh sách đề xuất nhận được.
+Pre-conditions | ● Người dùng đã đăng nhập.
+Post-conditions | ● Không làm thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận request. 2. [Data Access] Truy vấn các đề xuất hướng về bài đăng của userId. 3. [Controller] Trả về danh sách.
+--- TABLE END ---
+
+getSentProposals() – Use Case UC3.1 - Xem danh sách đề xuất đã gửi
+Bảng 15. Đặc tả method getSentProposals()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.1 - Xem danh sách đề xuất đã gửi
+Tầng Controller (Presentation) | Class: ProposalsController Method: getSent(@CurrentUser('nguoi_dung_id') userId, @Query() query: QueryPaginationDto) Decorators: @Get('proposals/sent'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ProposalsService Method: getSentProposals(userId: string, query: QueryPaginationDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.deXuatGiaoDich.findMany() Bảng tác động: de_xuat_giao_dich
+Input Arguments | ● userId (UUID): Người gửi.
+Return Value | Object: Đề xuất đã gửi.
+Pre-conditions | ● Người dùng đã đăng nhập.
+Post-conditions | ● Không thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Trích xuất userId. 2. [Data Access] Truy vấn de_xuat_giao_dich theo nguoi_gui_id. 3. [Controller] Phản hồi kết quả.
+--- TABLE END ---
+
+acceptProposal() – Use Case UC3.2 - Phê duyệt / Chấp nhận đề xuất giao dịch
+Bảng 16. Đặc tả method acceptProposal()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.2 - Phê duyệt / Chấp nhận đề xuất giao dịch
+Tầng Controller (Presentation) | Class: ProposalsController Method: accept(@Param('id') id, @CurrentUser('nguoi_dung_id') userId) Decorators: @Put('proposals/:id/accept'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ProposalsService Method: acceptProposal(id: string, userId: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.$transaction(), tx.baiDangTaiSan.update(), tx.deXuatGiaoDich.update(), tx.giaoDich.create() Bảng tác động: de_xuat_giao_dich, bai_dang_tai_san, giao_dich
+Input Arguments | ● id (UUID): Mã đề xuất. ● userId (UUID): Chủ sở hữu bài đăng.
+Return Value | Object: Thông báo thành công và bản ghi Giao dịch mới.
+Pre-conditions | ● Đề xuất ở trạng thái CHO_XU_LY hoặc DANG_THUONG_LUONG. ● Người dùng là chủ bài đăng. ● Tồn kho khả dụng >= so_luong_yeu_cau.
+Post-conditions | ● Trạng thái đề xuất -> DA_CHAP_NHAN. ● Tồn kho khả dụng giảm, giữ chỗ tăng. ● Tạo bản ghi GiaoDich mới trạng thái DANG_GIAO_DICH.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận yêu cầu chấp nhận. 2. [Service] Xác minh chủ bài đăng. 3. [Data Access] Thực thi Transaction CSDL:    a. Khóa bài đăng và trừ số lượng khả dụng, tăng giữ chỗ.    b. Chuyển đề xuất -> DA_CHAP_NHAN.    c. Tạo bản ghi giao_dich mới. 4. [Service] Bắn thông báo WebSocket tới người gửi. 5. [Controller] Trả về HTTP Code 200.
+--- TABLE END ---
+
+rejectProposal() – Use Case UC3.2 - Từ chối đề xuất giao dịch
+Bảng 17. Đặc tả method rejectProposal()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.2 - Từ chối đề xuất giao dịch
+Tầng Controller (Presentation) | Class: ProposalsController Method: reject(@Param('id') id, @CurrentUser('nguoi_dung_id') userId, @Body('ly_do_tu_choi') lyDoTuChoi) Decorators: @Put('proposals/:id/reject'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ProposalsService Method: rejectProposal(id: string, userId: string, lyDoTuChoi?: string) Return Type: Promise<DeXuatGiaoDich>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.deXuatGiaoDich.update() Bảng tác động: de_xuat_giao_dich
+Input Arguments | ● id (UUID): Mã đề xuất. ● userId (UUID): Chủ bài đăng. ● lyDoTuChoi: Lý do từ chối.
+Return Value | DeXuatGiaoDich: Đề xuất sau từ chối.
+Pre-conditions | ● Đề xuất đang chờ xử lý. ● Người từ chối là chủ bài đăng.
+Post-conditions | ● Trạng thái đề xuất -> TU_CHOI.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận yêu cầu từ chối. 2. [Service] Kiểm tra quyền hạn. 3. [Data Access] Cập nhật trang_thai = 'TU_CHOI'. 4. [Controller] Trả về kết quả.
+--- TABLE END ---
+
+startNegotiation() – Use Case UC3.3 - Chuyển sang tiến trình thương lượng
+Bảng 18. Đặc tả method startNegotiation()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.3 - Chuyển sang tiến trình thương lượng
+Tầng Controller (Presentation) | Class: ProposalsController Method: negotiate(@Param('id') id, @CurrentUser('nguoi_dung_id') userId) Decorators: @Put('proposals/:id/negotiate'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ProposalsService Method: startNegotiation(id: string, userId: string) Return Type: Promise<DeXuatGiaoDich>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.deXuatGiaoDich.update() Bảng tác động: de_xuat_giao_dich
+Input Arguments | ● id (UUID): Mã đề xuất.
+Return Value | DeXuatGiaoDich: Đề xuất trạng thái thương lượng.
+Pre-conditions | ● Đề xuất đang ở trạng thái CHO_XU_LY.
+Post-conditions | ● Trạng thái đề xuất -> DANG_THUONG_LUONG.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận yêu cầu mở thương lượng. 2. [Data Access] Đổi trang_thai sang DANG_THUONG_LUONG. 3. [Controller] Trả về HTTP Code 200.
+--- TABLE END ---
+
+createMessage() – Use Case UC3.3 - Gửi tin nhắn thương lượng trực tiếp
+Bảng 19. Đặc tả method createMessage()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.3 - Gửi tin nhắn thương lượng trực tiếp
+Tầng Controller (Presentation) | Class: NegotiationController Method: sendMessage(@Param('proposalId') proposalId, @CurrentUser('nguoi_dung_id') userId, @Body('noi_dung') noiDung) Decorators: @Post('proposals/:proposalId/messages'), @UseGuards(JwtAuthGuard) HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: NegotiationService Method: createMessage(proposalId: string, userId: string, noiDung: string) Return Type: Promise<TinNhanThuongLuong>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.tinNhanThuongLuong.create() Bảng tác động: tin_nhan_thuong_luong
+Input Arguments | ● proposalId (UUID): Mã đề xuất. ● userId (UUID): Người nhắn. ● noiDung (String): Nội dung tin nhắn.
+Return Value | TinNhanThuongLuong: Bản ghi tin nhắn mới.
+Pre-conditions | ● Đề xuất ở trạng thái DANG_THUONG_LUONG. ● Người nhắn thuộc 1 trong 2 bên.
+Post-conditions | ● Bản ghi tin nhắn mới lưu vào CSDL. ● Phát tin nhắn qua WebSocket Gateway tới đối tác.
+Processing Steps (3 Tầng) | 1. [Controller] Tiếp nhận tin nhắn thương lượng. 2. [Data Access] Lưu bản ghi tin nhắn mới. 3. [Service] Phát sự kiện NEW_MESSAGE qua NegotiationGateway. 4. [Controller] Phản hồi HTTP Code 201.
+--- TABLE END ---
+
+getMessages() – Use Case UC3.3 - Truy vấn lịch sử tin nhắn thương lượng
+Bảng 20. Đặc tả method getMessages()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC3.3 - Truy vấn lịch sử tin nhắn thương lượng
+Tầng Controller (Presentation) | Class: NegotiationController Method: getMessages(@Param('proposalId') proposalId, @CurrentUser('nguoi_dung_id') userId) Decorators: @Get('proposals/:proposalId/messages'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: NegotiationService Method: getMessages(proposalId: string, userId: string) Return Type: Promise<TinNhanThuongLuong[]>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.tinNhanThuongLuong.findMany() Bảng tác động: tin_nhan_thuong_luong
+Input Arguments | ● proposalId (UUID): Mã đề xuất.
+Return Value | TinNhanThuongLuong[]: Danh sách tin nhắn.
+Pre-conditions | ● Người dùng tham gia cuộc thương lượng.
+Post-conditions | ● Không làm thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận proposalId từ URL. 2. [Data Access] Truy vấn mảng tin nhắn theo thoi_gian asc. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+findAllMyTransactions() – Use Case UC4.3 - Truy vấn danh sách giao dịch cá nhân
+Bảng 21. Đặc tả method findAllMyTransactions()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC4.3 - Truy vấn danh sách giao dịch cá nhân
+Tầng Controller (Presentation) | Class: TransactionsController Method: findAll(@CurrentUser('nguoi_dung_id') userId, @Query() query: QueryPaginationDto) Decorators: @Get('transactions'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: TransactionsService Method: findAllMyTransactions(userId: string, query: QueryPaginationDto) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.giaoDich.findMany() Bảng tác động: giao_dich
+Input Arguments | ● userId (UUID): Người dùng đăng nhập. ● query: page, limit.
+Return Value | Object: Danh sách giao dịch cá nhân.
+Pre-conditions | ● Người dùng đã đăng nhập.
+Post-conditions | ● Không thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận request. 2. [Data Access] Tìm các bản ghi giao dịch mà userId là người sở hữu hoặc người tiếp nhận. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+findOne() [Transactions] – Use Case UC4.3 - Xem chi tiết bản ghi giao dịch
+Bảng 22. Đặc tả method findOne() [Transactions]
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC4.3 - Xem chi tiết bản ghi giao dịch
+Tầng Controller (Presentation) | Class: TransactionsController Method: findOne(@Param('id') id, @CurrentUser('nguoi_dung_id') userId) Decorators: @Get('transactions/:id'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: TransactionsService Method: findOne(id: string, userId: string) Return Type: Promise<GiaoDich>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.giaoDich.findUnique() Bảng tác động: giao_dich, de_xuat_giao_dich, bai_dang_tai_san
+Input Arguments | ● id (UUID): Mã giao dịch. ● userId (UUID): Người dùng.
+Return Value | GiaoDich: Chi tiết bản ghi giao dịch.
+Pre-conditions | ● Người dùng tham gia vào giao dịch.
+Post-conditions | ● Không làm thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận id giao dịch. 2. [Data Access] Truy vấn chi tiết giao dịch kèm thông tin bài đăng và hai bên. 3. [Controller] Phản hồi kết quả.
+--- TABLE END ---
+
+confirmTransaction() – Use Case UC4.1 - Xác nhận hoàn tất giao dịch hai bên
+Bảng 23. Đặc tả method confirmTransaction()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC4.1 - Xác nhận hoàn tất giao dịch hai bên
+Tầng Controller (Presentation) | Class: TransactionsController Method: confirm(@Param('id') id, @CurrentUser('nguoi_dung_id') userId) Decorators: @Put('transactions/:id/confirm'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: TransactionsService Method: confirmTransaction(id: string, userId: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.$transaction(), tx.giaoDich.update(), tx.baiDangTaiSan.update(), tx.hoSoUyTin.updateMany() Bảng tác động: giao_dich, bai_dang_tai_san, ho_so_uy_tin
+Input Arguments | ● id (UUID): Mã giao dịch. ● userId (UUID): Người bấm xác nhận.
+Return Value | Object: Cập nhật cờ xác nhận và trạng thái giao dịch.
+Pre-conditions | ● Giao dịch đang ở trạng thái DANG_GIAO_DICH. ● Người thực hiện thuộc 1 trong 2 bên.
+Post-conditions | ● Đánh dấu cờ xác nhận tương ứng. ● Khi cả 2 bên cùng xác nhận: Trạng thái giao dịch -> HOAN_TAT, giảm giữ chỗ, tăng số lượng đã phân phối, cộng 1 giao dịch hoàn tất trong hồ sơ uy tín cả 2 bên.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận yêu cầu xác nhận. 2. [Service] Xác minh vai trò người dùng. 3. [Data Access] Mở prisma.$transaction():    a. Cập nhật cờ xác nhận của người dùng.    b. Khi cả 2 bên cùng bấm xác nhận -> Đổi trạng thái giao dịch sang HOAN_TAT.    c. Giảm giữ chỗ, tăng số lượng đã phân phối trên bài đăng tài sản.    d. Tăng so_giao_dich_hoan_tat thêm 1 trong bảng ho_so_uy_tin cho cả 2 bên. 4. [Service] Bắn thông báo WebSocket cho đối tác. 5. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+cancelTransaction() – Use Case UC4.2 - Hủy bỏ tiến trình giao dịch dở dang
+Bảng 24. Đặc tả method cancelTransaction()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC4.2 - Hủy bỏ tiến trình giao dịch dở dang
+Tầng Controller (Presentation) | Class: TransactionsController Method: cancel(@Param('id') id, @CurrentUser('nguoi_dung_id') userId, @Body() body) Decorators: @Put('transactions/:id/cancel'), @UseGuards(JwtAuthGuard) HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: TransactionsService Method: cancelTransaction(id: string, userId: string, lyDo?: string) Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.$transaction(), tx.giaoDich.update(), tx.baiDangTaiSan.update() Bảng tác động: giao_dich, bai_dang_tai_san
+Input Arguments | ● id (UUID): Mã giao dịch. ● userId (UUID): Người hủy. ● lyDo: Lý do hủy.
+Return Value | Object: Thông báo hủy thành công.
+Pre-conditions | ● Giao dịch đang DANG_GIAO_DICH. ● Người hủy tham gia giao dịch.
+Post-conditions | ● Trạng thái giao dịch -> DA_HUY. ● Hoàn trả tồn kho: so_luong_kha_dung tăng, so_luong_giu_cho giảm.
+Processing Steps (3 Tầng) | 1. [Controller] Tiếp nhận yêu cầu hủy. 2. [Data Access] Thực thi Transaction CSDL:    a. Đổi trạng thái giao dịch thành DA_HUY, ghi lý do.    b. Hoàn trả số lượng khả dụng cho bài đăng tài sản. 3. [Service] Bắn thông báo WebSocket tới đối phương. 4. [Controller] Trả về HTTP Code 200.
+--- TABLE END ---
+
+createReview() – Use Case UC6.1 - Khởi tạo đánh giá chất lượng giao dịch
+Bảng 25. Đặc tả method createReview()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC6.1 - Khởi tạo đánh giá chất lượng giao dịch
+Tầng Controller (Presentation) | Class: ReviewsController Method: createReview(@CurrentUser('nguoi_dung_id') userId, @Body() dto: CreateReviewDto) Decorators: @Post('reviews'), @UseGuards(JwtAuthGuard) HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: ReviewsService Method: createReview(userId: string, dto: CreateReviewDto) Return Type: Promise<DanhGiaGiaoDich>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.$transaction(), tx.danhGiaGiaoDich.create(), tx.hoSoUyTin.update() Bảng tác động: danh_gia_giao_dich, ho_so_uy_tin
+Input Arguments | ● userId (UUID): Người đánh giá. ● dto: giao_dich_id, diem_sao (1-5), nhan_xet.
+Return Value | DanhGiaGiaoDich: Bản ghi đánh giá mới.
+Pre-conditions | ● Giao dịch đã HOAN_TAT. ● Người đánh giá chưa từng đánh giá giao dịch này trước đó.
+Post-conditions | ● Tạo bản ghi danh_gia_giao_dich mới. ● Tự động tính toán lại diem_uy_tin và diem_trung_binh trong ho_so_uy_tin của đối tác.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận payload đánh giá. 2. [Service] Kiểm tra giao dịch đã hoàn tất. 3. [Data Access] Thực thi Transaction CSDL:    a. Lưu bản ghi danh_gia_giao_dich mới.    b. Tính điểm uy tín tích lũy mới (+5đ cho 5 sao, +2đ cho 4 sao, -5đ cho <=2 sao).    c. Cập nhật ho_so_uy_tin cho người được đánh giá. 4. [Controller] Phản hồi HTTP Code 201.
+--- TABLE END ---
+
+getUserReviews() – Use Case UC6.2 - Truy vấn danh sách đánh giá của thành viên
+Bảng 26. Đặc tả method getUserReviews()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC6.2 - Truy vấn danh sách đánh giá của thành viên
+Tầng Controller (Presentation) | Class: ReviewsController Method: getUserReviews(@Param('id') userId: string) Decorators: @Get('reviews/user/:id') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ReviewsService Method: getUserReviews(userId: string) Return Type: Promise<DanhGiaGiaoDich[]>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.danhGiaGiaoDich.findMany() Bảng tác động: danh_gia_giao_dich
+Input Arguments | ● userId (UUID): Mã người dùng được đánh giá.
+Return Value | DanhGiaGiaoDich[]: Mảng các nhận xét và số sao.
+Pre-conditions | ● Không yêu cầu xác thực.
+Post-conditions | ● Không làm thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận userId từ URL. 2. [Data Access] Truy vấn bảng danh_gia_giao_dich theo nguoi_duoc_danh_gia_id. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+createReport() – Use Case UC7.1 - Khởi tạo báo cáo vi phạm
+Bảng 27. Đặc tả method createReport()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC7.1 - Khởi tạo báo cáo vi phạm
+Tầng Controller (Presentation) | Class: ReportsController Method: createReport(@CurrentUser('nguoi_dung_id') userId, @Body() dto: CreateReportDto) Decorators: @Post('reports'), @UseGuards(JwtAuthGuard) HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: ReportsService Method: createReport(userId: string, dto: CreateReportDto) Return Type: Promise<BaoCaoViPham>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baoCaoViPham.create() Bảng tác động: bao_cao_vi_pham
+Input Arguments | ● userId (UUID): Người báo cáo. ● dto: đối tượng bị báo cáo, lý do, mô tả, ảnh bằng chứng.
+Return Value | BaoCaoViPham: Bản ghi báo cáo mới.
+Pre-conditions | ● Người dùng đã đăng nhập. ● Đối tượng bị báo cáo tồn tại trong CSDL.
+Post-conditions | ● Tạo bản ghi bao_cao_vi_pham với trang_thai = 'CHO_XU_LY'.
+Processing Steps (3 Tầng) | 1. [Controller] Nhận payload báo cáo vi phạm. 2. [Service] Kiểm tra đối tượng bị báo cáo tồn tại. 3. [Data Access] Chèn bản ghi báo cáo vào CSDL. 4. [Controller] Phản hồi HTTP Code 201.
+--- TABLE END ---
+
+processReportAdmin() – Use Case UC7.4 - Xử lý báo cáo vi phạm & thi hành hình phạt (Admin)
+Bảng 28. Đặc tả method processReportAdmin()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Use Case UC7.4 - Xử lý báo cáo vi phạm & thi hành hình phạt (Admin)
+Tầng Controller (Presentation) | Class: ReportsController Method: processReport(@Param('id') id, @CurrentUser('nguoi_dung_id') adminId, @Body() dto: ProcessReportDto) Decorators: @Post('reports/:id/action'), @UseGuards(JwtAuthGuard, RolesGuard), @Roles('QUAN_TRI_VIEN') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: ReportsService Method: processReportAdmin(id: string, adminId: string, dto: ProcessReportDto) Return Type: Promise<BaoCaoViPham>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.$transaction(), tx.baoCaoViPham.update(), tx.baiDangTaiSan.update(), tx.nguoiDung.update() Bảng tác động: bao_cao_vi_pham, bai_dang_tai_san, nguoi_dung
+Input Arguments | ● id (UUID): Mã báo cáo. ● adminId (UUID): Mã Admin xử lý. ● dto: trang_thai_xu_ly, loai_bien_phap, ghi_chu_xu_ly.
+Return Value | BaoCaoViPham: Báo cáo sau xử lý.
+Pre-conditions | ● Báo cáo đang ở trạng thái CHO_XU_LY. ● Người xử lý là QUAN_TRI_VIEN.
+Post-conditions | ● Trạng thái báo cáo -> DA_XU_LY. ● Khóa bài đăng (DA_KHOA_SO) hoặc khóa tài khoản (BI_KHOA) nếu áp dụng hình phạt.
+Processing Steps (3 Tầng) | 1. [Controller] RolesGuard xác minh vai trò Admin. 2. [Service] Kiểm tra báo cáo hợp lệ. 3. [Data Access] Thực thi Transaction CSDL:    a. Áp dụng hình phạt ẩn bài đăng hoặc khóa tài khoản.    b. Cập nhật báo cáo nguoi_xu_ly_id = adminId, trang_thai = 'DA_XU_LY'. 4. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+getSystemStats() – Phân hệ Quản trị Admin - Thống kê tổng quan hệ thống
+Bảng 29. Đặc tả method getSystemStats()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Phân hệ Quản trị Admin - Thống kê tổng quan hệ thống
+Tầng Controller (Presentation) | Class: AdminController Method: getSystemStats() Decorators: @Get('admin/stats'), @UseGuards(JwtAuthGuard, RolesGuard), @Roles('QUAN_TRI_VIEN') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AdminService Method: getSystemStats() Return Type: Promise<Object>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDung.count(), prisma.baiDangTaiSan.count(), prisma.giaoDich.count() Bảng tác động: nguoi_dung, bai_dang_tai_san, giao_dich, bao_cao_vi_pham
+Input Arguments | ● Không có Payload.
+Return Value | Object: Các con số thống kê tổng người dùng, bài đăng, giao dịch.
+Pre-conditions | ● Người dùng có quyền QUAN_TRI_VIEN.
+Post-conditions | ● Không thay đổi CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Kiểm tra quyền Admin. 2. [Data Access] Đếm tổng số lượng bản ghi trong các bảng CSDL. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+updateUserStatus() – Phân hệ Quản trị Admin - Khóa / Khôi phục tài khoản người dùng
+Bảng 30. Đặc tả method updateUserStatus()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Phân hệ Quản trị Admin - Khóa / Khôi phục tài khoản người dùng
+Tầng Controller (Presentation) | Class: AdminController Method: updateUserStatus(@Param('id') userId, @Body('trang_thai') trang_thai) Decorators: @Patch('admin/users/:id/status'), @UseGuards(JwtAuthGuard, RolesGuard), @Roles('QUAN_TRI_VIEN') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AdminService Method: updateUserStatus(userId: string, trang_thai: string) Return Type: Promise<NguoiDung>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.nguoiDung.update() Bảng tác động: nguoi_dung
+Input Arguments | ● userId (UUID): Người dùng bị khóa/mở khóa. ● trang_thai ('HOAT_DONG' hoặc 'BI_KHOA').
+Return Value | NguoiDung: Người dùng sau khi cập nhật trạng thái.
+Pre-conditions | ● Người thực hiện có quyền QUAN_TRI_VIEN.
+Post-conditions | ● Trạng thái tài khoản người dùng chuyển sang HOAT_DONG hoặc BI_KHOA.
+Processing Steps (3 Tầng) | 1. [Controller] Xác minh quyền Admin. 2. [Data Access] Cập nhật trang_thai ở bảng nguoi_dung. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+updateAssetStatusAdmin() – Phân hệ Quản trị Admin - Cập nhật trạng thái bài đăng tài sản
+Bảng 31. Đặc tả method updateAssetStatusAdmin()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Phân hệ Quản trị Admin - Cập nhật trạng thái bài đăng tài sản
+Tầng Controller (Presentation) | Class: AdminController Method: updateAssetStatusAdmin(@Param('id') assetId, @Body('trang_thai') trang_thai) Decorators: @Patch('admin/assets/:id/status'), @UseGuards(JwtAuthGuard, RolesGuard), @Roles('QUAN_TRI_VIEN') HTTP Status: 200 OK
+Tầng Service (Business Logic) | Class: AdminService Method: updateAssetStatusAdmin(assetId: string, trang_thai: string) Return Type: Promise<BaiDangTaiSan>
+Tầng Data Access (Prisma / Cloud) | ORM API: prisma.baiDangTaiSan.update() Bảng tác động: bai_dang_tai_san
+Input Arguments | ● assetId (UUID): Bài đăng. ● trang_thai ('KHA_DUNG', 'DA_KHOA_SO', 'DA_KET_THUC').
+Return Value | BaiDangTaiSan: Bài đăng sau cập nhật.
+Pre-conditions | ● Người dùng có quyền Admin.
+Post-conditions | ● Trạng thái bài đăng thay đổi trong CSDL.
+Processing Steps (3 Tầng) | 1. [Controller] Xác minh quyền Admin. 2. [Data Access] Cập nhật trang_thai trong bai_dang_tai_san. 3. [Controller] Phản hồi HTTP Code 200.
+--- TABLE END ---
+
+processMultipleUploads() – Phân hệ Lưu trữ Tệp tin - Upload hình ảnh lên Cloud Storage (Cloudinary)
+Bảng 32. Đặc tả method processMultipleUploads()
+
+--- TABLE START ---
+Use Case Nghiệp vụ | Phân hệ Lưu trữ Tệp tin - Upload hình ảnh lên Cloud Storage (Cloudinary)
+Tầng Controller (Presentation) | Class: UploadController Method: uploadMultipleFiles(@UploadedFiles() files, @Req() req: Request) Decorators: @Post('upload/multiple'), @UseInterceptors(FilesInterceptor('files', 10)), @UseGuards(JwtAuthGuard) HTTP Status: 201 CREATED
+Tầng Service (Business Logic) | Class: UploadService Method: processMultipleUploads(files: Express.Multer.File[], host: string, protocol: string) Return Type: Promise<string[]>
+Tầng Data Access (Prisma / Cloud) | Cloud Service: Cloudinary Free Cloud Media Storage (Cloud CDN) Storage Cache: Multer Disk Engine (Thư mục tạm: ./uploads/)
+Input Arguments | ● files (Express.Multer.File[]): Mảng tệp tin ảnh đính kèm. ● host & protocol: Thông tin tên miền server.
+Return Value | Object: Mảng danh sách các đường dẫn HTTPS URL hình ảnh trực tuyến công khai trên Cloudinary CDN.
+Pre-conditions | ● Người dùng đã đăng nhập. ● Các tệp tin đúng định dạng ảnh (JPG, PNG, WEBP, GIF), dung lượng <= 5MB/tệp, số lượng <= 10 tệp.
+Post-conditions | ● Tệp tin được đẩy trực tiếp lên Cloud Storage (Cloudinary) trong thư mục 'asset-sharing'. ● Tệp tin đệm tạm thời trên máy chủ local được tự động dọn dẹp (xóa file tạm).
+Processing Steps (3 Tầng) | 1. [Controller] Multer Interceptor đón nhận tệp tin, kiểm tra định dạng và lưu đệm tạm thời. 2. [Service] Kiểm tra cấu hình kết nối Cloudinary Cloud Storage (cloud_name, api_key, api_secret). 3. [Cloud Storage Service] Gọi cloudinary.uploader.upload() đẩy tệp tin trực tiếp lên Cloud CDN vào thư mục 'asset-sharing'. 4. [Service] Xóa tệp tin đệm tạm thời trên máy chủ server bằng fs.unlinkSync(). 5. [Service] Trả về mảng đường dẫn HTTPS bảo mật trực tuyến (secure_url). 6. [Controller] Phản hồi HTTP Code 201 kèm mảng Cloud URLs.
+--- TABLE END ---
