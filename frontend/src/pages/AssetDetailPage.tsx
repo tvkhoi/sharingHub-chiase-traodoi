@@ -7,7 +7,7 @@ import { uploadService } from '../services/upload.service';
 import { useAuth } from '../context/AuthContext';
 import type { Asset } from '../types';
 import toast from 'react-hot-toast';
-import { MapPin, Box, Gift, ArrowLeftRight, Star, Send, ShieldAlert, ArrowLeft, Calendar, UploadCloud, X, Loader2, Image as ImageIcon } from 'lucide-react';
+import { MapPin, Box, Gift, ArrowLeftRight, Star, Send, ShieldAlert, ArrowLeft, Calendar, UploadCloud, X, Loader2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 export const AssetDetailPage: React.FC = () => {
