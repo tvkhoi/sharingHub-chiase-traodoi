@@ -156,9 +156,16 @@ export const AdminReportsPage: React.FC = () => {
                       )}
                     </td>
                     <td className="p-4 text-brand-rose font-semibold whitespace-nowrap">
-                      <span className="truncate max-w-[220px] block" title={report.ly_do_vi_pham}>
-                        {report.ly_do_vi_pham}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate max-w-[200px] block" title={report.ly_do_vi_pham}>
+                          {report.ly_do_vi_pham}
+                        </span>
+                        {report.minh_chung && (
+                          <span className="badge badge-indigo text-[10px] flex items-center gap-0.5" title="Có hình ảnh minh chứng">
+                            <ImageIcon className="w-3 h-3" /> Ảnh
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 whitespace-nowrap">
                       <div className="flex items-center justify-start">
@@ -309,7 +316,7 @@ export const AdminReportsPage: React.FC = () => {
                     {selectedReport.mo_ta_chi_tiet}
                   </div>
                 )}
-                {selectedReport.minh_chung && (
+                {selectedReport.minh_chung ? (
                   <div className="pt-2 border-t border-color/40 mt-2">
                     <span className="text-xs font-semibold text-secondary flex items-center gap-1 mb-2">
                       <ImageIcon className="w-3.5 h-3.5 text-brand-primary" /> Hình ảnh / Minh chứng đính kèm:
@@ -343,6 +350,11 @@ export const AdminReportsPage: React.FC = () => {
                         {selectedReport.minh_chung} <ExternalLink className="w-3 h-3" />
                       </a>
                     </div>
+                  </div>
+                ) : (
+                  <div className="pt-2 border-t border-color/40 mt-2 flex items-center gap-1.5 text-xs text-muted italic">
+                    <ImageIcon className="w-3.5 h-3.5 opacity-50 text-secondary" />
+                    <span>Không có hình ảnh đính kèm</span>
                   </div>
                 )}
               </div>
