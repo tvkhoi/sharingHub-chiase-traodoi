@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ProcessReportDto } from './dto/process-report.dto';
@@ -6,11 +6,57 @@ import { QueryPaginationDto } from '../../common/dto/pagination.dto';
 import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 
 @Injectable()
-export class ReportsService {
+export class ReportsService implements OnModuleInit {
+  private readonly logger = new Logger(ReportsService.name);
+
   constructor(
     private prisma: PrismaService,
     private negotiationGateway: NegotiationGateway,
   ) {}
+
+  async onModuleInit() {
+    await this.backfillMissingReportUserIds();
+  }
+
+  async backfillMissingReportUserIds() {
+    try {
+      const nullUserReports = await this.prisma.baoCaoViPham.findMany({
+        where: {
+          nguoi_dung_bi_bao_cao_id: null,
+          bai_dang_bi_bao_cao_id: { not: null },
+        },
+        select: {
+          bao_cao_id: true,
+          bai_dang_bi_bao_cao_id: true,
+        },
+      });
+
+      if (nullUserReports.length > 0) {
+        this.logger.log(`Tự động cập nhật ${nullUserReports.length} bản ghi báo cáo bị thiếu nguoi_dung_bi_bao_cao_id...`);
+        let updatedCount = 0;
+
+        for (const report of nullUserReports) {
+          if (report.bai_dang_bi_bao_cao_id) {
+            const asset = await this.prisma.baiDangTaiSan.findUnique({
+              where: { bai_dang_id: report.bai_dang_bi_bao_cao_id },
+              select: { chu_so_huu_id: true },
+            });
+
+            if (asset && asset.chu_so_huu_id) {
+              await this.prisma.baoCaoViPham.update({
+                where: { bao_cao_id: report.bao_cao_id },
+                data: { nguoi_dung_bi_bao_cao_id: asset.chu_so_huu_id },
+              });
+              updatedCount++;
+            }
+          }
+        }
+        this.logger.log(`✅ Đã tự động cập nhật xong ${updatedCount}/${nullUserReports.length} bản ghi báo cáo vi phạm trong CSDL!`);
+      }
+    } catch (error) {
+      this.logger.error('Lỗi khi tự động backfill nguoi_dung_bi_bao_cao_id:', error);
+    }
+  }
 
   async createReport(userId: string, dto: CreateReportDto) {
     if (dto.bai_dang_bi_bao_cao_id) {
