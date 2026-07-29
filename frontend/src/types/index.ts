@@ -58,6 +58,7 @@ export interface AssetCategory {
   ten_danh_muc: string;
   mo_ta?: string | null;
   bieu_tuong?: string | null;
+  trang_thai?: string;
 }
 
 export interface AssetImage {

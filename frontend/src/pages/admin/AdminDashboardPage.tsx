@@ -73,6 +73,7 @@ export const AdminDashboardPage: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<AssetCategory | null>(null);
   const [catName, setCatName] = useState<string>('');
   const [catDesc, setCatDesc] = useState<string>('');
+  const [catStatus, setCatStatus] = useState<string>('HOAT_DONG');
 
   // Assets state
   const [adminAssets, setAdminAssets] = useState<Asset[]>(cachedAdminAssetsList);
@@ -211,6 +212,19 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
+  const handleToggleCategoryStatus = async (category: AssetCategory) => {
+    const newStatus = category.trang_thai === 'TAM_AN' || category.trang_thai === 'VO_HIEU' ? 'HOAT_DONG' : 'TAM_AN';
+    try {
+      await adminService.updateCategory(category.danh_muc_id, {
+        trang_thai: newStatus,
+      });
+      toast.success(`Đã đổi trạng thái danh mục sang: ${newStatus === 'HOAT_DONG' ? 'Hoạt động' : 'Tạm ẩn'}`);
+      fetchCategories();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi thay đổi trạng thái danh mục');
+    }
+  };
+
   const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!catName.trim()) return toast.error('Vui lòng nhập tên danh mục');
@@ -220,6 +234,7 @@ export const AdminDashboardPage: React.FC = () => {
         await adminService.updateCategory(editingCategory.danh_muc_id, {
           ten_danh_muc: catName.trim(),
           mo_ta: catDesc.trim(),
+          trang_thai: catStatus,
         });
         toast.success('Đã cập nhật danh mục');
       } else {
@@ -232,6 +247,7 @@ export const AdminDashboardPage: React.FC = () => {
       setIsCategoryModalOpen(false);
       setCatName('');
       setCatDesc('');
+      setCatStatus('HOAT_DONG');
       setEditingCategory(null);
       fetchCategories();
     } catch (err: any) {
@@ -611,6 +627,7 @@ export const AdminDashboardPage: React.FC = () => {
                 setEditingCategory(null);
                 setCatName('');
                 setCatDesc('');
+                setCatStatus('HOAT_DONG');
                 setIsCategoryModalOpen(true);
               }}
               className="btn btn-emerald text-xs py-2 px-3.5 flex items-center gap-1.5"
@@ -637,6 +654,7 @@ export const AdminDashboardPage: React.FC = () => {
                             setEditingCategory(c);
                             setCatName(c.ten_danh_muc);
                             setCatDesc(c.mo_ta || '');
+                            setCatStatus(c.trang_thai || 'HOAT_DONG');
                             setIsCategoryModalOpen(true);
                           }}
                           className="p-1 rounded-lg text-muted hover:text-brand-primary transition-colors"
@@ -658,7 +676,15 @@ export const AdminDashboardPage: React.FC = () => {
                     </p>
                   </div>
                   <div className="pt-2 border-t border-color/40 flex items-center justify-between">
-                    <span className="badge badge-emerald text-[10px]">Đang hoạt động</span>
+                    <span className={`badge ${c.trang_thai === 'TAM_AN' || c.trang_thai === 'VO_HIEU' ? 'badge-rose' : 'badge-emerald'} text-[10px]`}>
+                      {c.trang_thai === 'TAM_AN' || c.trang_thai === 'VO_HIEU' ? 'Tạm ẩn' : 'Đang hoạt động'}
+                    </span>
+                    <button
+                      onClick={() => handleToggleCategoryStatus(c)}
+                      className="text-xs font-semibold text-brand-primary hover:underline"
+                    >
+                      {c.trang_thai === 'TAM_AN' || c.trang_thai === 'VO_HIEU' ? 'Bật hoạt động' : 'Tạm ẩn'}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -695,6 +721,18 @@ export const AdminDashboardPage: React.FC = () => {
                       onChange={(e) => setCatDesc(e.target.value)}
                       className="form-input text-sm"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-secondary mb-1">Trạng thái danh mục</label>
+                    <select
+                      value={catStatus}
+                      onChange={(e) => setCatStatus(e.target.value)}
+                      className="form-select text-sm"
+                    >
+                      <option value="HOAT_DONG">Đang hoạt động (HOAT_DONG)</option>
+                      <option value="TAM_AN">Tạm ẩn (TAM_AN)</option>
+                    </select>
                   </div>
 
                   <div className="flex justify-end gap-2 pt-2">
