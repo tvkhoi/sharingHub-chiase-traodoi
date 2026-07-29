@@ -730,8 +730,8 @@ export const AdminDashboardPage: React.FC = () => {
                       onChange={(e) => setCatStatus(e.target.value)}
                       className="form-select text-sm"
                     >
-                      <option value="HOAT_DONG">Đang hoạt động (HOAT_DONG)</option>
-                      <option value="TAM_AN">Tạm ẩn (TAM_AN)</option>
+                      <option value="HOAT_DONG">Đang hoạt động</option>
+                      <option value="TAM_AN">Tạm ẩn</option>
                     </select>
                   </div>
 
