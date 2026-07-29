@@ -399,9 +399,14 @@ export const AssetDetailPage: React.FC = () => {
               </div>
 
               {asset.hinh_thuc_chia_se === 'CHO_TANG' ? (
-                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-brand-emerald text-xs font-semibold flex items-center gap-2">
-                  <Gift className="w-4 h-4 shrink-0" />
-                  <span>Bài đăng Cho/Tặng miễn phí - Bạn không cần đối ứng thêm tài sản hay tiền.</span>
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-brand-emerald space-y-1">
+                  <div className="flex items-center gap-2 font-extrabold text-sm text-emerald-400">
+                    <Gift className="w-4 h-4 shrink-0 text-emerald-400" />
+                    <span>Bài đăng Cho / Tặng Miễn Phí</span>
+                  </div>
+                  <p className="text-xs text-secondary leading-relaxed">
+                    Đây là vật phẩm cho tặng cộng đồng. Bạn chỉ cần nhập số lượng và gửi lời nhắn (nếu có), không cần nhập tài sản hay tiền đối ứng.
+                  </p>
                 </div>
               ) : (
                 <div className="form-group space-y-3">
