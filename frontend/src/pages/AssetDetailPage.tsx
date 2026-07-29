@@ -36,6 +36,8 @@ export const AssetDetailPage: React.FC = () => {
   const [soLuongYeuCau, setSoLuongYeuCau] = useState<number>(1);
   const [loiNhan, setLoiNhan] = useState<string>('');
   const [taiSanDoiUng, setTaiSanDoiUng] = useState<string>('');
+  const [tienDoiUng, setTienDoiUng] = useState<string>('');
+  const [loaiDoiUng, setLoaiDoiUng] = useState<'TAI_SAN' | 'TIEN' | 'CA_HAI' | 'MIEN_PHI'>('TAI_SAN');
   const [submittingProposal, setSubmittingProposal] = useState<boolean>(false);
 
   // Report modal state
@@ -66,13 +68,42 @@ export const AssetDetailPage: React.FC = () => {
     }
   };
 
+  const openProposalModal = () => {
+    setSoLuongYeuCau(1);
+    setLoiNhan('');
+    setTienDoiUng('');
+    if (asset?.hinh_thuc_chia_se === 'CHO_TANG') {
+      setLoaiDoiUng('MIEN_PHI');
+      setTaiSanDoiUng('Xin nhận miễn phí (Cho/Tặng)');
+    } else {
+      setLoaiDoiUng('TAI_SAN');
+      setTaiSanDoiUng('');
+    }
+    setShowProposalModal(true);
+  };
+
   const handleSendProposal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!asset || !user) return;
 
-    if (!taiSanDoiUng.trim()) {
-      toast.error('Vui lòng nhập tài sản / giá trị đối ứng đề xuất');
-      return;
+    let finalTaiSan = taiSanDoiUng.trim();
+    let finalTien: number | undefined = undefined;
+
+    if (asset.hinh_thuc_chia_se === 'CHO_TANG' || loaiDoiUng === 'MIEN_PHI') {
+      finalTaiSan = 'Xin nhận miễn phí (Cho/Tặng)';
+    } else if (loaiDoiUng === 'TAI_SAN') {
+      if (!finalTaiSan) return toast.error('Vui lòng nhập tên tài sản / đồ dùng đối ứng');
+    } else if (loaiDoiUng === 'TIEN') {
+      const tienNum = Number(tienDoiUng);
+      if (!tienDoiUng || isNaN(tienNum) || tienNum <= 0) return toast.error('Vui lòng nhập số tiền bù hợp lệ (> 0)');
+      finalTaiSan = `Bù tiền mặt đối ứng (${tienNum.toLocaleString('vi-VN')} VNĐ)`;
+      finalTien = tienNum;
+    } else if (loaiDoiUng === 'CA_HAI') {
+      if (!finalTaiSan) return toast.error('Vui lòng nhập tên tài sản / đồ dùng đối ứng');
+      const tienNum = Number(tienDoiUng);
+      if (tienDoiUng && (!isNaN(tienNum) && tienNum > 0)) {
+        finalTien = tienNum;
+      }
     }
 
     setSubmittingProposal(true);
@@ -81,7 +112,8 @@ export const AssetDetailPage: React.FC = () => {
         bai_dang_id: asset.bai_dang_id,
         so_luong_yeu_cau: Number(soLuongYeuCau),
         loi_nhan: loiNhan || undefined,
-        tai_san_doi_ung: taiSanDoiUng.trim(),
+        tai_san_doi_ung: finalTaiSan,
+        tien_doi_ung: finalTien,
       });
 
       toast.success('Gửi đề xuất nhận/trao đổi tài sản thành công!');
@@ -324,7 +356,7 @@ export const AssetDetailPage: React.FC = () => {
             ) : (
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowProposalModal(true)}
+                  onClick={openProposalModal}
                   disabled={asset.so_luong_kha_dung <= 0}
                   className="btn btn-emerald flex-1 py-3 text-base"
                 >
@@ -366,19 +398,89 @@ export const AssetDetailPage: React.FC = () => {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label flex items-center justify-between">
-                  <span>Tài sản / Giá trị đối ứng đề xuất <span className="text-rose-500 font-bold">*</span></span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ví dụ: Đổi lấy Tai nghe Sony WH-1000XM4 hoặc Bù 500k..."
-                  value={taiSanDoiUng}
-                  onChange={(e) => setTaiSanDoiUng(e.target.value)}
-                  className="form-input"
-                  required
-                />
-              </div>
+              {asset.hinh_thuc_chia_se === 'CHO_TANG' ? (
+                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-brand-emerald text-xs font-semibold flex items-center gap-2">
+                  <Gift className="w-4 h-4 shrink-0" />
+                  <span>Bài đăng Cho/Tặng miễn phí - Bạn không cần đối ứng thêm tài sản hay tiền.</span>
+                </div>
+              ) : (
+                <div className="form-group space-y-3">
+                  <label className="form-label font-bold text-primary block">
+                    Hình thức đối ứng đề xuất <span className="text-rose-500">*</span>
+                  </label>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setLoaiDoiUng('TAI_SAN')}
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition-all ${
+                        loaiDoiUng === 'TAI_SAN'
+                          ? 'border-indigo-500 bg-indigo-500/15 text-indigo-400 font-bold shadow-md'
+                          : 'border-color text-secondary hover:bg-card-hover'
+                      }`}
+                    >
+                      <Box className="w-4 h-4" />
+                      Đổi đồ dùng
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setLoaiDoiUng('TIEN')}
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition-all ${
+                        loaiDoiUng === 'TIEN'
+                          ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400 font-bold shadow-md'
+                          : 'border-color text-secondary hover:bg-card-hover'
+                      }`}
+                    >
+                      <span className="text-sm font-black">$</span>
+                      Bù tiền mặt
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setLoaiDoiUng('CA_HAI')}
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1 transition-all ${
+                        loaiDoiUng === 'CA_HAI'
+                          ? 'border-amber-500 bg-amber-500/15 text-amber-400 font-bold shadow-md'
+                          : 'border-color text-secondary hover:bg-card-hover'
+                      }`}
+                    >
+                      <ArrowLeftRight className="w-4 h-4" />
+                      Đổi đồ + Bù tiền
+                    </button>
+                  </div>
+
+                  {(loaiDoiUng === 'TAI_SAN' || loaiDoiUng === 'CA_HAI') && (
+                    <div>
+                      <label className="form-label text-xs">Tên tài sản / Đồ dùng mang ra đổi *</label>
+                      <input
+                        type="text"
+                        placeholder="Ví dụ: Tai nghe Sony WH-1000XM4, Sách giáo khoa..."
+                        value={taiSanDoiUng}
+                        onChange={(e) => setTaiSanDoiUng(e.target.value)}
+                        className="form-input text-sm"
+                        required
+                      />
+                    </div>
+                  )}
+
+                  {(loaiDoiUng === 'TIEN' || loaiDoiUng === 'CA_HAI') && (
+                    <div>
+                      <label className="form-label text-xs">Số tiền đối ứng bù thêm (VNĐ) *</label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={10000}
+                        placeholder="Ví dụ: 100000 (cho 100k)"
+                        value={tienDoiUng}
+                        onChange={(e) => setTienDoiUng(e.target.value)}
+                        className="form-input text-sm"
+                        required={loaiDoiUng === 'TIEN'}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="form-group">
                 <label className="form-label">Lời nhắn gửi chủ tài sản</label>

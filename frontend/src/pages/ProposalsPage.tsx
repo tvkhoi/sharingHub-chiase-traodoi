@@ -258,7 +258,12 @@ export const ProposalsPage: React.FC = () => {
                     <span className="font-medium text-primary">Yêu cầu:</span> {prop.so_luong_yeu_cau} sản phẩm.
                     {prop.tai_san_doi_ung && (
                       <span className="ml-2 font-medium text-brand-emerald">
-                        (Đổi lấy: {prop.tai_san_doi_ung})
+                        (Đối ứng: {prop.tai_san_doi_ung})
+                      </span>
+                    )}
+                    {prop.tien_doi_ung && Number(prop.tien_doi_ung) > 0 && (
+                      <span className="ml-2 font-medium text-brand-amber">
+                        (Bù tiền: {Number(prop.tien_doi_ung).toLocaleString('vi-VN')} VNĐ)
                       </span>
                     )}
                   </p>
