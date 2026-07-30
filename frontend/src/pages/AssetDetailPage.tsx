@@ -299,7 +299,7 @@ export const AssetDetailPage: React.FC = () => {
                 </span>
               ) : (
                 <span className="badge badge-indigo flex items-center gap-1">
-                  <ArrowLeftRight className="w-3.5 h-3.5" /> Trao đổi ({asset.hinh_thuc_trao_doi === 'TIEN' ? 'Bù tiền' : 'Tài sản'})
+                  <ArrowLeftRight className="w-3.5 h-3.5" /> Trao đổi ({asset.hinh_thuc_trao_doi === 'TIEN' ? 'Tài sản + Bù tiền' : 'Tài sản'})
                 </span>
               )}
             </div>

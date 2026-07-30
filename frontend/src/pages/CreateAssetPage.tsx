@@ -261,7 +261,7 @@ export const CreateAssetPage: React.FC = () => {
                   className="form-select"
                 >
                   <option value="TAI_SAN">Trao đổi tài sản khác</option>
-                  <option value="TIEN">Bù bù thêm tiền</option>
+                  <option value="TIEN">Tài sản + Bù tiền</option>
                 </select>
               </div>
             )}
