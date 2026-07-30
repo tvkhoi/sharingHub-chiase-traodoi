@@ -192,7 +192,9 @@ export const UserProfilePage: React.FC = () => {
                       )}
                     </div>
                     <span className="text-[11px] text-muted">
-                      {new Date(rev.ngay_danh_gia).toLocaleDateString('vi-VN')}
+                      {rev.ngay_danh_gia && !isNaN(new Date(rev.ngay_danh_gia).getTime())
+                        ? new Date(rev.ngay_danh_gia).toLocaleDateString('vi-VN')
+                        : 'Gần đây'}
                     </span>
                   </div>
                   {rev.nhan_xet && <p className="text-sm text-secondary italic">"{rev.nhan_xet}"</p>}
