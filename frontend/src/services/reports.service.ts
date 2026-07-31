@@ -25,21 +25,25 @@ export interface ProcessReportPayload {
 }
 
 export const reportsService = {
+  /** Gửi báo cáo vi phạm về bài đăng hoặc người dùng */
   async createReport(payload: CreateReportPayload): Promise<Report> {
     const res = await api.post<Report>('/reports', payload);
     return res.data;
   },
 
+  /** Lấy danh sách tất cả báo cáo vi phạm (Dành cho Quản trị viên) */
   async getAllReportsAdmin(params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Report>> {
     const res = await api.get<PaginatedResponse<Report>>('/reports', { params });
     return res.data;
   },
 
+  /** Lấy thông tin chi tiết báo cáo vi phạm theo ID (Dành cho Quản trị viên) */
   async getReportByIdAdmin(id: string): Promise<Report> {
     const res = await api.get<Report>(`/reports/${id}`);
     return res.data;
   },
 
+  /** Xử lý báo cáo vi phạm và áp dụng biện pháp (Dành cho Quản trị viên) */
   async processReportAdmin(id: string, payload: ProcessReportPayload): Promise<Report> {
     const res = await api.post<Report>(`/reports/${id}/action`, payload);
     return res.data;

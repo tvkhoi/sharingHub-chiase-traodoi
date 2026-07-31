@@ -9,13 +9,13 @@ export interface SystemStats {
 }
 
 export const adminService = {
-  // 1. Get System Statistics
+  // 1. Lấy thống kê tổng quan hệ thống
   getSystemStats: async (): Promise<SystemStats> => {
     const res = await api.get('/admin/stats');
     return res.data;
   },
 
-  // 2. Get Users List
+  // 2. Lấy danh sách người dùng
   getUsers: async (params?: {
     page?: number;
     limit?: number;
@@ -27,13 +27,13 @@ export const adminService = {
     return res.data;
   },
 
-  // 3. Update User Status (Lock / Unlock)
+  // 3. Cập nhật trạng thái người dùng (Hoạt động / Bị khóa)
   updateUserStatus: async (userId: string, trang_thai: 'HOAT_DONG' | 'BI_KHOA'): Promise<User> => {
     const res = await api.patch(`/admin/users/${userId}/status`, { trang_thai });
     return res.data;
   },
 
-  // 4. Get Assets List for Moderation
+  // 4. Lấy danh sách tài sản/vật phẩm dành cho Quản trị viên
   getAssetsAdmin: async (params?: {
     page?: number;
     limit?: number;
@@ -44,7 +44,7 @@ export const adminService = {
     return res.data;
   },
 
-  // 5. Update Asset Status (Lock / Unlock)
+  // 5. Cập nhật trạng thái tài sản (Khả dụng / Đã khóa / Đã kết thúc)
   updateAssetStatusAdmin: async (
     assetId: string,
     trang_thai: 'KHA_DUNG' | 'DA_KHOA_SO' | 'DA_KET_THUC',
@@ -53,12 +53,13 @@ export const adminService = {
     return res.data;
   },
 
-  // 6. Category Management
+  // 6. Tạo danh mục tài sản mới
   createCategory: async (data: { ten_danh_muc: string; mo_ta?: string; bieu_tuong?: string }): Promise<AssetCategory> => {
     const res = await api.post('/admin/categories', data);
     return res.data;
   },
 
+  // 7. Cập nhật thông tin danh mục tài sản
   updateCategory: async (
     id: string,
     data: { ten_danh_muc?: string; mo_ta?: string; bieu_tuong?: string; trang_thai?: string },
@@ -67,6 +68,7 @@ export const adminService = {
     return res.data;
   },
 
+  // 8. Xóa danh mục tài sản
   deleteCategory: async (id: string): Promise<void> => {
     await api.delete(`/admin/categories/${id}`);
   },

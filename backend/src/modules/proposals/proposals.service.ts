@@ -208,11 +208,11 @@ export class ProposalsService {
     return proposal;
   }
 
-  // ACCEPT PROPOSAL (ACID TRANSACTION)
+  /** Chấp nhận đề xuất trao đổi và tự động khởi tạo giao dịch (ACID Transaction) */
   async acceptProposal(id: string, userId: string) {
     const proposal = await this.findOne(id);
 
-    // Only owner of the asset can accept (UC3.2)
+    // Chỉ chủ sở hữu tài sản mới có quyền chấp nhận đề xuất
     if (proposal.bai_dang.chu_so_huu_id !== userId) {
       throw new ForbiddenException('Chỉ chủ sở hữu tài sản mới có quyền chấp nhận đề xuất');
     }
@@ -222,7 +222,7 @@ export class ProposalsService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      // Re-fetch asset with transaction lock
+      // Lấy lại thông tin tài sản với khóa giao dịch
       const asset = await tx.baiDangTaiSan.findUnique({
         where: { bai_dang_id: proposal.bai_dang_id },
       });
@@ -231,7 +231,7 @@ export class ProposalsService {
         throw new BadRequestException('Số lượng khả dụng không đủ để hoàn tất chấp nhận đề xuất');
       }
 
-      // Update Asset quantities
+      // Cập nhật số lượng khả dụng và số lượng giữ chỗ của tài sản
       const newKhaDung = asset.so_luong_kha_dung - proposal.so_luong_yeu_cau;
       const newGiuCho = asset.so_luong_giu_cho + proposal.so_luong_yeu_cau;
       const newTrangThai = newKhaDung === 0 ? 'TAM_HET_KHA_DUNG' : asset.trang_thai;
@@ -245,13 +245,13 @@ export class ProposalsService {
         },
       });
 
-      // Update Proposal status
+      // Cập nhật trạng thái đề xuất thành DA_CHAP_NHAN
       await tx.deXuatGiaoDich.update({
         where: { de_xuat_id: id },
         data: { trang_thai: 'DA_CHAP_NHAN' },
       });
 
-      // Create Transaction
+      // Tạo hồ sơ giao dịch mới
       const giaoDich = await tx.giaoDich.create({
         data: {
           de_xuat_id: id,

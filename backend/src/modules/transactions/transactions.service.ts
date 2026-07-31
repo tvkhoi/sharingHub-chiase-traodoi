@@ -10,6 +10,7 @@ export class TransactionsService {
     private negotiationGateway: NegotiationGateway,
   ) {}
 
+  /** Lấy danh sách giao dịch cá nhân có phân trang */
   async findAllMyTransactions(userId: string, query?: QueryPaginationDto) {
     const page = Number(query?.page) || 1;
     const limit = Number(query?.limit) || 10;
@@ -68,6 +69,7 @@ export class TransactionsService {
     };
   }
 
+  /** Lấy thông tin chi tiết của một giao dịch theo ID */
   async findOne(id: string, userId: string) {
     const tx = await this.prisma.giaoDich.findUnique({
       where: { giao_dich_id: id },
@@ -110,7 +112,7 @@ export class TransactionsService {
     return tx;
   }
 
-  // CONFIRM TRANSACTION (ACID TRANSACTION)
+  /** Xác nhận bàn giao hoàn tất giao dịch (ACID Transaction) */
   async confirmTransaction(id: string, userId: string) {
     const txData = await this.findOne(id, userId);
 
@@ -128,7 +130,7 @@ export class TransactionsService {
       if (isOwner) xacNhanSoHuu = true;
       if (isReceiver) xacNhanTiepNhan = true;
 
-      // Both sides confirmed -> Transition to HOAN_TAT (8.4)
+      // Cả 2 bên đều đã xác nhận -> Chuyển trạng thái sang HOAN_TAT
       if (xacNhanSoHuu && xacNhanTiepNhan) {
         const updatedGiaoDich = await tx.giaoDich.update({
           where: { giao_dich_id: id },
@@ -139,7 +141,7 @@ export class TransactionsService {
           },
         });
 
-        // Update Asset quantities (BRL-019)
+        // Cập nhật lại số lượng giữ chỗ và số lượng đã phân phối của tài sản
         const asset = await tx.baiDangTaiSan.findUnique({
           where: { bai_dang_id: txData.de_xuat.bai_dang_id },
         });
@@ -161,7 +163,7 @@ export class TransactionsService {
           },
         });
 
-        // Increment completed transactions count for both participants (DSD 4.3 so_giao_dich_hoan_tat)
+        // Tăng số lượng giao dịch hoàn tất cho cả 2 người dùng trong hồ sơ uy tín
         await tx.hoSoUyTin.updateMany({
           where: {
             nguoi_dung_id: { in: [txData.nguoi_so_huu_id, txData.nguoi_tiep_nhan_id] },
@@ -171,7 +173,7 @@ export class TransactionsService {
           },
         });
 
-        // Notify both sides that transaction is completed
+        // Gửi thông báo đẩy cho cả hai bên khi giao dịch hoàn tất
         try {
           const partnerId = isOwner ? txData.nguoi_tiep_nhan_id : txData.nguoi_so_huu_id;
           const assetTitle = txData.de_xuat?.bai_dang?.ten_tai_san || 'tài sản';
@@ -200,7 +202,7 @@ export class TransactionsService {
           giao_dich: updatedGiaoDich,
         };
       } else {
-        // Only 1 side confirmed
+        // Mới chỉ có 1 bên xác nhận
         const updatedGiaoDich = await tx.giaoDich.update({
           where: { giao_dich_id: id },
           data: {
@@ -210,7 +212,7 @@ export class TransactionsService {
           },
         });
 
-        // Send push notification to the partner waiting for confirmation
+        // Gửi thông báo đẩy cho bên còn lại để yêu cầu xác nhận
         try {
           const partnerId = isOwner ? txData.nguoi_tiep_nhan_id : txData.nguoi_so_huu_id;
           const actorName = isOwner ? (txData.nguoi_so_huu?.ho_so?.ho_ten || 'Chủ tài sản') : (txData.nguoi_tiep_nhan?.ho_so?.ho_ten || 'Người nhận');
@@ -235,7 +237,7 @@ export class TransactionsService {
     });
   }
 
-  // CANCEL TRANSACTION (ACID TRANSACTION 8.5)
+  /** Hủy bỏ giao dịch và hoàn trả số lượng tài sản khả dụng (ACID Transaction) */
   async cancelTransaction(id: string, userId: string, lyDo?: string) {
     const txData = await this.findOne(id, userId);
 
@@ -251,7 +253,7 @@ export class TransactionsService {
     const isOwner = txData.nguoi_so_huu_id === userId;
 
     return this.prisma.$transaction(async (tx) => {
-      // 1. Update Transaction status
+      // 1. Cập nhật trạng thái giao dịch thành DA_HUY
       const updatedGiaoDich = await tx.giaoDich.update({
         where: { giao_dich_id: id },
         data: {
@@ -260,7 +262,7 @@ export class TransactionsService {
         },
       });
 
-      // 2. Synchronize associated Proposal status to DA_HUY
+      // 2. Đồng bộ trạng thái đề xuất tương ứng sang DA_HUY
       if (txData.de_xuat_id) {
         await tx.deXuatGiaoDich.update({
           where: { de_xuat_id: txData.de_xuat_id },
@@ -271,7 +273,7 @@ export class TransactionsService {
         });
       }
 
-      // 3. Release locked quantity back to available quantity
+      // 3. Hoàn trả số lượng đã giữ chỗ về số lượng khả dụng
       const asset = await tx.baiDangTaiSan.findUnique({
         where: { bai_dang_id: txData.de_xuat.bai_dang_id },
       });
@@ -291,7 +293,7 @@ export class TransactionsService {
         });
       }
 
-      // Send push notification to partner
+      // Gửi thông báo đẩy cho đối tác báo giao dịch bị hủy
       try {
         const partnerId = isOwner ? txData.nguoi_tiep_nhan_id : txData.nguoi_so_huu_id;
         const actorName = isOwner ? (txData.nguoi_so_huu?.ho_so?.ho_ten || 'Đối tác') : (txData.nguoi_tiep_nhan?.ho_so?.ho_ten || 'Đối tác');

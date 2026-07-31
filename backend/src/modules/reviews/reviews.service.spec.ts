@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewsService } from './reviews.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('ReviewsService', () => {
@@ -22,11 +23,17 @@ describe('ReviewsService', () => {
     $transaction: jest.fn((callback) => callback(mockPrismaService)),
   };
 
+  const mockNegotiationGateway = {
+    sendNotificationToUser: jest.fn(),
+    server: { emit: jest.fn() },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ReviewsService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: NegotiationGateway, useValue: mockNegotiationGateway },
       ],
     }).compile();
 

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProposalsService } from './proposals.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NegotiationGateway } from '../negotiation/negotiation.gateway';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('ProposalsService', () => {
@@ -25,11 +26,17 @@ describe('ProposalsService', () => {
     $transaction: jest.fn((callback) => callback(mockPrismaService)),
   };
 
+  const mockNegotiationGateway = {
+    sendNotificationToUser: jest.fn(),
+    server: { emit: jest.fn() },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProposalsService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: NegotiationGateway, useValue: mockNegotiationGateway },
       ],
     }).compile();
 
@@ -49,7 +56,11 @@ describe('ProposalsService', () => {
       } as any);
 
       await expect(
-        service.create('user-owner', { bai_dang_id: 'asset-1', so_luong_yeu_cau: 1 }),
+        service.create('user-owner', {
+          bai_dang_id: 'asset-1',
+          so_luong_yeu_cau: 1,
+          tai_san_doi_ung: 'Tai nghe Bluetooth Sony',
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -62,7 +73,11 @@ describe('ProposalsService', () => {
       } as any);
 
       await expect(
-        service.create('user-requester', { bai_dang_id: 'asset-1', so_luong_yeu_cau: 5 }),
+        service.create('user-requester', {
+          bai_dang_id: 'asset-1',
+          so_luong_yeu_cau: 5,
+          tai_san_doi_ung: 'Tai nghe Bluetooth Sony',
+        }),
       ).rejects.toThrow(BadRequestException);
     });
   });

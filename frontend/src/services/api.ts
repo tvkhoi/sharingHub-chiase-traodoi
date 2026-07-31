@@ -10,7 +10,7 @@ export const api = axios.create({
   },
 });
 
-// Request Interceptor: Attach JWT Token from localStorage if present
+// Trình đánh chặn yêu cầu (Request Interceptor): Đính kèm JWT Token từ localStorage nếu có
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -22,12 +22,12 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle 401 Unauthorized globally
+// Trình đánh chặn phản hồi (Response Interceptor): Xử lý lỗi 401 Unauthorized toàn hệ thống
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token and user on 401 if not already on login page
+      // Xóa token và thông tin người dùng khi bị 401 nếu chưa ở trang đăng nhập
       if (!window.location.pathname.includes('/login')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
