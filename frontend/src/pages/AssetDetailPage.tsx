@@ -37,6 +37,7 @@ export const AssetDetailPage: React.FC = () => {
   const [loiNhan, setLoiNhan] = useState<string>('');
   const [taiSanDoiUng, setTaiSanDoiUng] = useState<string>('');
   const [tienDoiUng, setTienDoiUng] = useState<string>('');
+  const [tienDoiUngError, setTienDoiUngError] = useState<string>('');
   const [loaiDoiUng, setLoaiDoiUng] = useState<'TAI_SAN' | 'TIEN' | 'CA_HAI' | 'MIEN_PHI'>('TAI_SAN');
   const [submittingProposal, setSubmittingProposal] = useState<boolean>(false);
 
@@ -80,6 +81,7 @@ export const AssetDetailPage: React.FC = () => {
     setSoLuongYeuCau(1);
     setLoiNhan('');
     setTienDoiUng('');
+    setTienDoiUngError('');
     if (asset?.hinh_thuc_chia_se === 'CHO_TANG') {
       setLoaiDoiUng('MIEN_PHI');
       setTaiSanDoiUng('Xin nhận miễn phí (Cho/Tặng)');
@@ -88,6 +90,20 @@ export const AssetDetailPage: React.FC = () => {
       setTaiSanDoiUng('');
     }
     setShowProposalModal(true);
+  };
+
+  const handleTienDoiUngChange = (val: string) => {
+    setTienDoiUng(val);
+    if (!val) {
+      setTienDoiUngError(loaiDoiUng === 'TIEN' ? 'Vui lòng nhập số tiền đối ứng bù thêm' : '');
+      return;
+    }
+    const num = Number(val);
+    if (isNaN(num) || num <= 0) {
+      setTienDoiUngError('Số tiền đối ứng phải lớn hơn 0 VNĐ');
+    } else {
+      setTienDoiUngError('');
+    }
   };
 
   const handleSendProposal = async (e: React.FormEvent) => {
@@ -546,14 +562,24 @@ export const AssetDetailPage: React.FC = () => {
                       <label className="form-label text-xs">Số tiền đối ứng bù thêm (VNĐ) *</label>
                       <input
                         type="number"
-                        min={0}
-                        step={10000}
-                        placeholder="Ví dụ: 100000 (cho 100k)"
+                        placeholder="Ví dụ: 1000, 50000, 100000..."
                         value={tienDoiUng}
-                        onChange={(e) => setTienDoiUng(e.target.value)}
-                        className="form-input text-sm"
+                        onChange={(e) => handleTienDoiUngChange(e.target.value)}
+                        className={`form-input text-sm ${
+                          tienDoiUngError ? 'border-rose-500 focus:ring-rose-500' : ''
+                        }`}
                         required={loaiDoiUng === 'TIEN'}
                       />
+                      {tienDoiUng && !isNaN(Number(tienDoiUng)) && Number(tienDoiUng) > 0 && (
+                        <p className="text-xs text-emerald-400 font-semibold mt-1 flex items-center gap-1">
+                          ✓ Bù thêm: {Number(tienDoiUng).toLocaleString('vi-VN')} VNĐ
+                        </p>
+                      )}
+                      {tienDoiUngError && (
+                        <p className="text-xs text-rose-400 font-medium mt-1 flex items-center gap-1">
+                          ⚠️ {tienDoiUngError}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
