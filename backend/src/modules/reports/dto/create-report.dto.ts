@@ -1,5 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class MinhChungDto {
+  @ApiProperty({
+    description: 'Đường dẫn tệp đính kèm',
+    example: 'https://example.com/evidence-image.jpg',
+  })
+  @IsString()
+  @IsNotEmpty()
+  duong_dan_tep: string;
+
+  @ApiPropertyOptional({ description: 'Tên tệp gốc', example: 'bien_ban.png' })
+  @IsString()
+  @IsOptional()
+  ten_tep?: string;
+
+  @ApiPropertyOptional({ description: 'Loại tệp MIME type', example: 'image/png' })
+  @IsString()
+  @IsOptional()
+  loai_tep?: string;
+
+  @ApiPropertyOptional({ description: 'Kích thước tệp (bytes)', example: 102400 })
+  @IsOptional()
+  kich_thuoc_tep?: number;
+
+  @ApiPropertyOptional({ description: 'Thứ tự hiển thị', example: 1 })
+  @IsOptional()
+  thu_tu_hien_thi?: number;
+}
 
 export class CreateReportDto {
   @ApiPropertyOptional({
@@ -35,7 +64,7 @@ export class CreateReportDto {
   mo_ta_chi_tiet?: string;
 
   @ApiPropertyOptional({
-    description: 'Đường dẫn ảnh/link minh chứng vi phạm (nếu có)',
+    description: 'Đường dẫn ảnh/link minh chứng vi phạm (nếu có - alias cũ)',
     example: 'https://example.com/evidence-image.jpg',
   })
   @IsString()
@@ -49,6 +78,16 @@ export class CreateReportDto {
   @IsString()
   @IsOptional()
   minh_chung?: string;
+
+  @ApiPropertyOptional({
+    description: 'Danh sách các tệp minh chứng đính kèm (bảng minh_chung_bao_cao)',
+    type: [MinhChungDto],
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => MinhChungDto)
+  danh_sach_minh_chung?: MinhChungDto[];
 
   @ApiPropertyOptional({
     description: 'Loại báo cáo hoặc kháng cáo (BAI_DANG, NGUOI_DUNG, KHANG_CAO...)',

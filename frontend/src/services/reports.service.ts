@@ -7,6 +7,13 @@ export interface CreateReportPayload {
   ly_do_bao_cao: string;
   mo_ta_chi_tiet?: string;
   minh_chung?: string;
+  danh_sach_minh_chung?: Array<{
+    duong_dan_tep: string;
+    ten_tep?: string;
+    loai_tep?: string;
+    kich_thuoc_tep?: number;
+    thu_tu_hien_thi?: number;
+  }>;
   loai_bao_cao?: string;
 }
 

@@ -373,39 +373,75 @@ export const AdminReportsPage: React.FC = () => {
                     {selectedReport.mo_ta_chi_tiet}
                   </div>
                 )}
-                {selectedReport.minh_chung ? (
+                {(selectedReport.danh_sach_minh_chung && selectedReport.danh_sach_minh_chung.length > 0) || selectedReport.minh_chung ? (
                   <div className="pt-2 border-t border-color/40 mt-2">
                     <span className="text-xs font-semibold text-secondary flex items-center gap-1 mb-2">
-                      <ImageIcon className="w-3.5 h-3.5 text-brand-primary" /> Hình ảnh / Minh chứng đính kèm:
+                      <ImageIcon className="w-3.5 h-3.5 text-brand-primary" /> 
+                      Danh sách minh chứng đính kèm ({selectedReport.danh_sach_minh_chung?.length || 1}):
                     </span>
-                    <div className="flex flex-col gap-2">
-                      <a
-                        href={selectedReport.minh_chung}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block rounded-xl overflow-hidden border border-color max-w-xs hover:opacity-90 transition-opacity group relative shadow-md"
-                        title="Bấm để xem ảnh gốc kích thước lớn"
-                      >
-                        <img
-                          src={selectedReport.minh_chung}
-                          alt="Bằng chứng vi phạm"
-                          className="max-h-48 w-auto object-cover rounded-xl"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = 'none';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity">
-                          <ExternalLink className="w-4 h-4 mr-1" /> Xem ảnh đầy đủ
-                        </div>
-                      </a>
-                      <a
-                        href={selectedReport.minh_chung}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-brand-primary underline break-all inline-flex items-center gap-1 font-mono"
-                      >
-                        {selectedReport.minh_chung} <ExternalLink className="w-3 h-3" />
-                      </a>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(selectedReport.danh_sach_minh_chung && selectedReport.danh_sach_minh_chung.length > 0
+                        ? selectedReport.danh_sach_minh_chung
+                        : [{
+                            minh_chung_id: 'legacy',
+                            bao_cao_id: selectedReport.bao_cao_id,
+                            duong_dan_tep: selectedReport.minh_chung!,
+                            ten_tep: 'Bằng chứng đính kèm',
+                          }]
+                      ).map((mc, idx) => {
+                        const isImage = !mc.loai_tep || mc.loai_tep.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(mc.duong_dan_tep);
+
+                        return (
+                          <div
+                            key={mc.minh_chung_id || idx}
+                            className="flex flex-col p-2.5 rounded-xl border border-color bg-background/80 hover:border-brand-primary/50 transition-colors shadow-sm"
+                          >
+                            {isImage ? (
+                              <a
+                                href={mc.duong_dan_tep}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block rounded-lg overflow-hidden border border-color group relative bg-black/5"
+                                title="Bấm để mở ảnh trong tab mới"
+                              >
+                                <img
+                                  src={mc.duong_dan_tep}
+                                  alt={mc.ten_tep || 'Minh chứng'}
+                                  className="h-32 w-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-200"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity">
+                                  <ExternalLink className="w-4 h-4 mr-1" /> Xem ảnh lớn
+                                </div>
+                              </a>
+                            ) : (
+                              <div className="h-32 flex flex-col items-center justify-center bg-slate-900/10 rounded-lg p-2 text-center border border-dashed border-color">
+                                <FileText className="w-8 h-8 text-brand-primary mb-1" />
+                                <span className="text-xs font-medium text-primary truncate max-w-full">
+                                  {mc.ten_tep || 'Tệp đính kèm'}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="mt-2 flex items-center justify-between gap-1 text-[11px] text-secondary">
+                              <span className="truncate font-medium text-primary" title={mc.ten_tep || mc.duong_dan_tep}>
+                                #{idx + 1} {mc.ten_tep || 'Bằng chứng đính kèm'}
+                              </span>
+                              <a
+                                href={mc.duong_dan_tep}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-brand-primary underline inline-flex items-center gap-0.5 shrink-0 font-mono"
+                              >
+                                Mở link <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (
@@ -463,14 +499,13 @@ export const AdminReportsPage: React.FC = () => {
                     >
                       {selectedReport?.loai_bao_cao === 'KHANG_CAO' ? (
                         <>
-                          <option value="KHOI_PHUC_BAI_DANG">🟢 Phê duyệt kháng cáo (Mở lại bài đăng bị khóa)</option>
-                          <option value="AN_BAI_DANG">🔴 Giữ nguyên ẩn / khóa bài đăng</option>
+                          <option value="KHOI_PHUC_BAI_DANG">Phê duyệt kháng cáo (Mở lại bài đăng bị khóa)</option>
+                          <option value="AN_BAI_DANG">Giữ nguyên ẩn / khóa bài đăng</option>
                         </>
                       ) : (
                         <>
-                          <option value="AN_BAI_DANG">🔴 Ẩn / Khóa bài đăng vi phạm</option>
-                          <option value="KHOA_TAI_KHOAN">🔴 Khóa tài khoản thành viên vi phạm</option>
-                          <option value="KHOI_PHUC_BAI_DANG">🟢 Khôi phục mở lại bài đăng</option>
+                          <option value="AN_BAI_DANG">Ẩn / Khóa bài đăng vi phạm</option>
+                          <option value="KHOA_TAI_KHOAN">Khóa tài khoản thành viên vi phạm</option>
                         </>
                       )}
                     </select>

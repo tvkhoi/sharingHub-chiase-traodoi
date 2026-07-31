@@ -207,12 +207,28 @@ model BaoCaoViPham {
   ngay_bao_cao             DateTime       @default(now()) @db.Timestamptz
   ngay_cap_nhat            DateTime       @default(now()) @updatedAt @db.Timestamptz
 
-  nguoi_bao_cao            NguoiDung      @relation("NguoiBaoCao", fields: [nguoi_bao_cao_id], references: [nguoi_dung_id], onDelete: Restrict)
-  nguoi_dung_bi_bao_cao    NguoiDung?     @relation("NguoiBiBaoCao", fields: [nguoi_dung_bi_bao_cao_id], references: [nguoi_dung_id], onDelete: Restrict)
-  bai_dang_bi_bao_cao      BaiDangTaiSan? @relation("BaiDangBiBaoCao", fields: [bai_dang_bi_bao_cao_id], references: [bai_dang_id], onDelete: Restrict)
+  nguoi_bao_cao            NguoiDung         @relation("NguoiBaoCao", fields: [nguoi_bao_cao_id], references: [nguoi_dung_id], onDelete: Restrict)
+  nguoi_dung_bi_bao_cao    NguoiDung?        @relation("NguoiBiBaoCao", fields: [nguoi_dung_bi_bao_cao_id], references: [nguoi_dung_id], onDelete: Restrict)
+  bai_dang_bi_bao_cao      BaiDangTaiSan?    @relation("BaiDangBiBaoCao", fields: [bai_dang_bi_bao_cao_id], references: [bai_dang_id], onDelete: Restrict)
   bien_phap                BienPhapXuLy[]
+  danh_sach_minh_chung     MinhChungBaoCao[]
 
   @@map("bao_cao_vi_pham")
+}
+
+model MinhChungBaoCao {
+  minh_chung_id   String       @id @default(uuid()) @db.Uuid
+  bao_cao_id      String       @db.Uuid
+  duong_dan_tep   String       @db.VarChar(500)
+  ten_tep         String?      @db.VarChar(255)
+  loai_tep        String?      @db.VarChar(100)
+  kich_thuoc_tep  BigInt?
+  thu_tu_hien_thi Int          @default(1)
+  ngay_tai_len    DateTime     @default(now()) @db.Timestamptz
+
+  bao_cao         BaoCaoViPham @relation(fields: [bao_cao_id], references: [bao_cao_id], onDelete: Cascade)
+
+  @@map("minh_chung_bao_cao")
 }
 
 model BienPhapXuLy {

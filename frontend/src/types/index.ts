@@ -154,6 +154,17 @@ export interface PenaltyAction {
   quan_tri_vien?: Partial<User>;
 }
 
+export interface MinhChungBaoCao {
+  minh_chung_id: string;
+  bao_cao_id: string;
+  duong_dan_tep: string;
+  ten_tep?: string | null;
+  loai_tep?: string | null;
+  kich_thuoc_tep?: number | null;
+  thu_tu_hien_thi?: number;
+  ngay_tai_len?: string;
+}
+
 export interface Report {
   bao_cao_id: string;
   nguoi_bao_cao_id: string;
@@ -163,6 +174,7 @@ export interface Report {
   ly_do_vi_pham: string;
   mo_ta_chi_tiet: string;
   minh_chung?: string | null;
+  danh_sach_minh_chung?: MinhChungBaoCao[];
   trang_thai_xu_ly: ReportStatus;
   ngay_bao_cao: string;
   nguoi_bao_cao?: Partial<User>;

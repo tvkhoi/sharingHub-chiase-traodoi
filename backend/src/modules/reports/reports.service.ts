@@ -111,6 +111,42 @@ export class ReportsService implements OnModuleInit {
       }
     }
 
+    const minhChungListToCreate: any[] = [];
+    if (dto.danh_sach_minh_chung && dto.danh_sach_minh_chung.length > 0) {
+      dto.danh_sach_minh_chung.forEach((mc, index) => {
+        if (mc.duong_dan_tep) {
+          const fileName = mc.ten_tep || mc.duong_dan_tep.substring(mc.duong_dan_tep.lastIndexOf('/') + 1) || 'Tệp đính kèm';
+          const fileExt = fileName.includes('.') ? fileName.substring(fileName.lastIndexOf('.') + 1) : '';
+
+          minhChungListToCreate.push({
+            duong_dan_tep: mc.duong_dan_tep,
+            ten_tep: fileName,
+            loai_tep: mc.loai_tep || (fileExt ? `image/${fileExt}` : 'image/jpeg'),
+            kich_thuoc_tep: mc.kich_thuoc_tep ? BigInt(mc.kich_thuoc_tep) : null,
+            thu_tu_hien_thi: mc.thu_tu_hien_thi || index + 1,
+          });
+        }
+      });
+    } else {
+      const singleUrl = dto.minh_chung || dto.bang_chung_hinh_anh;
+      if (singleUrl) {
+        const urls = singleUrl.split(',').map((u) => u.trim()).filter(Boolean);
+        urls.forEach((url, index) => {
+          const fileName = url.substring(url.lastIndexOf('/') + 1) || 'Tệp đính kèm';
+          const fileExt = fileName.includes('.') ? fileName.substring(fileName.lastIndexOf('.') + 1) : '';
+
+          minhChungListToCreate.push({
+            duong_dan_tep: url,
+            ten_tep: fileName,
+            loai_tep: fileExt ? `image/${fileExt}` : 'image/jpeg',
+            thu_tu_hien_thi: index + 1,
+          });
+        });
+      }
+    }
+
+    const legacyMinhChung = dto.minh_chung || dto.bang_chung_hinh_anh || (minhChungListToCreate.length > 0 ? minhChungListToCreate[0].duong_dan_tep : null);
+
     return this.prisma.baoCaoViPham.create({
       data: {
         nguoi_bao_cao_id: userId,
@@ -119,8 +155,13 @@ export class ReportsService implements OnModuleInit {
         loai_bao_cao: loaiBaoCao,
         ly_do_vi_pham: dto.ly_do_bao_cao,
         mo_ta_chi_tiet: dto.mo_ta_chi_tiet || dto.ly_do_bao_cao,
-        minh_chung: dto.minh_chung || dto.bang_chung_hinh_anh || null,
+        minh_chung: legacyMinhChung,
         trang_thai_xu_ly: 'CHO_KIEM_DUYET',
+        ...(minhChungListToCreate.length > 0 && {
+          danh_sach_minh_chung: {
+            create: minhChungListToCreate,
+          },
+        }),
       },
       include: {
         nguoi_bao_cao: {
@@ -137,6 +178,9 @@ export class ReportsService implements OnModuleInit {
             email: true,
             ho_so: true,
           },
+        },
+        danh_sach_minh_chung: {
+          orderBy: { thu_tu_hien_thi: 'asc' },
         },
       },
     });
@@ -167,6 +211,9 @@ export class ReportsService implements OnModuleInit {
               email: true,
               ho_so: true,
             },
+          },
+          danh_sach_minh_chung: {
+            orderBy: { thu_tu_hien_thi: 'asc' },
           },
           bien_phap: {
             include: {
@@ -213,6 +260,9 @@ export class ReportsService implements OnModuleInit {
             email: true,
             ho_so: true,
           },
+        },
+        danh_sach_minh_chung: {
+          orderBy: { thu_tu_hien_thi: 'asc' },
         },
         bien_phap: {
           include: {
